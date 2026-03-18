@@ -27,14 +27,24 @@ const Card = styled.div`
   background:
     linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.04),
-      rgba(255, 255, 255, 0.01)
+      rgba(184, 111, 82, 0.08),
+      rgba(184, 111, 82, 0.02)
     ),
     ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
   box-shadow: ${({ theme }) => theme.shadow.md};
   display: grid;
   gap: 1rem;
+  transition:
+    transform ${({ theme }) => theme.transitions.default},
+    border-color ${({ theme }) => theme.transitions.default},
+    box-shadow ${({ theme }) => theme.transitions.default};
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: ${({ theme }) => theme.colors.secondary};
+    box-shadow: 0 14px 32px rgba(184, 111, 82, 0.1);
+  }
 
   @media ${media.tablet} {
     padding: 2rem;
@@ -57,9 +67,9 @@ const Eyebrow = styled.span`
   width: fit-content;
   padding: 0.45rem 0.9rem;
   border-radius: ${({ theme }) => theme.radius.pill};
-  background: ${({ theme }) => theme.colors.surfaceSoft || "rgba(255,255,255,0.06)"};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  color: ${({ theme }) => theme.colors.primary};
+  background: rgba(184, 111, 82, 0.12);
+  border: 1px solid rgba(184, 111, 82, 0.28);
+  color: ${({ theme }) => theme.colors.secondary};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -114,7 +124,7 @@ export function ContactCtaBase({
         <Card>
           <Content>
             {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-            <Title>{title}</Title>
+            {title && <Title>{title}</Title>}
             {description && <Text>{description}</Text>}
           </Content>
 

@@ -9,11 +9,13 @@ export const Card = styled.article`
   transition:
     transform ${({ theme }) => theme.transitions.default},
     border-color ${({ theme }) => theme.transitions.default},
-    background ${({ theme }) => theme.transitions.default};
+    background ${({ theme }) => theme.transitions.default},
+    box-shadow ${({ theme }) => theme.transitions.default};
 
   &:hover {
     transform: translateY(-2px);
-    border-color: ${({ theme }) => theme.colors.primary};
+    border-color: ${({ theme }) => theme.colors.secondary};
     background: ${({ theme }) => theme.colors.surfaceHover};
+    box-shadow: 0 10px 24px rgba(184, 111, 82, 0.08);
   }
 `;

@@ -44,6 +44,7 @@ const sharedStyles = css<{ $variant: ButtonVariant }>`
   font-weight: 700;
   font-size: ${({ theme }) => theme.fontSizes.sm};
   cursor: pointer;
+  text-decoration: none;
   transition:
     transform ${({ theme }) => theme.transitions.default},
     background ${({ theme }) => theme.transitions.default},
@@ -55,6 +56,11 @@ const sharedStyles = css<{ $variant: ButtonVariant }>`
     transform: translateY(-1px);
   }
 
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(184, 111, 82, 0.18);
+  }
+
   ${({ theme, $variant }) =>
     $variant === "ghost"
       ? css`
@@ -64,7 +70,8 @@ const sharedStyles = css<{ $variant: ButtonVariant }>`
 
           &:hover {
             background: ${theme.colors.surface};
-            border-color: ${theme.colors.primary};
+            border-color: ${theme.colors.secondary};
+            color: ${theme.colors.secondary};
           }
         `
       : css`
@@ -74,6 +81,7 @@ const sharedStyles = css<{ $variant: ButtonVariant }>`
 
           &:hover {
             background: ${theme.colors.primaryHover};
+            box-shadow: 0 10px 28px rgba(184, 111, 82, 0.16);
           }
         `}
 `;
@@ -113,7 +121,8 @@ export function Button(props: ButtonProps) {
     );
   }
 
-  const { children: _children, variant: _variant, ...rest } = props as ButtonAsButtonProps;
+  const { children: _children, variant: _variant, ...rest } =
+    props as ButtonAsButtonProps;
 
   return (
     <StyledButton type="button" $variant={variant} {...rest}>

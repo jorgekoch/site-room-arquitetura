@@ -105,10 +105,14 @@ const Item = styled.li`
   background: ${({ theme }) => theme.colors.surface};
   color: ${({ theme }) => theme.colors.textSoft};
   line-height: 1.7;
-  transition: 0.2s ease;
+  transition:
+    transform ${({ theme }) => theme.transitions.default},
+    border-color ${({ theme }) => theme.transitions.default},
+    background ${({ theme }) => theme.transitions.default};
 
   &:hover {
-    border-color: ${({ theme }) => theme.colors.primary};
+    border-color: ${({ theme }) => theme.colors.secondary};
+    background: ${({ theme }) => theme.colors.surfaceHover};
     transform: translateY(-2px);
   }
 `;

@@ -18,9 +18,9 @@ const Eyebrow = styled.span`
   width: fit-content;
   padding: 0.45rem 0.9rem;
   border-radius: ${({ theme }) => theme.radius.pill};
-  background: rgba(139, 92, 246, 0.12);
-  border: 1px solid rgba(139, 92, 246, 0.24);
-  color: ${({ theme }) => theme.colors.primary};
+  background: rgba(184, 111, 82, 0.12);
+  border: 1px solid rgba(184, 111, 82, 0.28);
+  color: ${({ theme }) => theme.colors.secondary};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   font-weight: 700;
   letter-spacing: 0.08em;

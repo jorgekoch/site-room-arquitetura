@@ -66,10 +66,8 @@ const Eyebrow = styled.span`
   padding: 0.4rem 0.8rem;
   border-radius: ${({ theme }) => theme.radius.pill};
   background: rgba(184, 111, 82, 0.12);
-  border: 1px solid rgba(184, 111, 82, 0.3);
+  border: 1px solid rgba(184, 111, 82, 0.28);
   color: ${({ theme }) => theme.colors.secondary};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  color: ${({ theme }) => theme.colors.primary};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   font-weight: 700;
   text-transform: uppercase;
@@ -136,11 +134,15 @@ const Highlight = styled.div`
   border-radius: ${({ theme }) => theme.radius.md};
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  transition: 0.2s ease;
+  transition:
+    transform ${({ theme }) => theme.transitions.default},
+    border-color ${({ theme }) => theme.transitions.default},
+    background ${({ theme }) => theme.transitions.default};
 
   &:hover {
     transform: translateY(-2px);
-    border-color: ${({ theme }) => theme.colors.primary};
+    border-color: ${({ theme }) => theme.colors.secondary};
+    background: ${({ theme }) => theme.colors.surfaceHover};
   }
 `;
 
