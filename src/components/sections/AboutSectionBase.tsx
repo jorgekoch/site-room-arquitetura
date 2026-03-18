@@ -165,9 +165,9 @@ const ImagePlaceholder = styled.div`
 `;
 
 export function AboutSectionBase({
-  eyebrow,
-  title,
-  description,
+  eyebrow = "Sobre",
+  title = "Uma estrutura clara para apresentar trajetória e diferenciais",
+  description = "Use esta seção para apresentar a pessoa, a marca ou a proposta com mais profundidade e confiança.",
   mainTag,
   mainTitle,
   paragraphs = [],
