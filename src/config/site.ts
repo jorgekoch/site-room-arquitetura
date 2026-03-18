@@ -22,25 +22,26 @@ export type SiteConfig = {
 
 export const siteConfig: SiteConfig = {
   brand: {
-    name: "Seu Nome ou Marca",
-    initials: "SN",
-    tagline: "Uma frase curta explicando o que você faz de forma profissional.",
+    name: "ROOM Arquitetura Sustentável",
+    initials: "RM",
+    tagline:
+      "Arquitetura sustentável com propósito, identidade e sensibilidade.",
   },
 
   contact: {
-    whatsapp: "https://wa.me/5541999999999",
-    instagram: "https://instagram.com/seuperfil",
-    email: "contato@seudominio.com",
+    whatsapp: "",
+    instagram: "",
+    email: "",
   },
 
   cta: {
-    primaryLabel: "Entrar em contato",
+    primaryLabel: "Solicitar proposta",
     primaryTo: "/contato",
-    secondaryLabel: "Ver serviços",
-    secondaryTo: "/servicos",
+    secondaryLabel: "Conhecer serviços",
+    secondaryTo: "#servicos",
   },
 
   footer: {
-    note: "Estrutura moderna, visual profissional e foco total em clareza e conversão.",
+    note: "Projetos arquitetônicos, interiores e consultorias com atendimento personalizado em todo o Brasil.",
   },
 };

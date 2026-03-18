@@ -9,6 +9,7 @@ type CtaLink = {
 };
 
 type ContactCtaBaseProps = {
+  id?: string;
   eyebrow?: string;
   title?: string;
   description?: string;
@@ -24,10 +25,14 @@ const Card = styled.div`
   padding: 1.5rem;
   border-radius: ${({ theme }) => theme.radius.lg};
   background:
-    linear-gradient(180deg, rgba(139, 92, 246, 0.12), rgba(139, 92, 246, 0.03)),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.04),
+      rgba(255, 255, 255, 0.01)
+    ),
     ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  box-shadow: ${({ theme }) => theme.shadow.glow};
+  box-shadow: ${({ theme }) => theme.shadow.md};
   display: grid;
   gap: 1rem;
 
@@ -44,7 +49,7 @@ const Card = styled.div`
 
 const Content = styled.div`
   display: grid;
-  gap: 0.65rem;
+  gap: 0.75rem;
 `;
 
 const Eyebrow = styled.span`
@@ -52,8 +57,8 @@ const Eyebrow = styled.span`
   width: fit-content;
   padding: 0.45rem 0.9rem;
   border-radius: ${({ theme }) => theme.radius.pill};
-  background: rgba(139, 92, 246, 0.12);
-  border: 1px solid rgba(139, 92, 246, 0.24);
+  background: ${({ theme }) => theme.colors.surfaceSoft || "rgba(255,255,255,0.06)"};
+  border: 1px solid ${({ theme }) => theme.colors.border};
   color: ${({ theme }) => theme.colors.primary};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   font-weight: 700;
@@ -79,6 +84,11 @@ const Actions = styled.div`
   @media ${media.tablet} {
     display: flex;
     flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  @media ${media.laptop} {
+    justify-content: flex-end;
   }
 
   & > * {
@@ -91,14 +101,15 @@ const Actions = styled.div`
 `;
 
 export function ContactCtaBase({
+  id,
   eyebrow = "Próximo passo",
-  title = "Transforme interesse em ação",
-  description = "Use este bloco para convidar a pessoa a entrar em contato, solicitar orçamento ou iniciar o atendimento.",
-  primaryCta = { label: "Entrar em contato", to: "/contato" },
+  title = "Vamos conversar sobre o seu projeto?",
+  description = "Preencha o formulário para solicitar sua proposta e dar o primeiro passo para um projeto pensado com identidade, sensibilidade e propósito.",
+  primaryCta = { label: "Solicitar proposta", to: "/contato" },
   secondaryCta,
 }: ContactCtaBaseProps) {
   return (
-    <Section>
+    <Section id={id}>
       <Container>
         <Card>
           <Content>

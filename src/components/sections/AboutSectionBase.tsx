@@ -47,9 +47,6 @@ const Column = styled.div`
 const HighlightCard = styled(Card)`
   display: grid;
   gap: 1rem;
-  background:
-    linear-gradient(180deg, rgba(139, 92, 246, 0.08), rgba(139, 92, 246, 0.03)),
-    ${({ theme }) => theme.colors.surface};
 `;
 
 const Title = styled.h3`
@@ -105,9 +102,15 @@ const Item = styled.li`
   padding: 1rem;
   border-radius: ${({ theme }) => theme.radius.md};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  background: ${({ theme }) => theme.colors.backgroundSoft};
+  background: ${({ theme }) => theme.colors.surface};
   color: ${({ theme }) => theme.colors.textSoft};
   line-height: 1.7;
+  transition: 0.2s ease;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary};
+    transform: translateY(-2px);
+  }
 `;
 
 const ImageCard = styled.div`
@@ -118,6 +121,17 @@ const ImageCard = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.border};
   background: ${({ theme }) => theme.colors.surface};
   box-shadow: ${({ theme }) => theme.shadow.md};
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.05),
+      rgba(0, 0, 0, 0.2)
+    );
+  }
 
   @media ${media.tablet} {
     min-height: 340px;
@@ -144,26 +158,18 @@ const ImagePlaceholder = styled.div`
   text-align: center;
   color: ${({ theme }) => theme.colors.textMuted};
   padding: 1.5rem;
-
-  @media ${media.tablet} {
-    min-height: 340px;
-  }
-
-  @media ${media.laptop} {
-    min-height: 420px;
-  }
 `;
 
 export function AboutSectionBase({
-  eyebrow = "Sobre",
-  title = "Uma estrutura clara para apresentar trajetória e diferenciais",
-  description = "Use esta seção para apresentar a pessoa, a marca ou a proposta com mais profundidade e confiança.",
-  mainTag = "Trajetória",
-  mainTitle = "Uma apresentação forte e bem organizada",
+  eyebrow,
+  title,
+  description,
+  mainTag,
+  mainTitle,
   paragraphs = [],
   bullets = [],
-  sideTag = "Destaques",
-  sideTitle = "Pontos importantes",
+  sideTag,
+  sideTitle,
   sideItems = [],
   image,
   imageAlt = "",
@@ -172,13 +178,17 @@ export function AboutSectionBase({
   return (
     <Section>
       <Container>
-        <SectionHeader eyebrow={eyebrow} title={title} description={description} />
+        <SectionHeader
+          eyebrow={eyebrow}
+          title={title}
+          description={description}
+        />
 
         <Grid>
           <Column>
             <HighlightCard>
               {mainTag && <Tag>{mainTag}</Tag>}
-              <Title>{mainTitle}</Title>
+              {mainTitle && <Title>{mainTitle}</Title>}
 
               {paragraphs.map((paragraph, index) => (
                 <Text key={index}>{paragraph}</Text>
@@ -201,7 +211,7 @@ export function AboutSectionBase({
                   <Image src={image} alt={imageAlt} />
                 ) : (
                   <ImagePlaceholder>
-                    Imagem do profissional, marca ou projeto
+                    Imagem do projeto ou ambiente
                   </ImagePlaceholder>
                 )}
               </ImageCard>

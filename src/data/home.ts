@@ -21,30 +21,30 @@ export type HomeData = {
 
 export const homeData: HomeData = {
   hero: {
-    eyebrow: "Serviço profissional",
-    title: "Título principal do site",
+    eyebrow: "ROOM Arquitetura Sustentável",
+    title: "Projetos com identidade, sensibilidade e propósito",
     description:
-      "Uma descrição clara e estratégica explicando o que você faz e como ajuda seu público.",
+      "A ROOM Arquitetura Sustentável desenvolve projetos arquitetônicos, interiores e consultorias para quem busca espaços mais conscientes, funcionais e alinhados à própria essência.",
     highlights: [
       {
-        title: "Diferencial 1",
-        text: "Explicação curta sobre esse diferencial.",
+        title: "Atendimento personalizado",
+        text: "Cada projeto é conduzido com proximidade, atenção aos detalhes e foco nas necessidades reais do cliente.",
       },
       {
-        title: "Diferencial 2",
-        text: "Explicação curta sobre esse diferencial.",
+        title: "Escuta sensível",
+        text: "O processo parte da compreensão da rotina, dos desejos e da identidade de quem vai viver o espaço.",
       },
       {
-        title: "Diferencial 3",
-        text: "Explicação curta sobre esse diferencial.",
+        title: "Atendimento em todo o Brasil",
+        text: "Com base em Rio do Sul/SC, a ROOM atende clientes de diferentes regiões do país.",
       },
     ],
   },
 
   finalCta: {
     eyebrow: "Próximo passo",
-    title: "Use essa base para tirar projetos do papel com mais rapidez e consistência",
+    title: "Vamos conversar sobre o seu projeto?",
     description:
-      "Agora que a estrutura central está pronta, você pode começar a personalizar o starter kit para o seu próprio site e, depois, para os próximos clientes.",
+      "Preencha o formulário para solicitar sua proposta e dar o primeiro passo para um projeto pensado com identidade, funcionalidade e sensibilidade.",
   },
 };

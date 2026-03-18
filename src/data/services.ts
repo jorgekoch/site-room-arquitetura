@@ -31,69 +31,69 @@ export type ServicesData = {
 export const servicesData: ServicesData = {
   section: {
     eyebrow: "Serviços",
-    title: "Soluções pensadas para criar sites mais profissionais e estratégicos",
+    title: "Soluções pensadas para criar espaços com mais propósito",
     description:
-      "Uma estrutura adaptável para diferentes objetivos, desde uma landing page enxuta até um site institucional mais completo.",
+      "Projetos e consultorias que unem estética, funcionalidade e sensibilidade para transformar ambientes de forma consciente e personalizada.",
   },
 
   items: [
     {
-      tag: "Essencial",
-      title: "Landing page profissional",
+      tag: "01",
+      title: "Projeto Arquitetônico",
       description:
-        "Ideal para apresentar um serviço principal, mostrar diferenciais e facilitar o contato com uma estrutura simples e eficiente.",
+        "Desenvolvimento de projetos que equilibram beleza, funcionalidade e propósito, respeitando as necessidades do cliente e a identidade de cada espaço.",
       bullets: [
-        "Página única com foco em conversão",
-        "Visual moderno e responsivo",
-        "CTA claro para WhatsApp ou formulário",
+        "Soluções personalizadas para cada projeto",
+        "Ambientes funcionais, conscientes e bem planejados",
+        "Arquitetura com identidade e intenção",
       ],
       cta: {
-        label: "Quero uma landing page",
+        label: "Solicitar proposta",
         to: "/contato",
         variant: "ghost",
       },
     },
     {
-      tag: "Profissional",
-      title: "Site institucional",
+      tag: "02",
+      title: "Projeto de Interiores",
       description:
-        "Uma estrutura com múltiplas páginas para fortalecer posicionamento, explicar serviços com clareza e transmitir mais credibilidade.",
+        "Ambientes internos pensados para traduzir estilo, conforto e praticidade, valorizando a experiência de quem vive o espaço no dia a dia.",
       bullets: [
-        "Home, Sobre, Serviços e Contato",
-        "Navegação mais completa",
-        "Mais autoridade para a marca ou profissional",
+        "Estética alinhada à personalidade do cliente",
+        "Mais aconchego, fluidez e funcionalidade",
+        "Aproveitamento inteligente dos ambientes",
       ],
       cta: {
-        label: "Quero um site institucional",
+        label: "Solicitar proposta",
         to: "/contato",
       },
     },
     {
-      tag: "Premium",
-      title: "Refino visual e UX",
+      tag: "03",
+      title: "Consultorias",
       description:
-        "Melhorias de interface, hierarquia visual e experiência do usuário para criar uma presença online mais sofisticada e mais eficiente.",
+        "Orientação profissional para apoiar decisões com mais clareza e segurança em reformas, composição de ambientes e direcionamento de projeto.",
       bullets: [
-        "Layout mais elegante",
-        "Mais clareza e escaneabilidade",
-        "Melhor percepção de valor",
+        "Direcionamento especializado",
+        "Mais segurança nas decisões do projeto",
+        "Apoio sensível e estratégico em cada etapa",
       ],
       cta: {
-        label: "Solicitar orçamento",
+        label: "Solicitar proposta",
         to: "/contato",
       },
     },
   ],
 
   sectionCta: {
-    label: "Falar sobre meu projeto",
+    label: "Solicitar proposta",
     to: "/contato",
   },
 
   finalCta: {
-    eyebrow: "Vamos conversar",
-    title: "Encontre o formato ideal para o seu projeto",
+    eyebrow: "Atendimento personalizado",
+    title: "Escolha o caminho ideal para começar seu projeto",
     description:
-      "Entre em contato para entender qual estrutura faz mais sentido para o seu objetivo e como podemos transformar isso em um site mais forte e profissional.",
+      "A ROOM oferece um atendimento cuidadoso para entender seu momento, suas necessidades e a melhor forma de transformar sua ideia em um espaço com identidade.",
   },
 };

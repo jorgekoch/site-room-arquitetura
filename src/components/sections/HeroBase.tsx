@@ -65,8 +65,10 @@ const Eyebrow = styled.span`
   width: fit-content;
   padding: 0.4rem 0.8rem;
   border-radius: ${({ theme }) => theme.radius.pill};
-  background: rgba(139, 92, 246, 0.12);
-  border: 1px solid rgba(139, 92, 246, 0.24);
+  background: rgba(184, 111, 82, 0.12);
+  border: 1px solid rgba(184, 111, 82, 0.3);
+  color: ${({ theme }) => theme.colors.secondary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
   color: ${({ theme }) => theme.colors.primary};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   font-weight: 700;
@@ -130,10 +132,16 @@ const Highlights = styled.div`
 `;
 
 const Highlight = styled.div`
-  padding: 0.95rem;
+  padding: 1rem;
   border-radius: ${({ theme }) => theme.radius.md};
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
+  transition: 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
 `;
 
 const HighlightTitle = styled.strong`
@@ -160,9 +168,17 @@ const VisualCard = styled.div`
   overflow: hidden;
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.05),
+      rgba(0, 0, 0, 0.25)
+    );
+  }
 
   @media ${media.tablet} {
     min-height: 340px;
@@ -187,10 +203,10 @@ const Placeholder = styled.div`
 `;
 
 export function HeroBase({
-  eyebrow = "Seu serviço",
-  title = "Título principal do site",
-  description = "Uma descrição clara explicando o que você faz e como ajuda seu cliente.",
-  primaryCta = { label: "Ação principal", to: "/contato" },
+  eyebrow,
+  title,
+  description,
+  primaryCta,
   secondaryCta,
   highlights = [],
   image,
@@ -200,12 +216,14 @@ export function HeroBase({
       <Container>
         <Grid>
           <Content>
-            <Eyebrow>{eyebrow}</Eyebrow>
-            <Title>{title}</Title>
-            <Description>{description}</Description>
+            {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+            {title && <Title>{title}</Title>}
+            {description && <Description>{description}</Description>}
 
             <Actions>
-              {primaryCta && <Button to={primaryCta.to}>{primaryCta.label}</Button>}
+              {primaryCta && (
+                <Button to={primaryCta.to}>{primaryCta.label}</Button>
+              )}
               {secondaryCta && (
                 <Button to={secondaryCta.to} variant="ghost">
                   {secondaryCta.label}
@@ -230,7 +248,7 @@ export function HeroBase({
               {image ? (
                 <VisualImage src={image} alt="" />
               ) : (
-                <Placeholder>Imagem do profissional / serviço</Placeholder>
+                <Placeholder>Imagem do projeto ou ambiente</Placeholder>
               )}
             </VisualCard>
           </Visual>

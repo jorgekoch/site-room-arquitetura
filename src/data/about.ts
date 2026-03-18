@@ -23,37 +23,38 @@ export type AboutData = {
 export const aboutData: AboutData = {
   section: {
     eyebrow: "Sobre",
-    title: "Uma estrutura para apresentar trajetória, proposta e diferenciais",
+    title: "Arquitetura sustentável com propósito e sentimento",
     description:
-      "Esta página ajuda a construir confiança, transmitir autoridade e explicar melhor quem está por trás do projeto.",
+      "Uma abordagem que une escuta, identidade e sensibilidade para criar espaços mais humanos, funcionais e conscientes.",
   },
 
   content: {
-    mainTag: "Apresentação",
-    mainTitle: "Uma narrativa clara, profissional e fácil de adaptar",
+    mainTag: "Sobre a ROOM",
+    mainTitle: "Projetos que nascem da escuta e ganham forma com intenção",
     paragraphs: [
-      "A seção sobre é uma das partes mais importantes para gerar confiança. É aqui que o visitante entende melhor quem é o profissional, qual é sua trajetória e por que vale a pena continuar nessa jornada.",
-      "Em vez de transformar isso em um bloco pesado de texto, a proposta é organizar a apresentação de forma elegante, escaneável e alinhada com a experiência geral do site.",
+      "A ROOM Arquitetura Sustentável, liderada por Emanuela Bilk Lopes, nasce do desejo de criar espaços que façam sentido para quem os vive. Cada projeto começa com uma escuta sensível, respeitando necessidades, desejos e estilo de vida.",
+      "Mais do que uma busca estética, a proposta é desenvolver ambientes com identidade, funcionalidade e propósito, traduzindo sentimentos e intenções em soluções arquitetônicas que acolhem, inspiram e conectam.",
     ],
     bullets: [
-      "Ajuda a reforçar autoridade",
-      "Melhora a percepção de profissionalismo",
-      "Cria uma conexão mais clara com o visitante",
+      "Atendimento personalizado em cada etapa",
+      "Escuta sensível das necessidades do cliente",
+      "Projetos com identidade e propósito",
+      "Atendimento em todo o Brasil, com base em Rio do Sul/SC",
     ],
-    sideTag: "Destaques",
-    sideTitle: "Pontos que podem entrar aqui",
+    sideTag: "Diferenciais",
+    sideTitle: "O que orienta cada projeto",
     sideItems: [
-      "Formação, experiência ou trajetória",
-      "Diferenciais de atendimento ou serviço",
-      "Áreas de atuação ou especialidades",
-      "Valores, visão ou abordagem de trabalho",
+      "Atendimento próximo e personalizado, com foco na realidade de cada cliente",
+      "Escuta sensível para compreender rotina, desejos e expectativas",
+      "Projetos com identidade, pensados para refletir quem vive o espaço",
+      "Arquitetura sustentável com olhar funcional, humano e consciente",
     ],
   },
 
   finalCta: {
     eyebrow: "Próximo passo",
-    title: "Apresente melhor sua trajetória e fortaleça seu posicionamento",
+    title: "Dê forma a um projeto alinhado à sua essência",
     description:
-      "Uma boa página sobre ajuda a transformar curiosidade em confiança e prepara melhor o visitante para entrar em contato.",
+      "Com um processo cuidadoso e personalizado, a ROOM transforma necessidades e sentimentos em espaços com identidade, beleza e propósito.",
   },
 };

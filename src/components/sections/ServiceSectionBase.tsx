@@ -24,6 +24,7 @@ type SectionCta = {
 };
 
 type ServiceSectionBaseProps = {
+  id?: string;
   eyebrow?: string;
   title?: string;
   description?: string;
@@ -119,6 +120,7 @@ const SectionAction = styled.div`
 `;
 
 export function ServiceSectionBase({
+  id,
   eyebrow = "Serviços",
   title = "Uma estrutura clara para apresentar o que você oferece",
   description = "Use esta seção para destacar seus principais serviços, modalidades ou áreas de atuação.",
@@ -126,9 +128,13 @@ export function ServiceSectionBase({
   cta,
 }: ServiceSectionBaseProps) {
   return (
-    <Section>
+    <Section id={id}>
       <Container>
-        <SectionHeader eyebrow={eyebrow} title={title} description={description} />
+        <SectionHeader
+          eyebrow={eyebrow}
+          title={title}
+          description={description}
+        />
 
         <Grid>
           {items.map((item, index) => (

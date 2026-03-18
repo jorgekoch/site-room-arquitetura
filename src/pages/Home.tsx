@@ -26,6 +26,7 @@ export function Home() {
       />
 
       <ServiceSectionBase
+        id="servicos"
         eyebrow={servicesData.section.eyebrow}
         title={servicesData.section.title}
         description={servicesData.section.description}
