@@ -53,7 +53,7 @@ const Grid = styled.div`
 
 const Content = styled.div`
   display: grid;
-  gap: 1rem;
+  gap: 1.2rem;
 
   @media ${media.tablet} {
     gap: 1.2rem;
@@ -75,8 +75,9 @@ const Eyebrow = styled.span`
 
 const Title = styled.h1`
   font-size: clamp(2rem, 7vw, 4.8rem);
-  line-height: 1;
-  letter-spacing: -0.04em;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  max-width: 720px;
   text-wrap: balance;
 
   @media ${media.tablet} {
@@ -85,7 +86,7 @@ const Title = styled.h1`
 `;
 
 const Description = styled.p`
-  max-width: 600px;
+  max-width: 520px;
   font-size: ${({ theme }) => theme.fontSizes.md};
   line-height: 1.75;
   color: ${({ theme }) => theme.colors.textSoft};

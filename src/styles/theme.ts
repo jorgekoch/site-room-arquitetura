@@ -1,27 +1,27 @@
 export const theme = {
   colors: {
-    background: "#111412",
-    backgroundSoft: "#171B18",
-    surface: "#1D221F",
-    surfaceSoft: "#222823",
-    surfaceHover: "#2A312B",
-    border: "#313A33",
+  background: "#121815",
+  backgroundSoft: "#18201C",
+  surface: "#1F2823",
+  surfaceSoft: "#26322B",
+  surfaceHover: "#2E3C34",
+  border: "#3A4A40",
 
-    text: "#F5F1E8",
-    textSoft: "#C8C1B4",
-    textMuted: "#9F988C",
+  text: "#F7F5F0",
+  textSoft: "#D6D0C5",
+  textMuted: "#AFA89B",
 
-    primary: "#7FA08A",
-    primaryHover: "#92B19C",
-    primaryContrast: "#111412",
+  primary: "#4FB286",
+  primaryHover: "#68C79B",
+  primaryContrast: "#0F1412",
 
-    secondary: "#B86F52",
-    secondaryHover: "#C98062",
-    secondaryContrast: "#FDF8F3",
+  secondary: "#C46E4E",
+  secondaryHover: "#D88463",
+  secondaryContrast: "#FFF8F2",
 
-    danger: "#FF7A7A",
-    success: "#73C991",
-  },
+  danger: "#FF7A7A",
+  success: "#6ED3A3",
+},
 
   fonts: {
     heading: "'Inter', system-ui, sans-serif",
@@ -35,7 +35,7 @@ export const theme = {
     lg: "1.125rem",
     xl: "1.5rem",
     xxl: "2.25rem",
-    hero: "clamp(2.4rem, 5vw, 4.8rem)",
+    hero: "clamp(2.2rem, 4vw, 3.8rem)",
   },
 
   spacing: {
@@ -56,9 +56,9 @@ export const theme = {
   },
 
   shadow: {
-    sm: "0 6px 20px rgba(0, 0, 0, 0.18)",
-    md: "0 12px 32px rgba(0, 0, 0, 0.28)",
-    glow: "0 0 0 1px rgba(127, 160, 138, 0.18), 0 10px 30px rgba(127, 160, 138, 0.12)",
+    sm: "0 6px 20px rgba(0, 0, 0, 0.15)",
+    md: "0 12px 28px rgba(0, 0, 0, 0.22)",
+    glow: "0 10px 28px rgba(79, 178, 134, 0.35)",
   },
 
   layout: {
@@ -71,5 +71,3 @@ export const theme = {
     default: "0.25s ease",
   },
 };
-
-export type AppTheme = typeof theme;

@@ -29,12 +29,15 @@ const Eyebrow = styled.span`
 
 const Title = styled.h2`
   font-size: clamp(1.8rem, 3vw, 3rem);
-  line-height: 1.05;
+  line-height: 1.12;
+  max-width: 720px;
 `;
 
 const Description = styled.p`
   color: ${({ theme }) => theme.colors.textSoft};
-  line-height: 1.8;
+  line-height: 1.75;
+  max-width: 520px;
+  font-size: ${({ theme }) => theme.fontSizes.md};
 `;
 
 export function SectionHeader({
