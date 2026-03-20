@@ -21,79 +21,65 @@ export type ServicesData = {
     label: string;
     to: string;
   };
-  finalCta: {
-    eyebrow: string;
-    title: string;
-    description: string;
-  };
 };
 
 export const servicesData: ServicesData = {
   section: {
-    eyebrow: "Serviços",
-    title: "Soluções pensadas para criar espaços com mais propósito",
+    eyebrow: "Como a ROOM projeta",
+    title: "Mais do que desenhar uma casa, a ROOM constrói entendimento",
     description:
-      "Projetos e consultorias que unem estética, funcionalidade e sensibilidade para transformar ambientes de forma consciente e personalizada.",
+      "Cada projeto nasce de uma escuta profunda, da leitura do terreno e de decisões que equilibram estética, funcionalidade e sustentabilidade.",
   },
 
   items: [
     {
-      tag: "01",
-      title: "Projeto Arquitetônico",
+      tag: "Escuta",
+      title: "Imersão na sua história",
       description:
-        "Desenvolvimento de projetos que equilibram beleza, funcionalidade e propósito, respeitando as necessidades do cliente e a identidade de cada espaço.",
+        "A primeira reunião é um momento de escuta real para entender rotina, desejos, referências e possibilidades.",
       bullets: [
-        "Soluções personalizadas para cada projeto",
-        "Ambientes funcionais, conscientes e bem planejados",
-        "Arquitetura com identidade e intenção",
+        "Briefing aprofundado",
+        "Entendimento da rotina",
+        "Referências e repertório pessoal",
       ],
-      cta: {
-        label: "Solicitar proposta",
-        to: "/contato",
-        variant: "ghost",
-      },
     },
     {
-      tag: "02",
-      title: "Projeto de Interiores",
+      tag: "Contexto",
+      title: "O terreno como guia",
       description:
-        "Ambientes internos pensados para traduzir estilo, conforto e praticidade, valorizando a experiência de quem vive o espaço no dia a dia.",
+        "O projeto nasce da leitura do local, considerando clima, sol, vento, topografia e entorno.",
       bullets: [
-        "Estética alinhada à personalidade do cliente",
-        "Mais aconchego, fluidez e funcionalidade",
-        "Aproveitamento inteligente dos ambientes",
+        "Ventilação natural",
+        "Aproveitamento de luz",
+        "Leitura do ambiente ao longo do ano",
       ],
-      cta: {
-        label: "Solicitar proposta",
-        to: "/contato",
-      },
     },
     {
-      tag: "03",
-      title: "Consultorias",
+      tag: "Estratégia",
+      title: "Sustentabilidade aplicada",
       description:
-        "Orientação profissional para apoiar decisões com mais clareza e segurança em reformas, composição de ambientes e direcionamento de projeto.",
+        "A sustentabilidade não é estética, é estratégia de projeto e decisão consciente.",
       bullets: [
-        "Direcionamento especializado",
-        "Mais segurança nas decisões do projeto",
-        "Apoio sensível e estratégico em cada etapa",
+        "Uso inteligente de recursos",
+        "Valorização de soluções locais",
+        "Redução de impacto ambiental",
       ],
-      cta: {
-        label: "Solicitar proposta",
-        to: "/contato",
-      },
+    },
+    {
+      tag: "Processo",
+      title: "Clareza em cada etapa",
+      description:
+        "Você entende exatamente o que está acontecendo em cada fase do projeto.",
+      bullets: [
+        "Estudo preliminar (2D)",
+        "Anteprojeto (3D)",
+        "Projeto executivo",
+      ],
     },
   ],
 
   sectionCta: {
-    label: "Solicitar proposta",
-    to: "/contato",
-  },
-
-  finalCta: {
-    eyebrow: "Atendimento personalizado",
-    title: "Escolha o caminho ideal para começar seu projeto",
-    description:
-      "A ROOM oferece um atendimento cuidadoso para entender seu momento, suas necessidades e a melhor forma de transformar sua ideia em um espaço com identidade.",
+    label: "Ver projetos",
+    to: "#portfolio",
   },
 };

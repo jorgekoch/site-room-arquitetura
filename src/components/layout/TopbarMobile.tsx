@@ -1,19 +1,21 @@
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { siteConfig } from "../../config/site";
 import { navigationItems } from "../../config/navigation";
 
 const Wrapper = styled.header`
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
   height: ${({ theme }) => theme.layout.mobileTopbarHeight};
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 1rem;
-  background: rgba(10, 10, 14, 0.92);
+  background: rgba(18, 24, 21, 0.9);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
 
@@ -22,10 +24,13 @@ const Wrapper = styled.header`
   }
 `;
 
-const Brand = styled.div`
+const Brand = styled(Link)`
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
 `;
 
 const Badge = styled.div`
@@ -35,18 +40,36 @@ const Badge = styled.div`
   background: linear-gradient(
     135deg,
     ${({ theme }) => theme.colors.primary},
-    #6d45d8
+    ${({ theme }) => theme.colors.primaryHover}
   );
   color: ${({ theme }) => theme.colors.primaryContrast};
   display: grid;
   place-items: center;
   font-weight: 800;
   box-shadow: ${({ theme }) => theme.shadow.glow};
+  flex-shrink: 0;
+`;
+
+const BrandContent = styled.div`
+  display: grid;
+  min-width: 0;
 `;
 
 const Title = styled.div`
   font-weight: 700;
   color: ${({ theme }) => theme.colors.text};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const Subtitle = styled.div`
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const MenuButton = styled.button`
@@ -59,6 +82,17 @@ const MenuButton = styled.button`
   display: grid;
   place-items: center;
   cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background ${({ theme }) => theme.transitions.default},
+    border-color ${({ theme }) => theme.transitions.default},
+    color ${({ theme }) => theme.transitions.default};
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.surfaceHover};
+    border-color: ${({ theme }) => theme.colors.secondary};
+    color: ${({ theme }) => theme.colors.secondary};
+  }
 `;
 
 const Overlay = styled.button<{ $open: boolean }>`
@@ -82,12 +116,12 @@ const MenuPanel = styled.div<{ $open: boolean }>`
   left: 0;
   right: 0;
   z-index: 99;
-  background: rgba(10, 10, 14, 0.98);
+  background: rgba(18, 24, 21, 0.98);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   padding: 1rem;
   display: grid;
-  gap: 0.75rem;
+  gap: 0.9rem;
 
   opacity: ${({ $open }) => ($open ? 1 : 0)};
   transform: ${({ $open }) =>
@@ -107,24 +141,23 @@ const Nav = styled.nav`
   gap: 0.55rem;
 `;
 
-const NavItem = styled(NavLink)`
+const NavItemButton = styled.button`
   padding: 0.95rem 1rem;
   border-radius: ${({ theme }) => theme.radius.md};
   color: ${({ theme }) => theme.colors.textSoft};
   border: 1px solid transparent;
-  transition: all ${({ theme }) => theme.transitions.default};
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background ${({ theme }) => theme.transitions.default},
+    color ${({ theme }) => theme.transitions.default},
+    border-color ${({ theme }) => theme.transitions.default};
 
   &:hover {
     background: ${({ theme }) => theme.colors.surface};
     color: ${({ theme }) => theme.colors.text};
     border-color: ${({ theme }) => theme.colors.border};
-  }
-
-  &.active {
-    background: ${({ theme }) => theme.colors.surface};
-    color: ${({ theme }) => theme.colors.text};
-    border-color: ${({ theme }) => theme.colors.primary};
-    box-shadow: ${({ theme }) => theme.shadow.glow};
   }
 `;
 
@@ -135,7 +168,7 @@ const BottomText = styled.p`
   margin-top: 0.25rem;
 `;
 
-const CtaLink = styled(NavLink)`
+const CtaLink = styled(Link)`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -145,6 +178,7 @@ const CtaLink = styled(NavLink)`
   background: ${({ theme }) => theme.colors.primary};
   color: ${({ theme }) => theme.colors.primaryContrast};
   font-weight: 700;
+  text-decoration: none;
   box-shadow: ${({ theme }) => theme.shadow.glow};
 `;
 
@@ -173,6 +207,20 @@ function HamburgerIcon({ open }: HamburgerIconProps) {
   );
 }
 
+function scrollToSection(id: string) {
+  const element = document.getElementById(id);
+
+  if (!element) return;
+
+  const yOffset = -80;
+  const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+  window.scrollTo({
+    top: y,
+    behavior: "smooth",
+  });
+}
+
 export function TopbarMobile() {
   const [open, setOpen] = useState(false);
 
@@ -198,12 +246,30 @@ export function TopbarMobile() {
     setOpen(false);
   }
 
+  function handleNavClick(target: string) {
+    handleClose();
+
+    if (target.startsWith("#")) {
+      const id = target.replace("#", "");
+      setTimeout(() => {
+        scrollToSection(id);
+      }, 10);
+      return;
+    }
+
+    window.location.href = target;
+  }
+
   return (
     <>
       <Wrapper>
-        <Brand>
+        <Brand to="/">
           <Badge>{siteConfig.brand.initials}</Badge>
-          <Title>{siteConfig.brand.name}</Title>
+
+          <BrandContent>
+            <Title>{siteConfig.brand.name}</Title>
+            <Subtitle>Arquitetura residencial autoral</Subtitle>
+          </BrandContent>
         </Brand>
 
         <MenuButton
@@ -226,14 +292,13 @@ export function TopbarMobile() {
       <MenuPanel $open={open}>
         <Nav>
           {navigationItems.map((item) => (
-            <NavItem
+            <NavItemButton
               key={item.path}
-              to={item.path}
-              end={item.path === "/"}
-              onClick={handleClose}
+              type="button"
+              onClick={() => handleNavClick(item.path)}
             >
               {item.label}
-            </NavItem>
+            </NavItemButton>
           ))}
         </Nav>
 

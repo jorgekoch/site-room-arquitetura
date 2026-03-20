@@ -25,7 +25,7 @@ export const siteConfig: SiteConfig = {
     name: "ROOM Arquitetura Sustentável",
     initials: "RM",
     tagline:
-      "Arquitetura sustentável com propósito, identidade e sensibilidade.",
+      "Casas com identidade, guiadas pelo terreno e pela história de quem vai viver nelas.",
   },
 
   contact: {
@@ -37,11 +37,11 @@ export const siteConfig: SiteConfig = {
   cta: {
     primaryLabel: "Solicitar proposta",
     primaryTo: "/contato",
-    secondaryLabel: "Conhecer serviços",
-    secondaryTo: "#servicos",
+    secondaryLabel: "Conhecer projetos",
+    secondaryTo: "#portfolio",
   },
 
   footer: {
-    note: "Projetos arquitetônicos, interiores e consultorias com atendimento personalizado em todo o Brasil.",
+    note: "Arquitetura residencial autoral com escuta profunda, clareza de processo e estratégias sustentáveis.",
   },
 };

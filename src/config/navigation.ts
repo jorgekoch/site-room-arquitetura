@@ -4,9 +4,10 @@ export type NavigationItem = {
 };
 
 export const navigationItems: NavigationItem[] = [
-  { label: "Início", path: "/" },
-  { label: "Sobre", path: "/sobre" },
-  { label: "Serviços", path: "/servicos" },
-  { label: "Galeria", path: "/galeria" },
-  { label: "Contato", path: "/contato" },
+  { label: "Início", path: "#topo" },
+  { label: "Projetos", path: "#portfolio" },
+  { label: "Processo", path: "#processo" },
+  { label: "Atendimento", path: "#formatos" },
+  { label: "Sobre", path: "#sobre" },
+  { label: "Proposta", path: "#contato" },
 ];

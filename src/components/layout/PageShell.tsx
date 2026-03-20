@@ -14,8 +14,10 @@ const Shell = styled.div`
 
 const Main = styled.main`
   min-height: 100vh;
+  padding-top: ${({ theme }) => theme.layout.mobileTopbarHeight};
 
   @media ${media.laptop} {
+    padding-top: 0;
   }
 `;
 

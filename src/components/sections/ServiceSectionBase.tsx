@@ -107,17 +107,6 @@ const ActionRow = styled.div`
   }
 `;
 
-const SectionAction = styled.div`
-  margin-top: 2rem;
-
-  & > * {
-    width: 100%;
-
-    @media ${media.tablet} {
-      width: auto;
-    }
-  }
-`;
 
 export function ServiceSectionBase({
   id,
@@ -125,7 +114,6 @@ export function ServiceSectionBase({
   title = "Uma estrutura clara para apresentar o que você oferece",
   description = "Use esta seção para destacar seus principais serviços, modalidades ou áreas de atuação.",
   items = [],
-  cta,
 }: ServiceSectionBaseProps) {
   return (
     <Section id={id}>
@@ -162,12 +150,6 @@ export function ServiceSectionBase({
             </ServiceCard>
           ))}
         </Grid>
-
-        {cta && (
-          <SectionAction>
-            <Button to={cta.to}>{cta.label}</Button>
-          </SectionAction>
-        )}
       </Container>
     </Section>
   );

@@ -24,14 +24,17 @@ export function Servicos() {
       />
 
       <ContactCtaBase
-        eyebrow={servicesData.finalCta.eyebrow}
-        title={servicesData.finalCta.title}
-        description={servicesData.finalCta.description}
+        eyebrow="Próximo passo"
+        title="Vamos conversar sobre o seu projeto?"
+        description="Solicite sua proposta para entender qual formato de atendimento faz mais sentido para o seu contexto."
         primaryCta={{
           label: siteConfig.cta.primaryLabel,
           to: siteConfig.cta.primaryTo,
         }}
-        secondaryCta={{ label: "Voltar para início", to: "/" }}
+        secondaryCta={{
+          label: siteConfig.cta.secondaryLabel,
+          to: siteConfig.cta.secondaryTo,
+        }}
       />
     </>
   );

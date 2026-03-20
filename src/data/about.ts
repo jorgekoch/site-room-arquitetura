@@ -13,48 +13,37 @@ export type AboutData = {
     sideTitle: string;
     sideItems: string[];
   };
-  finalCta: {
-    eyebrow: string;
-    title: string;
-    description: string;
-  };
 };
 
 export const aboutData: AboutData = {
   section: {
     eyebrow: "Sobre",
-    title: "Arquitetura sustentável com propósito e sentimento",
+    title:
+      "Arquitetura que nasce da relação entre pessoas, lugar e modo de viver",
     description:
-      "Uma abordagem que une escuta, identidade e sensibilidade para criar espaços mais humanos, funcionais e conscientes.",
+      "A ROOM desenvolve projetos residenciais a partir de uma escuta sensível, conectando a vida das pessoas ao potencial do lugar.",
   },
 
   content: {
-    mainTag: "Sobre a ROOM",
-    mainTitle: "Projetos que nascem da escuta e ganham forma com intenção",
+    mainTag: "Filosofia",
+    mainTitle: "Cada casa é pensada para fazer sentido para quem vive nela",
     paragraphs: [
-      "A ROOM Arquitetura Sustentável, liderada por Emanuela Bilk Lopes, nasce do desejo de criar espaços que façam sentido para quem os vive. Cada projeto começa com uma escuta sensível, respeitando necessidades, desejos e estilo de vida.",
-      "Mais do que uma busca estética, a proposta é desenvolver ambientes com identidade, funcionalidade e propósito, traduzindo sentimentos e intenções em soluções arquitetônicas que acolhem, inspiram e conectam.",
+      "A ROOM, conduzida por Emanuela Bilk Lopes, desenvolve projetos residenciais a partir de uma escuta profunda e de uma leitura cuidadosa do terreno e do contexto.",
+      "A sustentabilidade é tratada como estratégia: decisões que envolvem conforto, impacto ambiental, economia de recursos e qualidade de vida.",
+      "O resultado são casas práticas, afetivas e alinhadas à realidade de quem vai viver nelas.",
     ],
     bullets: [
-      "Atendimento personalizado em cada etapa",
-      "Escuta sensível das necessidades do cliente",
-      "Projetos com identidade e propósito",
-      "Atendimento em todo o Brasil, com base em Rio do Sul/SC",
+      "Projetos com identidade real",
+      "Conexão com o ambiente e o terreno",
+      "Foco na vida de quem habita o espaço",
     ],
-    sideTag: "Diferenciais",
-    sideTitle: "O que orienta cada projeto",
+    sideTag: "Abordagem",
+    sideTitle: "O que guia cada projeto",
     sideItems: [
-      "Atendimento próximo e personalizado, com foco na realidade de cada cliente",
-      "Escuta sensível para compreender rotina, desejos e expectativas",
-      "Projetos com identidade, pensados para refletir quem vive o espaço",
-      "Arquitetura sustentável com olhar funcional, humano e consciente",
+      "Escuta profunda do cliente",
+      "Leitura estratégica do terreno",
+      "Clareza em todo o processo",
+      "Soluções sustentáveis reais",
     ],
-  },
-
-  finalCta: {
-    eyebrow: "Próximo passo",
-    title: "Dê forma a um projeto alinhado à sua essência",
-    description:
-      "Com um processo cuidadoso e personalizado, a ROOM transforma necessidades e sentimentos em espaços com identidade, beleza e propósito.",
   },
 };

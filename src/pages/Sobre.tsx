@@ -30,9 +30,9 @@ export function Sobre() {
       />
 
       <ContactCtaBase
-        eyebrow={aboutData.finalCta.eyebrow}
-        title={aboutData.finalCta.title}
-        description={aboutData.finalCta.description}
+        eyebrow="Próximo passo"
+        title="Vamos conversar sobre o seu projeto?"
+        description="Se a proposta da ROOM faz sentido para o seu momento, o próximo passo é preencher a solicitação de proposta."
         primaryCta={{
           label: siteConfig.cta.primaryLabel,
           to: siteConfig.cta.primaryTo,

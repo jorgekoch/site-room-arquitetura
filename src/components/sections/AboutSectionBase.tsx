@@ -6,6 +6,7 @@ import { SectionHeader } from "./SectionHeader";
 import { media } from "../../styles/breakpoints";
 
 type AboutSectionBaseProps = {
+  id?: string;
   eyebrow?: string;
   title?: string;
   description?: string;
@@ -165,6 +166,7 @@ const ImagePlaceholder = styled.div`
 `;
 
 export function AboutSectionBase({
+  id,
   eyebrow = "Sobre",
   title = "Uma estrutura clara para apresentar trajetória e diferenciais",
   description = "Use esta seção para apresentar a pessoa, a marca ou a proposta com mais profundidade e confiança.",
@@ -180,7 +182,7 @@ export function AboutSectionBase({
   showImage = true,
 }: AboutSectionBaseProps) {
   return (
-    <Section>
+    <Section id={id}>
       <Container>
         <SectionHeader
           eyebrow={eyebrow}

@@ -22,29 +22,31 @@ export type HomeData = {
 export const homeData: HomeData = {
   hero: {
     eyebrow: "ROOM Arquitetura Sustentável",
-    title: "Projetos com identidade, sensibilidade e propósito",
+    title:
+      "Casas com identidade, guiadas pelo terreno e pela história de quem vai viver nelas",
     description:
-      "A ROOM Arquitetura Sustentável desenvolve projetos arquitetônicos, interiores e consultorias para quem busca espaços mais conscientes, funcionais e alinhados à própria essência.",
+      "A ROOM desenvolve projetos residenciais a partir de uma escuta profunda, da leitura do terreno e de estratégias sustentáveis que tornam cada casa mais consciente, funcional e conectada com a vida de quem habita.",
     highlights: [
       {
-        title: "Atendimento personalizado",
-        text: "Cada projeto é conduzido com proximidade, atenção aos detalhes e foco nas necessidades reais do cliente.",
+        title: "Escuta profunda",
+        text: "Uma imersão real para entender sua rotina, história e o que você deseja viver na casa.",
       },
       {
-        title: "Escuta sensível",
-        text: "O processo parte da compreensão da rotina, dos desejos e da identidade de quem vai viver o espaço.",
+        title: "Projeto com identidade",
+        text: "Cada casa nasce única, alinhada ao terreno e à forma de viver de cada família.",
       },
       {
-        title: "Atendimento em todo o Brasil",
-        text: "Com base em Rio do Sul/SC, a ROOM atende clientes de diferentes regiões do país.",
+        title: "Clareza no processo",
+        text: "Etapas bem definidas para você construir com segurança e sem surpresas.",
       },
     ],
   },
 
   finalCta: {
     eyebrow: "Próximo passo",
-    title: "Vamos conversar sobre o seu projeto?",
+    title:
+      "Se a sua casa precisa nascer de quem você é, o projeto precisa começar pela escuta",
     description:
-      "Preencha o formulário para solicitar sua proposta e dar o primeiro passo para um projeto pensado com identidade, funcionalidade e sensibilidade.",
+      "Preencha o formulário de proposta para dar o primeiro passo. Você receberá as orientações iniciais e entenderá como funciona o processo da ROOM.",
   },
 };
