@@ -2,7 +2,6 @@ import styled from "styled-components";
 import type { ReactNode } from "react";
 import { TopbarMobile } from "./TopbarMobile";
 import { Footer } from "./Footer";
-import { WhatsAppButton } from "../ui/WhatsAppButton";
 
 type PageShellProps = {
   children: ReactNode;
