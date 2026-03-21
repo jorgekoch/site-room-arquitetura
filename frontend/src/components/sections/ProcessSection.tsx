@@ -30,6 +30,18 @@ const Card = styled.div`
   border-radius: ${({ theme }) => theme.radius.md};
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
+  transition:
+    transform ${({ theme }) => theme.transitions.default},
+    border-color ${({ theme }) => theme.transitions.default},
+    background ${({ theme }) => theme.transitions.default},
+    box-shadow ${({ theme }) => theme.transitions.default};
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: ${({ theme }) => theme.colors.secondary};
+    background: ${({ theme }) => theme.colors.surfaceHover};
+    box-shadow: ${({ theme }) => theme.shadow.md};
+  }
 `;
 
 const StepNumber = styled.span`

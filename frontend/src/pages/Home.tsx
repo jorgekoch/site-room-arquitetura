@@ -14,6 +14,7 @@ import { portfolioData } from "../data/portfolio";
 import { processData } from "../data/process";
 import { offeringsData } from "../data/offerings";
 import { aboutData } from "../data/about";
+import { Reveal } from "../components/motion/Reveal";
 
 export function Home() {
   return (
@@ -35,79 +36,92 @@ export function Home() {
           slides={homeData.hero.slides}
         />
       </div>
+        <Reveal>
+          <AudienceSection
+            id="pra-quem-e"
+            eyebrow={audienceData.section.eyebrow}
+            title={audienceData.section.title}
+            description={audienceData.section.description}
+            items={audienceData.items}
+          />
+        </Reveal>
 
-        <AudienceSection
-          id="pra-quem-e"
-          eyebrow={audienceData.section.eyebrow}
-          title={audienceData.section.title}
-          description={audienceData.section.description}
-          items={audienceData.items}
-        />
+        <Reveal>
+          <ServiceSectionBase
+            id="como-projetamos"
+            eyebrow={servicesData.section.eyebrow}
+            title={servicesData.section.title}
+            description={servicesData.section.description}
+            items={servicesData.items}
+            cta={servicesData.sectionCta}
+          />
+        </Reveal>
 
-      <ServiceSectionBase
-        id="como-projetamos"
-        eyebrow={servicesData.section.eyebrow}
-        title={servicesData.section.title}
-        description={servicesData.section.description}
-        items={servicesData.items}
-        cta={servicesData.sectionCta}
-      />
+        <Reveal>
+          <PortfolioSection
+            eyebrow={portfolioData.section.eyebrow}
+            title={portfolioData.section.title}
+            description={portfolioData.section.description}
+            items={portfolioData.items}
+          />
+        </Reveal>
 
-      <PortfolioSection
-        eyebrow={portfolioData.section.eyebrow}
-        title={portfolioData.section.title}
-        description={portfolioData.section.description}
-        items={portfolioData.items}
-      />
+        <Reveal>
+          <ProcessSection
+            id="processo"
+            eyebrow={processData.section.eyebrow}
+            title={processData.section.title}
+            description={processData.section.description}
+            steps={processData.steps}
+          />
+        </Reveal>
 
-        <ProcessSection
-          id="processo"
-          eyebrow={processData.section.eyebrow}
-          title={processData.section.title}
-          description={processData.section.description}
-          steps={processData.steps}
-        />
+        <Reveal>
+          <OfferingsSection
+            id="formatos"
+            eyebrow={offeringsData.section.eyebrow}
+            title={offeringsData.section.title}
+            description={offeringsData.section.description}
+            items={offeringsData.items}
+            note={offeringsData.note}
+          />
+        </Reveal>
 
-        <OfferingsSection
-          id="formatos"
-          eyebrow={offeringsData.section.eyebrow}
-          title={offeringsData.section.title}
-          description={offeringsData.section.description}
-          items={offeringsData.items}
-          note={offeringsData.note}
-        />
+        <Reveal>
+          <AboutSectionBase
+            id="sobre"
+            eyebrow={aboutData.section.eyebrow}
+            title={aboutData.section.title}
+            description={aboutData.section.description}
+            mainTag={aboutData.content.mainTag}
+            mainTitle={aboutData.content.mainTitle}
+            paragraphs={aboutData.content.paragraphs}
+            bullets={aboutData.content.bullets}
+            sideTag={aboutData.content.sideTag}
+            sideTitle={aboutData.content.sideTitle}
+            sideItems={aboutData.content.sideItems}
+            profiles={aboutData.content.profiles}
+            image={aboutData.content.image}
+            showImage
+          />
+        </Reveal>
 
-      <AboutSectionBase
-        id="sobre"
-        eyebrow={aboutData.section.eyebrow}
-        title={aboutData.section.title}
-        description={aboutData.section.description}
-        mainTag={aboutData.content.mainTag}
-        mainTitle={aboutData.content.mainTitle}
-        paragraphs={aboutData.content.paragraphs}
-        bullets={aboutData.content.bullets}
-        sideTag={aboutData.content.sideTag}
-        sideTitle={aboutData.content.sideTitle}
-        sideItems={aboutData.content.sideItems}
-        profiles={aboutData.content.profiles}
-        image={aboutData.content.image}
-        showImage
-      />
-
-      <ContactCtaBase
-        id="contato"
-        eyebrow={homeData.finalCta.eyebrow}
-        title={homeData.finalCta.title}
-        description={homeData.finalCta.description}
-        primaryCta={{
-          label: siteConfig.cta.primaryLabel,
-          to: siteConfig.cta.primaryTo,
-        }}
-        secondaryCta={{
-          label: siteConfig.cta.secondaryLabel,
-          to: siteConfig.cta.secondaryTo,
-        }}
-      />
+        <Reveal>
+          <ContactCtaBase
+            id="contato"
+            eyebrow={homeData.finalCta.eyebrow}
+            title={homeData.finalCta.title}
+            description={homeData.finalCta.description}
+            primaryCta={{
+              label: siteConfig.cta.primaryLabel,
+              to: siteConfig.cta.primaryTo,
+            }}
+            secondaryCta={{
+              label: siteConfig.cta.secondaryLabel,
+              to: siteConfig.cta.secondaryTo,
+            }}
+          />
+        </Reveal>
     </>
   );
 }

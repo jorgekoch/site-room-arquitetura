@@ -8,58 +8,51 @@ import AdminRequestAccess from "./pages/AdminRequestAccess";
 import AdminPropostas from "./pages/AdminPropostas";
 import AdminUsuarios from "./pages/AdminUsuarios";
 import { AdminRoute } from "./components/auth/AdminRoute";
+import ProjetoDetalhe from "./pages/ProjetoDetalhe";
+import { ScrollToTop } from "./components/utils/ScrollToTop";
 
 function App() {
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          <PageShell>
-            <Home />
-          </PageShell>
-        }
-      />
+    <>
+      <ScrollToTop/>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <PageShell>
+                <Home />
+              </PageShell>
+            }
+          />
 
-      <Route
-        path="/contato"
-        element={
-          <PageShell>
-            <Contato />
-          </PageShell>
-        }
-      />
+          <Route path="/contato" element={<Contato />} />
 
-      <Route
-        path="/proposta-enviada"
-        element={
-          <PageShell>
-            <PropostaEnviada />
-          </PageShell>
-        }
-      />
+          <Route path="/proposta-enviada" element={ <PropostaEnviada />} />
 
-      <Route path="/admin/login" element={<AdminLogin />} />
-      <Route path="/admin/solicitar-acesso" element={<AdminRequestAccess />} />
+          <Route path="/projetos/:slug" element={<ProjetoDetalhe />} />
 
-      <Route
-        path="/admin/propostas"
-        element={
-          <AdminRoute>
-            <AdminPropostas />
-          </AdminRoute>
-        }
-      />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/solicitar-acesso" element={<AdminRequestAccess />} />
 
-      <Route
-        path="/admin/usuarios"
-        element={
-          <AdminRoute>
-            <AdminUsuarios />
-          </AdminRoute>
-        }
-      />
-    </Routes>
+          <Route
+            path="/admin/propostas"
+            element={
+              <AdminRoute>
+                <AdminPropostas />
+              </AdminRoute>
+            }
+          />
+
+          <Route
+            path="/admin/usuarios"
+            element={
+              <AdminRoute>
+                <AdminUsuarios />
+              </AdminRoute>
+            }
+          />
+        </Routes>
+    </>
   );
 }
 

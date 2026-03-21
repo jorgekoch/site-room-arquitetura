@@ -1,11 +1,13 @@
 import styled from "styled-components";
 
-export const Card = styled.article`
-  padding: 1.5rem;
+export const Card = styled.div`
+  padding: 1.2rem;
   border-radius: ${({ theme }) => theme.radius.lg};
+
   background: ${({ theme }) => theme.colors.surface};
+
   border: 1px solid ${({ theme }) => theme.colors.border};
-  box-shadow: ${({ theme }) => theme.shadow.sm};
+
   transition:
     transform ${({ theme }) => theme.transitions.default},
     border-color ${({ theme }) => theme.transitions.default},
@@ -16,6 +18,6 @@ export const Card = styled.article`
     transform: translateY(-2px);
     border-color: ${({ theme }) => theme.colors.secondary};
     background: ${({ theme }) => theme.colors.surfaceHover};
-    box-shadow: 0 10px 24px rgba(184, 111, 82, 0.08);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   }
 `;

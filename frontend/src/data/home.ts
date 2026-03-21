@@ -26,7 +26,7 @@ export const homeData: HomeData = {
   hero: {
     eyebrow: "ROOM Arquitetura Sustentável",
     title:
-      "Casas com identidade, guiadas pelo terreno e pela história de quem vai viver nelas",
+      "Casas com identidade, guiadas pela história de quem vai viver nelas",
     description:
       "A ROOM desenvolve projetos residenciais a partir de uma escuta profunda, da leitura do terreno e de estratégias sustentáveis que tornam cada casa mais consciente, funcional e conectada com a vida de quem habita.",
     highlights: [

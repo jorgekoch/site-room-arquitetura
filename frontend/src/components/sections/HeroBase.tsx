@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { Container } from "../ui/Container";
 import { Button } from "../ui/Button";
@@ -26,6 +26,7 @@ type HeroBaseProps = {
 };
 
 const AUTOPLAY_INTERVAL = 5000;
+const SWIPE_THRESHOLD = 40;
 
 const Section = styled.section`
   position: relative;
@@ -58,10 +59,6 @@ const Grid = styled.div`
 const Content = styled.div`
   display: grid;
   gap: 1.2rem;
-
-  @media ${media.tablet} {
-    gap: 1.2rem;
-  }
 `;
 
 const Eyebrow = styled.span`
@@ -139,6 +136,7 @@ const Highlight = styled.div`
   border-radius: ${({ theme }) => theme.radius.md};
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
+
   transition:
     transform ${({ theme }) => theme.transitions.default},
     border-color ${({ theme }) => theme.transitions.default},
@@ -311,16 +309,19 @@ export function HeroBase({
 
   const hasSlides = validSlides.length > 0;
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!hasSlides || validSlides.length <= 1) return;
+    if (!hasSlides || validSlides.length <= 1 || isPaused) return;
 
     const interval = window.setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % validSlides.length);
     }, AUTOPLAY_INTERVAL);
 
     return () => window.clearInterval(interval);
-  }, [hasSlides, validSlides.length]);
+  }, [hasSlides, validSlides.length, isPaused]);
 
   useEffect(() => {
     if (currentSlide > validSlides.length - 1) {
@@ -330,7 +331,6 @@ export function HeroBase({
 
   function handlePrevSlide() {
     if (!hasSlides) return;
-
     setCurrentSlide((prev) =>
       prev === 0 ? validSlides.length - 1 : prev - 1
     );
@@ -338,8 +338,30 @@ export function HeroBase({
 
   function handleNextSlide() {
     if (!hasSlides) return;
-
     setCurrentSlide((prev) => (prev + 1) % validSlides.length);
+  }
+
+  function handleTouchStart(event: React.TouchEvent<HTMLDivElement>) {
+    touchStartX.current = event.touches[0].clientX;
+    touchEndX.current = null;
+  }
+
+  function handleTouchMove(event: React.TouchEvent<HTMLDivElement>) {
+    touchEndX.current = event.touches[0].clientX;
+  }
+
+  function handleTouchEnd() {
+    if (touchStartX.current === null || touchEndX.current === null) return;
+
+    const deltaX = touchStartX.current - touchEndX.current;
+
+    if (Math.abs(deltaX) < SWIPE_THRESHOLD) return;
+
+    if (deltaX > 0) {
+      handleNextSlide();
+    } else {
+      handlePrevSlide();
+    }
   }
 
   return (
@@ -375,7 +397,14 @@ export function HeroBase({
           </Content>
 
           <Visual>
-            <VisualCard aria-live="polite">
+            <VisualCard
+              aria-live="polite"
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
               {hasSlides ? (
                 <>
                   <SlideLayer>
@@ -424,7 +453,10 @@ export function HeroBase({
                   )}
                 </>
               ) : image ? (
-                <StaticImage src={image} alt={title || "Imagem da seção principal"} />
+                <StaticImage
+                  src={image}
+                  alt={title || "Imagem da seção principal"}
+                />
               ) : (
                 <Placeholder>Imagem do projeto ou ambiente</Placeholder>
               )}

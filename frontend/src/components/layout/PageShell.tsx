@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import type { ReactNode } from "react";
 import { TopbarMobile } from "./TopbarMobile";
+import { Footer } from "./Footer";
+import { WhatsAppButton } from "../ui/WhatsAppButton";
 
 type PageShellProps = {
   children: ReactNode;
@@ -20,6 +22,8 @@ export function PageShell({ children }: PageShellProps) {
     <Shell>
       <TopbarMobile />
       <Main>{children}</Main>
+      <Footer />
+      <WhatsAppButton />
     </Shell>
   );
 }

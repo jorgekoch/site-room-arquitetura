@@ -1,12 +1,11 @@
-import { useState } from "react";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 import { Container } from "../ui/Container";
 import { SectionHeader } from "./SectionHeader";
-import { PortfolioModal } from "./PortfolioModal";
 import { media } from "../../styles/breakpoints";
 
 type PortfolioItem = {
-  slug?: string;
+  slug: string;
   title: string;
   location: string;
   description: string;
@@ -40,8 +39,7 @@ const Grid = styled.div`
   }
 `;
 
-const Card = styled.button`
-  all: unset;
+const Card = styled(Link)`
   display: grid;
   grid-template-rows: auto 1fr;
   cursor: pointer;
@@ -49,6 +47,7 @@ const Card = styled.button`
   overflow: hidden;
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
+  text-decoration: none;
   transition:
     transform ${({ theme }) => theme.transitions.default},
     border-color ${({ theme }) => theme.transitions.default},
@@ -140,6 +139,7 @@ const TopMeta = styled.div`
 const ProjectTitle = styled.h3`
   font-size: 1.12rem;
   line-height: 1.2;
+  color: ${({ theme }) => theme.colors.text};
 `;
 
 const Location = styled.span`
@@ -183,8 +183,6 @@ export function PortfolioSection({
   description = "Casas pensadas a partir da escuta, do lugar e da identidade de quem vive cada espaço.",
   items = [],
 }: PortfolioSectionProps) {
-  const [selectedProject, setSelectedProject] = useState<PortfolioItem | null>(null);
-
   return (
     <Section id="portfolio">
       <Container>
@@ -195,12 +193,11 @@ export function PortfolioSection({
         />
 
         <Grid>
-          {items.map((item, index) => (
+          {items.map((item) => (
             <Card
-              key={item.slug || index}
-              type="button"
-              onClick={() => setSelectedProject(item)}
-              aria-label={`Abrir galeria do projeto ${item.title}`}
+              key={item.slug}
+              to={`/projetos/${item.slug}`}
+              aria-label={`Abrir projeto ${item.title}`}
             >
               <Cover>
                 {item.cover ? (
@@ -225,7 +222,6 @@ export function PortfolioSection({
                   <ImageCount>
                     {item.images.length} {item.images.length === 1 ? "imagem" : "imagens"}
                   </ImageCount>
-
                   <ExploreText>Explorar →</ExploreText>
                 </BottomMeta>
               </Content>
@@ -233,15 +229,6 @@ export function PortfolioSection({
           ))}
         </Grid>
       </Container>
-
-      <PortfolioModal
-        open={!!selectedProject}
-        onClose={() => setSelectedProject(null)}
-        images={selectedProject?.images || []}
-        title={selectedProject?.title || ""}
-        location={selectedProject?.location}
-        description={selectedProject?.description}
-      />
     </Section>
   );
 }

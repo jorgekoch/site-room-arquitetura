@@ -148,6 +148,10 @@ const ImageCard = styled.div`
   background: ${({ theme }) => theme.colors.surface};
   box-shadow: ${({ theme }) => theme.shadow.md};
 
+  &:hover img {
+    transform: scale(1.03);
+  }
+  
   &::after {
     content: "";
     position: absolute;
@@ -174,6 +178,8 @@ const Image = styled.img`
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform ${({ theme }) =>
+  theme.transitions.default};
 `;
 
 const ImagePlaceholder = styled.div`
