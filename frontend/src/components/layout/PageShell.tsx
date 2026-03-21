@@ -23,7 +23,6 @@ export function PageShell({ children }: PageShellProps) {
       <TopbarMobile />
       <Main>{children}</Main>
       <Footer />
-      <WhatsAppButton />
     </Shell>
   );
 }
