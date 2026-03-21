@@ -56,7 +56,7 @@ export const portfolioData: PortfolioData = {
       title: "Casa da Jabuticabeira",
       location: "Adicionar localidade",
       description: "Adicionar descrição de acordo.",
-      cover: images.portfolio.casaDaJabuticabeira[0],
+      cover: images.portfolio.casaDaJabuticabeira[5],
       images: images.portfolio.casaDaJabuticabeira,
     },
     {

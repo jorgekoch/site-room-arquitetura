@@ -1,26 +1,25 @@
 import styled from "styled-components";
 import { Container } from "../ui/Container";
-import { Tag } from "../ui/Tag";
 import { SectionHeader } from "./SectionHeader";
 import { media } from "../../styles/breakpoints";
 
-type OfferingItem = {
-  tag: string;
+type Offering = {
   title: string;
   description: string;
-  bullets: string[];
 };
 
-type OfferingsSectionProps = {
+type Props = {
+  id?: string;
   eyebrow?: string;
   title?: string;
   description?: string;
-  items?: OfferingItem[];
+  items?: Offering[];
   note?: string;
 };
 
 const Section = styled.section`
   padding: 1rem 0 5rem;
+  scroll-margin-top: 92px;
 `;
 
 const Grid = styled.div`
@@ -30,86 +29,43 @@ const Grid = styled.div`
   @media ${media.tablet} {
     grid-template-columns: repeat(2, 1fr);
   }
-
-  @media ${media.laptop} {
-    grid-template-columns: repeat(3, 1fr);
-  }
 `;
 
-const Card = styled.article`
-  padding: 1.35rem;
-  border-radius: ${({ theme }) => theme.radius.lg};
+const Card = styled.div`
+  padding: 1.2rem;
+  border-radius: ${({ theme }) => theme.radius.md};
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  box-shadow: ${({ theme }) => theme.shadow.sm};
-  display: grid;
-  gap: 0.9rem;
-  transition:
-    transform ${({ theme }) => theme.transitions.default},
-    border-color ${({ theme }) => theme.transitions.default},
-    background ${({ theme }) => theme.transitions.default},
-    box-shadow ${({ theme }) => theme.transitions.default};
-
-  &:hover {
-    transform: translateY(-2px);
-    border-color: ${({ theme }) => theme.colors.secondary};
-    background: ${({ theme }) => theme.colors.surfaceHover};
-    box-shadow: 0 10px 24px rgba(196, 110, 78, 0.08);
-  }
 `;
 
-const CardTitle = styled.h3`
-  font-size: 1.1rem;
-  line-height: 1.25;
+const Title = styled.h3`
+  margin-bottom: 0.4rem;
+  line-height: 1.3;
 `;
 
-const CardText = styled.p`
-  color: ${({ theme }) => theme.colors.textSoft};
-  line-height: 1.75;
-`;
-
-const BulletList = styled.ul`
-  display: grid;
-  gap: 0.7rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-`;
-
-const Bullet = styled.li`
+const Text = styled.p`
+  font-size: ${({ theme }) => theme.fontSizes.sm};
   color: ${({ theme }) => theme.colors.textSoft};
   line-height: 1.7;
-  padding-left: 1rem;
-  position: relative;
-
-  &::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0.72rem;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: ${({ theme }) => theme.colors.secondary};
-  }
 `;
 
 const Note = styled.p`
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
   color: ${({ theme }) => theme.colors.textMuted};
-  line-height: 1.75;
-  max-width: 900px;
+  line-height: 1.7;
 `;
 
 export function OfferingsSection({
-  eyebrow = "Formatos de atendimento",
-  title = "Diferentes formas de conduzir o projeto, conforme a profundidade que sua casa precisa",
-  description = "A ROOM estrutura o atendimento de forma personalizada, mas pode trabalhar com diferentes níveis de aprofundamento conforme o momento, a complexidade e o tipo de entrega ideal para cada cliente.",
+  id,
+  eyebrow,
+  title = "Formatos",
+  description,
   items = [],
   note,
-}: OfferingsSectionProps) {
+}: Props) {
   return (
-    <Section id="formatos">
+    <Section id={id}>
       <Container>
         <SectionHeader
           eyebrow={eyebrow}
@@ -120,15 +76,8 @@ export function OfferingsSection({
         <Grid>
           {items.map((item, index) => (
             <Card key={index}>
-              <Tag>{item.tag}</Tag>
-              <CardTitle>{item.title}</CardTitle>
-              <CardText>{item.description}</CardText>
-
-              <BulletList>
-                {item.bullets.map((bullet, bulletIndex) => (
-                  <Bullet key={bulletIndex}>{bullet}</Bullet>
-                ))}
-              </BulletList>
+              <Title>{item.title}</Title>
+              <Text>{item.description}</Text>
             </Card>
           ))}
         </Grid>

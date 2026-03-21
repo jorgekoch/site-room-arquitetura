@@ -19,6 +19,7 @@ type ContactCtaBaseProps = {
 
 const Section = styled.section`
   padding: 1rem 0 5rem;
+  scroll-margin-top: 92px;
 `;
 
 const Card = styled.div`

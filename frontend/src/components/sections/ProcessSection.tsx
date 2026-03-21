@@ -3,7 +3,8 @@ import { Container } from "../ui/Container";
 import { SectionHeader } from "./SectionHeader";
 import { media } from "../../styles/breakpoints";
 
-type ProcessSectionProps = {
+type Props = {
+  id?: string;
   eyebrow?: string;
   title?: string;
   description?: string;
@@ -12,67 +13,47 @@ type ProcessSectionProps = {
 
 const Section = styled.section`
   padding: 1rem 0 5rem;
+  scroll-margin-top: 92px;
 `;
 
 const Grid = styled.div`
   display: grid;
   gap: 1rem;
 
-  @media ${media.tablet} {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   @media ${media.laptop} {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 `;
 
-const StepCard = styled.article`
-  padding: 1.25rem;
-  border-radius: ${({ theme }) => theme.radius.lg};
+const Card = styled.div`
+  padding: 1.2rem;
+  border-radius: ${({ theme }) => theme.radius.md};
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  box-shadow: ${({ theme }) => theme.shadow.sm};
-  transition:
-    transform ${({ theme }) => theme.transitions.default},
-    border-color ${({ theme }) => theme.transitions.default},
-    background ${({ theme }) => theme.transitions.default};
-
-  &:hover {
-    transform: translateY(-2px);
-    border-color: ${({ theme }) => theme.colors.secondary};
-    background: ${({ theme }) => theme.colors.surfaceHover};
-  }
 `;
 
 const StepNumber = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  margin-bottom: 0.85rem;
-  border-radius: 50%;
-  background: rgba(196, 110, 78, 0.12);
-  border: 1px solid rgba(196, 110, 78, 0.28);
+  font-size: 0.8rem;
   color: ${({ theme }) => theme.colors.secondary};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: 700;
 `;
 
-const StepTitle = styled.h3`
-  font-size: 1rem;
-  line-height: 1.4;
+const Text = styled.p`
+  margin-top: 0.5rem;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  color: ${({ theme }) => theme.colors.textSoft};
+  line-height: 1.7;
 `;
 
 export function ProcessSection({
-  eyebrow = "Processo",
-  title = "Um processo claro, estruturado e construído junto",
-  description = "Da primeira conversa até o projeto executivo, cada etapa é pensada para trazer clareza e segurança.",
+  id,
+  eyebrow,
+  title = "Processo",
+  description,
   steps = [],
-}: ProcessSectionProps) {
+}: Props) {
   return (
-    <Section id="processo">
+    <Section id={id}>
       <Container>
         <SectionHeader
           eyebrow={eyebrow}
@@ -82,10 +63,10 @@ export function ProcessSection({
 
         <Grid>
           {steps.map((step, index) => (
-            <StepCard key={index}>
-              <StepNumber>{String(index + 1).padStart(2, "0")}</StepNumber>
-              <StepTitle>{step}</StepTitle>
-            </StepCard>
+            <Card key={index}>
+              <StepNumber>0{index + 1}</StepNumber>
+              <Text>{step}</Text>
+            </Card>
           ))}
         </Grid>
       </Container>

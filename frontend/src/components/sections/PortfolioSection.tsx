@@ -2,9 +2,11 @@ import { useState } from "react";
 import styled from "styled-components";
 import { Container } from "../ui/Container";
 import { SectionHeader } from "./SectionHeader";
+import { PortfolioModal } from "./PortfolioModal";
 import { media } from "../../styles/breakpoints";
 
 type PortfolioItem = {
+  slug?: string;
   title: string;
   location: string;
   description: string;
@@ -21,6 +23,7 @@ type PortfolioSectionProps = {
 
 const Section = styled.section`
   padding: 1rem 0 5rem;
+  scroll-margin-top: 92px;
 `;
 
 const Grid = styled.div`
@@ -33,12 +36,14 @@ const Grid = styled.div`
 
   @media ${media.laptop} {
     grid-template-columns: repeat(3, 1fr);
+    align-items: stretch;
   }
 `;
 
 const Card = styled.button`
   all: unset;
-  display: block;
+  display: grid;
+  grid-template-rows: auto 1fr;
   cursor: pointer;
   border-radius: ${({ theme }) => theme.radius.lg};
   overflow: hidden;
@@ -47,18 +52,27 @@ const Card = styled.button`
   transition:
     transform ${({ theme }) => theme.transitions.default},
     border-color ${({ theme }) => theme.transitions.default},
-    background ${({ theme }) => theme.transitions.default};
+    background ${({ theme }) => theme.transitions.default},
+    box-shadow ${({ theme }) => theme.transitions.default};
+  box-shadow: ${({ theme }) => theme.shadow.sm};
+  height: 100%;
 
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     border-color: ${({ theme }) => theme.colors.secondary};
     background: ${({ theme }) => theme.colors.surfaceHover};
+    box-shadow: ${({ theme }) => theme.shadow.md};
+  }
+
+  &:hover img {
+    transform: scale(1.03);
   }
 `;
 
 const Cover = styled.div`
-  height: 220px;
-  background: ${({ theme }) => theme.colors.surfaceSoft};
+  position: relative;
+  height: 240px;
+  background: ${({ theme }) => theme.colors.backgroundSoft};
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   overflow: hidden;
 `;
@@ -68,6 +82,7 @@ const CoverImage = styled.img`
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform ${({ theme }) => theme.transitions.default};
 `;
 
 const CoverPlaceholder = styled.div`
@@ -81,14 +96,49 @@ const CoverPlaceholder = styled.div`
   padding: 1rem;
 `;
 
+const ImageOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.04),
+    rgba(0, 0, 0, 0.26)
+  );
+  pointer-events: none;
+`;
+
+const ViewHint = styled.span`
+  position: absolute;
+  right: 0.9rem;
+  bottom: 0.9rem;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: ${({ theme }) => theme.radius.pill};
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.28);
+  color: #fff;
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  font-weight: 700;
+  backdrop-filter: blur(6px);
+`;
+
 const Content = styled.div`
   padding: 1rem;
   display: grid;
-  gap: 0.4rem;
+  gap: 0.55rem;
+  align-content: start;
+`;
+
+const TopMeta = styled.div`
+  display: grid;
+  gap: 0.35rem;
 `;
 
 const ProjectTitle = styled.h3`
-  font-size: 1.1rem;
+  font-size: 1.12rem;
   line-height: 1.2;
 `;
 
@@ -100,107 +150,31 @@ const Location = styled.span`
 const ProjectDescription = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   color: ${({ theme }) => theme.colors.textSoft};
-  line-height: 1.7;
+  line-height: 1.72;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 `;
 
-const ModalOverlay = styled.div`
-  position: fixed;
-  inset: 0;
-  background: rgba(7, 10, 9, 0.72);
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-  z-index: 1000;
-`;
-
-const ModalCard = styled.div`
-  width: min(980px, 100%);
-  max-height: 90vh;
-  overflow: auto;
-  border-radius: ${({ theme }) => theme.radius.lg};
-  background: ${({ theme }) => theme.colors.background};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  box-shadow: ${({ theme }) => theme.shadow.md};
-`;
-
-const ModalHeader = styled.div`
-  display: grid;
-  gap: 0.35rem;
-  padding: 1.25rem 1.25rem 0;
-`;
-
-const ModalTitle = styled.h3`
-  font-size: clamp(1.35rem, 3vw, 2rem);
-  line-height: 1.1;
-`;
-
-const ModalLocation = styled.span`
-  color: ${({ theme }) => theme.colors.textMuted};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-`;
-
-const ModalDescription = styled.p`
-  color: ${({ theme }) => theme.colors.textSoft};
-  line-height: 1.75;
-`;
-
-const ModalBody = styled.div`
-  padding: 1.25rem;
-`;
-
-const Gallery = styled.div`
-  display: grid;
-  gap: 1rem;
-
-  @media ${media.tablet} {
-    grid-template-columns: repeat(2, 1fr);
-  }
-`;
-
-const GalleryImage = styled.img`
-  width: 100%;
-  height: 280px;
-  object-fit: cover;
-  display: block;
-  border-radius: ${({ theme }) => theme.radius.md};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  background: ${({ theme }) => theme.colors.surface};
-`;
-
-const GalleryPlaceholder = styled.div`
-  display: grid;
-  place-items: center;
-  min-height: 240px;
-  border-radius: ${({ theme }) => theme.radius.md};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  background: ${({ theme }) => theme.colors.surface};
-  color: ${({ theme }) => theme.colors.textMuted};
-  text-align: center;
-  padding: 1rem;
-`;
-
-const CloseButton = styled.button`
-  margin: 0 1.25rem 1.25rem auto;
-  display: inline-flex;
+const BottomMeta = styled.div`
+  margin-top: 0.35rem;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  padding: 0.75rem 1rem;
-  border-radius: ${({ theme }) => theme.radius.pill};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  background: transparent;
-  color: ${({ theme }) => theme.colors.text};
-  cursor: pointer;
-  transition:
-    background ${({ theme }) => theme.transitions.default},
-    border-color ${({ theme }) => theme.transitions.default},
-    color ${({ theme }) => theme.transitions.default};
+  justify-content: space-between;
+  gap: 0.75rem;
+`;
 
-  &:hover {
-    background: ${({ theme }) => theme.colors.surface};
-    border-color: ${({ theme }) => theme.colors.secondary};
-    color: ${({ theme }) => theme.colors.secondary};
-  }
+const ImageCount = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  color: ${({ theme }) => theme.colors.textMuted};
+`;
+
+const ExploreText = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.secondary};
 `;
 
 export function PortfolioSection({
@@ -222,59 +196,52 @@ export function PortfolioSection({
 
         <Grid>
           {items.map((item, index) => (
-            <Card key={index} onClick={() => setSelectedProject(item)}>
+            <Card
+              key={item.slug || index}
+              type="button"
+              onClick={() => setSelectedProject(item)}
+              aria-label={`Abrir galeria do projeto ${item.title}`}
+            >
               <Cover>
                 {item.cover ? (
-                  <CoverImage src={item.cover} alt={item.title} />
+                  <CoverImage src={item.cover} alt={item.title} loading="lazy" />
                 ) : (
                   <CoverPlaceholder>Imagem de capa do projeto</CoverPlaceholder>
                 )}
+
+                <ImageOverlay />
+                <ViewHint>Ver projeto</ViewHint>
               </Cover>
 
               <Content>
-                <ProjectTitle>{item.title}</ProjectTitle>
-                <Location>{item.location}</Location>
+                <TopMeta>
+                  <ProjectTitle>{item.title}</ProjectTitle>
+                  <Location>{item.location}</Location>
+                </TopMeta>
+
                 <ProjectDescription>{item.description}</ProjectDescription>
+
+                <BottomMeta>
+                  <ImageCount>
+                    {item.images.length} {item.images.length === 1 ? "imagem" : "imagens"}
+                  </ImageCount>
+
+                  <ExploreText>Explorar →</ExploreText>
+                </BottomMeta>
               </Content>
             </Card>
           ))}
         </Grid>
       </Container>
 
-      {selectedProject && (
-        <ModalOverlay onClick={() => setSelectedProject(null)}>
-          <ModalCard onClick={(event) => event.stopPropagation()}>
-            <ModalHeader>
-              <ModalTitle>{selectedProject.title}</ModalTitle>
-              <ModalLocation>{selectedProject.location}</ModalLocation>
-              <ModalDescription>{selectedProject.description}</ModalDescription>
-            </ModalHeader>
-
-            <ModalBody>
-              {selectedProject.images.length > 0 ? (
-                <Gallery>
-                  {selectedProject.images.map((image, index) => (
-                    <GalleryImage
-                      key={index}
-                      src={image}
-                      alt={`${selectedProject.title} ${index + 1}`}
-                    />
-                  ))}
-                </Gallery>
-              ) : (
-                <GalleryPlaceholder>
-                  Adicione as principais imagens deste projeto no array{" "}
-                  <strong>images</strong>.
-                </GalleryPlaceholder>
-              )}
-            </ModalBody>
-
-            <CloseButton onClick={() => setSelectedProject(null)}>
-              Fechar
-            </CloseButton>
-          </ModalCard>
-        </ModalOverlay>
-      )}
+      <PortfolioModal
+        open={!!selectedProject}
+        onClose={() => setSelectedProject(null)}
+        images={selectedProject?.images || []}
+        title={selectedProject?.title || ""}
+        location={selectedProject?.location}
+        description={selectedProject?.description}
+      />
     </Section>
   );
 }

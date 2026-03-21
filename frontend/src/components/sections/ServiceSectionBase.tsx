@@ -34,6 +34,7 @@ type ServiceSectionBaseProps = {
 
 const Section = styled.section`
   padding: 1rem 0 4rem;
+  scroll-margin-top: 92px;
 
   @media ${media.laptop} {
     padding: 1rem 0 5rem;

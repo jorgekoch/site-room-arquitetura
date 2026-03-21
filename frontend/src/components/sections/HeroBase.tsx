@@ -305,7 +305,7 @@ export function HeroBase({
   slides = [],
 }: HeroBaseProps) {
   const validSlides = useMemo(
-    () => slides.filter((slide) => Boolean(slide)),
+    () => slides.filter((slide): slide is string => Boolean(slide)),
     [slides]
   );
 
@@ -375,7 +375,7 @@ export function HeroBase({
           </Content>
 
           <Visual>
-            <VisualCard>
+            <VisualCard aria-live="polite">
               {hasSlides ? (
                 <>
                   <SlideLayer>
@@ -424,7 +424,7 @@ export function HeroBase({
                   )}
                 </>
               ) : image ? (
-                <StaticImage src={image} alt="" />
+                <StaticImage src={image} alt={title || "Imagem da seção principal"} />
               ) : (
                 <Placeholder>Imagem do projeto ou ambiente</Placeholder>
               )}

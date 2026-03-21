@@ -36,12 +36,13 @@ export function Home() {
         />
       </div>
 
-      <AudienceSection
-        eyebrow={audienceData.section.eyebrow}
-        title={audienceData.section.title}
-        description={audienceData.section.description}
-        items={audienceData.items}
-      />
+        <AudienceSection
+          id="pra-quem-e"
+          eyebrow={audienceData.section.eyebrow}
+          title={audienceData.section.title}
+          description={audienceData.section.description}
+          items={audienceData.items}
+        />
 
       <ServiceSectionBase
         id="como-projetamos"
@@ -59,20 +60,22 @@ export function Home() {
         items={portfolioData.items}
       />
 
-      <ProcessSection
-        eyebrow={processData.section.eyebrow}
-        title={processData.section.title}
-        description={processData.section.description}
-        steps={processData.steps}
-      />
+        <ProcessSection
+          id="processo"
+          eyebrow={processData.section.eyebrow}
+          title={processData.section.title}
+          description={processData.section.description}
+          steps={processData.steps}
+        />
 
-      <OfferingsSection
-        eyebrow={offeringsData.section.eyebrow}
-        title={offeringsData.section.title}
-        description={offeringsData.section.description}
-        items={offeringsData.items}
-        note={offeringsData.note}
-      />
+        <OfferingsSection
+          id="formatos"
+          eyebrow={offeringsData.section.eyebrow}
+          title={offeringsData.section.title}
+          description={offeringsData.section.description}
+          items={offeringsData.items}
+          note={offeringsData.note}
+        />
 
       <AboutSectionBase
         id="sobre"
@@ -86,6 +89,7 @@ export function Home() {
         sideTag={aboutData.content.sideTag}
         sideTitle={aboutData.content.sideTitle}
         sideItems={aboutData.content.sideItems}
+        profiles={aboutData.content.profiles}
         image={aboutData.content.image}
         showImage
       />

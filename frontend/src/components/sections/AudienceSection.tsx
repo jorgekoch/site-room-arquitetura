@@ -8,7 +8,8 @@ type AudienceItem = {
   description: string;
 };
 
-type AudienceSectionProps = {
+type Props = {
+  id?: string;
   eyebrow?: string;
   title?: string;
   description?: string;
@@ -16,7 +17,12 @@ type AudienceSectionProps = {
 };
 
 const Section = styled.section`
-  padding: 1rem 0 5rem;
+  padding: 1rem 0 4rem;
+  scroll-margin-top: 92px;
+
+  @media ${media.laptop} {
+    padding: 1rem 0 5rem;
+  }
 `;
 
 const Grid = styled.div`
@@ -26,45 +32,48 @@ const Grid = styled.div`
   @media ${media.tablet} {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  @media ${media.laptop} {
+    grid-template-columns: repeat(3, 1fr);
+  }
 `;
 
-const Card = styled.article`
-  padding: 1.35rem;
-  border-radius: ${({ theme }) => theme.radius.lg};
+const Card = styled.div`
+  padding: 1.2rem;
+  border-radius: ${({ theme }) => theme.radius.md};
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  box-shadow: ${({ theme }) => theme.shadow.sm};
   transition:
     transform ${({ theme }) => theme.transitions.default},
-    border-color ${({ theme }) => theme.transitions.default},
-    background ${({ theme }) => theme.transitions.default};
+    border-color ${({ theme }) => theme.transitions.default};
 
   &:hover {
     transform: translateY(-2px);
     border-color: ${({ theme }) => theme.colors.secondary};
-    background: ${({ theme }) => theme.colors.surfaceHover};
   }
 `;
 
-const CardTitle = styled.h3`
+const Title = styled.h3`
+  margin-bottom: 0.5rem;
   font-size: 1.05rem;
   line-height: 1.3;
-  margin-bottom: 0.55rem;
 `;
 
-const CardText = styled.p`
+const Text = styled.p`
+  font-size: ${({ theme }) => theme.fontSizes.sm};
   color: ${({ theme }) => theme.colors.textSoft};
-  line-height: 1.75;
+  line-height: 1.7;
 `;
 
 export function AudienceSection({
-  eyebrow = "Para quem é",
-  title = "A ROOM faz sentido para quem quer construir com mais identidade, clareza e pertencimento",
-  description = "A proposta da ROOM conversa principalmente com pessoas que estão planejando a primeira casa e desejam um projeto mais consciente, funcional e conectado à própria forma de viver.",
+  id,
+  eyebrow,
+  title = "Pra quem é",
+  description,
   items = [],
-}: AudienceSectionProps) {
+}: Props) {
   return (
-    <Section id="para-quem-e">
+    <Section id={id}>
       <Container>
         <SectionHeader
           eyebrow={eyebrow}
@@ -75,8 +84,8 @@ export function AudienceSection({
         <Grid>
           {items.map((item, index) => (
             <Card key={index}>
-              <CardTitle>{item.title}</CardTitle>
-              <CardText>{item.description}</CardText>
+              <Title>{item.title}</Title>
+              <Text>{item.description}</Text>
             </Card>
           ))}
         </Grid>

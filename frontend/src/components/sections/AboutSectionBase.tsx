@@ -5,6 +5,12 @@ import { Tag } from "../ui/Tag";
 import { SectionHeader } from "./SectionHeader";
 import { media } from "../../styles/breakpoints";
 
+type AboutProfileItem = {
+  tag: string;
+  title: string;
+  text: string;
+};
+
 type AboutSectionBaseProps = {
   id?: string;
   eyebrow?: string;
@@ -17,6 +23,7 @@ type AboutSectionBaseProps = {
   sideTag?: string;
   sideTitle?: string;
   sideItems?: string[];
+  profiles?: AboutProfileItem[];
   image?: string;
   imageAlt?: string;
   showImage?: boolean;
@@ -24,6 +31,7 @@ type AboutSectionBaseProps = {
 
 const Section = styled.section`
   padding: 1rem 0 4rem;
+  scroll-margin-top: 92px;
 
   @media ${media.laptop} {
     padding: 1rem 0 5rem;
@@ -94,7 +102,7 @@ const Bullet = styled.li`
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: ${({ theme }) => theme.colors.primary};
+    background: ${({ theme }) => theme.colors.secondary};
   }
 `;
 
@@ -102,6 +110,32 @@ const Divider = styled.div`
   height: 1px;
   background: ${({ theme }) => theme.colors.border};
   margin: 0.25rem 0;
+`;
+
+const ProfilesGrid = styled.div`
+  display: grid;
+  gap: 1rem;
+
+  @media ${media.tablet} {
+    grid-template-columns: repeat(2, 1fr);
+    align-items: stretch;
+  }
+`;
+
+const ProfileCard = styled(Card)`
+  display: grid;
+  gap: 0.75rem;
+  height: 100%;
+`;
+
+const ProfileTitle = styled.h4`
+  font-size: 1rem;
+  line-height: 1.35;
+`;
+
+const ProfileText = styled.p`
+  color: ${({ theme }) => theme.colors.textSoft};
+  line-height: 1.75;
 `;
 
 const ImageCard = styled.div`
@@ -123,6 +157,7 @@ const ImageCard = styled.div`
       rgba(0, 0, 0, 0.05),
       rgba(0, 0, 0, 0.2)
     );
+    pointer-events: none;
   }
 
   @media ${media.tablet} {
@@ -164,6 +199,7 @@ export function AboutSectionBase({
   sideTag,
   sideTitle,
   sideItems = [],
+  profiles = [],
   image,
   imageAlt = "",
   showImage = true,
@@ -171,11 +207,7 @@ export function AboutSectionBase({
   return (
     <Section id={id}>
       <Container>
-        <SectionHeader
-          eyebrow={eyebrow}
-          title={title}
-          description={description}
-        />
+        <SectionHeader eyebrow={eyebrow} title={title} description={description} />
 
         <Grid>
           <Column>
@@ -205,7 +237,6 @@ export function AboutSectionBase({
                     {(sideTag || sideTitle) && (
                       <BulletGroupTitle>{sideTitle || sideTag}</BulletGroupTitle>
                     )}
-
                     <BulletList>
                       {sideItems.map((item, index) => (
                         <Bullet key={index}>{item}</Bullet>
@@ -215,13 +246,25 @@ export function AboutSectionBase({
                 </>
               )}
             </HighlightCard>
+
+            {profiles.length > 0 && (
+              <ProfilesGrid>
+                {profiles.map((profile, index) => (
+                  <ProfileCard key={index}>
+                    <Tag>{profile.tag}</Tag>
+                    <ProfileTitle>{profile.title}</ProfileTitle>
+                    <ProfileText>{profile.text}</ProfileText>
+                  </ProfileCard>
+                ))}
+              </ProfilesGrid>
+            )}
           </Column>
 
           <Column>
             {showImage && (
               <ImageCard>
                 {image ? (
-                  <Image src={image} alt={imageAlt} />
+                  <Image src={image} alt={imageAlt} loading="lazy" />
                 ) : (
                   <ImagePlaceholder>
                     Imagem do projeto ou ambiente
