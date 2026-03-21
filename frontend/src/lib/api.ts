@@ -15,7 +15,7 @@ export async function apiFetch(
     headers.set("Authorization", `Bearer ${token}`);
   }
 
-  return fetch(`${API_URL}${path}`, {
+  return fetch(`${API_URL}/api${path}`, {
     ...init,
     headers,
   });

@@ -340,7 +340,7 @@ export default function AdminPropostas() {
   useEffect(() => {
     loadItems();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statusFilter, projectTypeFilter]);
+  }, [statusFilter, projectTypeFilter, search]);
 
   useEffect(() => {
     if (selectedId) {
@@ -387,7 +387,6 @@ export default function AdminPropostas() {
             placeholder="Buscar por nome, e-mail ou telefone"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            onBlur={loadItems}
           />
 
           <Select

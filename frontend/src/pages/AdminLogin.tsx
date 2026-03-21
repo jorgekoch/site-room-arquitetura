@@ -102,37 +102,44 @@ export default function AdminLogin() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  event.preventDefault();
 
-    try {
-      setIsSubmitting(true);
-      setErrorMessage("");
+  try {
+    setIsSubmitting(true);
+    setErrorMessage("");
 
-      const response = await fetch(`${API_URL}/admin-auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+    console.log("API_URL:", API_URL);
+    console.log("LOGIN URL:", `${API_URL}/api/admin-auth/login`);
 
-      const data = await response.json().catch(() => null);
+    const response = await fetch(`${API_URL}/api/admin-auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-      if (!response.ok) {
-        throw new Error(data?.message || "Não foi possível fazer login.");
-      }
+    console.log("STATUS:", response.status);
 
-      setAdminToken(data.token);
-      navigate("/admin/propostas");
-    } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : "Erro ao autenticar."
-      );
-    } finally {
-      setIsSubmitting(false);
+    const data = await response.json().catch(() => null);
+    console.log("DATA:", data);
+
+    if (!response.ok) {
+      throw new Error(data?.message || "Não foi possível fazer login.");
     }
+
+    setAdminToken(data.token);
+    navigate("/admin/propostas");
+  } catch (error) {
+    console.error(error);
+    setErrorMessage(
+      error instanceof Error ? error.message : "Erro ao autenticar."
+    );
+  } finally {
+    setIsSubmitting(false);
   }
+}
 
   return (
     <Section>
