@@ -17,29 +17,64 @@ enum ProposalStatus {
   CANCELED
 }
 
+enum AdminRole {
+  OWNER
+  ADMIN
+}
+
 model ProposalRequest {
-  id                     String         @id @default(cuid())
-  createdAt              DateTime       @default(now())
-  updatedAt              DateTime       @updatedAt
-  status                 ProposalStatus @default(NEW)
+  id                          String         @id @default(cuid())
+  createdAt                   DateTime       @default(now())
+  updatedAt                   DateTime       @updatedAt
+  status                      ProposalStatus @default(NEW)
 
-  email                  String
-  fullName               String
-  cpf                    String
-  address                String
-  birthDate              String
-  phone                  String
-  socialProfile          String?
-  preferredContactMethod String
-  referralSource         String
-  desiredWorkStart       String
-  projectType            String
+  email                       String
+  fullName                    String
+  cpf                         String
+  address                     String
+  birthDate                   String
+  phone                       String
+  socialProfile               String?
 
-  taxAgreement           Boolean
-  paymentMethod          String
-  paymentMethodOther     String?
+  preferredContactMethod      String
+  preferredContactMethodOther String?
 
-  projectDetailsJson     Json
+  referralSource              String
+  referralSourceOther         String?
+
+  desiredWorkStart            String
+
+  projectType                 String
+  projectTypeOther            String?
+
+  taxAgreement                Boolean
+  paymentMethod               String
+  paymentMethodOther          String?
+
+  projectDetailsJson          Json
+
+  internalNotes               String?
+  paymentProofUrl             String?
+  paymentProofUploadedAt      DateTime?
 
   @@map("proposal_requests")
+}
+
+model AdminUser {
+  id                    String    @id @default(cuid())
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  name                  String
+  email                 String    @unique
+  passwordHash          String
+
+  role                  AdminRole @default(ADMIN)
+  approved              Boolean   @default(false)
+  isActive              Boolean   @default(false)
+
+  approvalToken         String?   @unique
+  approvalTokenExpiresAt DateTime?
+
+  @@map("admin_users")
 }

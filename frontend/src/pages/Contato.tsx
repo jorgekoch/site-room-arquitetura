@@ -15,12 +15,14 @@ const Header = styled.div`
   display: grid;
   gap: 0.8rem;
   max-width: 820px;
-  margin-bottom: 2rem;
+  margin: 0 auto 2rem;
+  text-align: center;
 `;
 
 const Eyebrow = styled.span`
   display: inline-flex;
   width: fit-content;
+  margin: 0 auto;
   padding: 0.45rem 0.9rem;
   border-radius: ${({ theme }) => theme.radius.pill};
   background: rgba(196, 110, 78, 0.12);
@@ -33,7 +35,7 @@ const Eyebrow = styled.span`
 `;
 
 const Title = styled.h1`
-  font-size: clamp(2rem, 5vw, 3.6rem);
+  font-size: clamp(2rem, 5vw, 3.4rem);
   line-height: 1.08;
 `;
 
@@ -41,14 +43,25 @@ const Description = styled.p`
   color: ${({ theme }) => theme.colors.textSoft};
   line-height: 1.8;
   max-width: 760px;
+  margin: 0 auto;
 `;
 
 const Card = styled.div`
+  max-width: 1040px;
+  margin: 0 auto;
   padding: 1.5rem;
   border-radius: ${({ theme }) => theme.radius.lg};
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
   box-shadow: ${({ theme }) => theme.shadow.sm};
+
+  @media ${media.tablet} {
+    padding: 2rem;
+  }
+
+  @media ${media.laptop} {
+    padding: 2.2rem;
+  }
 `;
 
 export default function Contato() {
@@ -57,7 +70,9 @@ export default function Contato() {
       <Container>
         <Header>
           <Eyebrow>Solicitação de proposta</Eyebrow>
-          <Title>Vamos entender seu projeto com profundidade antes de propor qualquer solução</Title>
+          <Title>
+            Vamos entender seu projeto com profundidade antes de propor qualquer solução
+          </Title>
           <Description>
             Este formulário inicial ajuda a ROOM a compreender melhor o contexto,
             as necessidades e o tipo de experiência mais adequada para o seu projeto.

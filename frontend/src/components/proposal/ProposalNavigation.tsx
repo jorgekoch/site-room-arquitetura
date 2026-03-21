@@ -14,6 +14,9 @@ type Props = {
   totalSteps: number;
   onBack: () => void;
   onNext: () => void;
+  onSubmitStep: () => void;
+  isSubmitting?: boolean;
+  isSubmitDisabled?: boolean;
 };
 
 export function ProposalNavigation({
@@ -21,6 +24,9 @@ export function ProposalNavigation({
   totalSteps,
   onBack,
   onNext,
+  onSubmitStep,
+  isSubmitting = false,
+  isSubmitDisabled = false,
 }: Props) {
   const isLast = currentStep === totalSteps - 1;
 
@@ -29,14 +35,20 @@ export function ProposalNavigation({
       <div>
         {currentStep > 0 && (
           <Button type="button" variant="ghost" onClick={onBack}>
-            Voltar
+            Voltar etapa
           </Button>
         )}
       </div>
 
       <div>
         {isLast ? (
-          <Button type="submit">Enviar solicitação</Button>
+          <Button
+            type="button"
+            disabled={isSubmitting || isSubmitDisabled}
+            onClick={onSubmitStep}
+          >
+            {isSubmitting ? "Enviando..." : "Enviar solicitação"}
+          </Button>
         ) : (
           <Button type="button" onClick={onNext}>
             Continuar

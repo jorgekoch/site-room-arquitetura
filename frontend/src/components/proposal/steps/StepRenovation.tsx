@@ -1,5 +1,5 @@
 import { useFormContext } from "react-hook-form";
-import type { ProposalSchemaValue } from "../../../schemas/proposalSchema";
+import type { ProposalSchemaValues } from "../../../schemas/proposalSchema";
 import { projectModeOptions } from "../../../data/proposalOptions";
 import {
   StepWrapper,
@@ -19,7 +19,7 @@ export function StepRenovation() {
   const {
     register,
     formState: { errors },
-  } = useFormContext<ProposalSchemaValue>();
+  } = useFormContext<ProposalSchemaValues>();
 
   return (
     <StepWrapper>

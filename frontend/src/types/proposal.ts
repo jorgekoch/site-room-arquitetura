@@ -57,18 +57,28 @@ export type ProposalFormValues = {
   birthDate: string;
   phone: string;
   socialProfile: string;
+
   preferredContactMethod: ContactMethod;
+  preferredContactMethodOther: string;
+
   referralSource: ReferralSource;
+  referralSourceOther: string;
+
   desiredWorkStart: string;
+
   projectType: ProjectType;
+  projectTypeOther: string;
 
   newConstruction: {
     terrainSize: string;
     terrainSlope: TerrainSlope;
+    terrainSlopeOther: string;
     terrainZone: TerrainZone;
+    terrainZoneOther: string;
     terrainAddress: string;
     scopeDescription: string;
     floors: FloorsOption;
+    floorsOther: string;
     desiredArea: string;
     definedBudget: string;
     wantsEngineeringPartnership: string;

@@ -1,3 +1,5 @@
+import { images } from "../assets/images";
+
 export type HighlightItem = {
   title: string;
   text: string;
@@ -15,6 +17,7 @@ export type HomeData = {
     title: string;
     description: string;
     highlights: HighlightItem[];
+    slides: string[];
   };
   finalCta: FinalCtaData;
 };
@@ -40,6 +43,7 @@ export const homeData: HomeData = {
         text: "Etapas bem definidas para você construir com segurança e sem surpresas.",
       },
     ],
+    slides: images.hero.carousel,
   },
 
   finalCta: {

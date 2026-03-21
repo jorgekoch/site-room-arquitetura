@@ -1,3 +1,5 @@
+import { images } from "../assets/images";
+
 export type AboutData = {
   section: {
     eyebrow: string;
@@ -5,6 +7,7 @@ export type AboutData = {
     description: string;
   };
   content: {
+    image: string;
     mainTag: string;
     mainTitle: string;
     paragraphs: string[];
@@ -25,6 +28,7 @@ export const aboutData: AboutData = {
   },
 
   content: {
+    image: images.about.main,
     mainTag: "Filosofia",
     mainTitle: "Cada casa é pensada para fazer sentido para quem vive nela",
     paragraphs: [

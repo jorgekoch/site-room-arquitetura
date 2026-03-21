@@ -32,6 +32,7 @@ export function Home() {
             to: siteConfig.cta.secondaryTo,
           }}
           highlights={homeData.hero.highlights}
+          slides={homeData.hero.slides}
         />
       </div>
 
@@ -85,7 +86,8 @@ export function Home() {
         sideTag={aboutData.content.sideTag}
         sideTitle={aboutData.content.sideTitle}
         sideItems={aboutData.content.sideItems}
-        showImage={false}
+        image={aboutData.content.image}
+        showImage
       />
 
       <ContactCtaBase

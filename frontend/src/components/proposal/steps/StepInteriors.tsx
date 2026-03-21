@@ -1,6 +1,7 @@
+import styled from "styled-components";
 import { Controller, useFormContext } from "react-hook-form";
 import type { InteriorsScopeOption } from "../../../types/proposal";
-import type { ProposalSchemaValue } from "../../../schemas/proposalSchema";
+import type { ProposalSchemaValues } from "../../../schemas/proposalSchema";
 import {
   interiorsScopeOptions,
   projectModeOptions,
@@ -21,13 +22,18 @@ import {
   RadioItem,
 } from "../ProposalFields";
 
+const Column = styled.div`
+  display: grid;
+  gap: 1rem;
+`;
+
 export function StepInteriors() {
   const {
     register,
     control,
     watch,
     formState: { errors },
-  } = useFormContext<ProposalSchemaValue>();
+  } = useFormContext<ProposalSchemaValues>();
 
   const includedItems = watch("interiors.includedItems");
   const hasOther = includedItems.includes("outro");
@@ -41,55 +47,62 @@ export function StepInteriors() {
         </StepDescription>
       </StepHeader>
 
-      <Field>
-        <Label>O que deve estar incluso na proposta?</Label>
+      <Column>
+        <Field>
+          <Label>O que deve estar incluso na proposta?</Label>
 
-        <Controller
-          control={control}
-          name="interiors.includedItems"
-          render={({ field }) => {
-            const selectedValues = field.value || [];
+          <Controller
+            control={control}
+            name="interiors.includedItems"
+            render={({ field }) => {
+              const selectedValues = field.value || [];
 
-            function toggleValue(value: InteriorsScopeOption) {
-              if (selectedValues.includes(value)) {
-                field.onChange(selectedValues.filter((item) => item !== value));
-                return;
+              function toggleValue(value: InteriorsScopeOption) {
+                if (selectedValues.includes(value)) {
+                  field.onChange(selectedValues.filter((item) => item !== value));
+                  return;
+                }
+
+                field.onChange([...selectedValues, value]);
               }
 
-              field.onChange([...selectedValues, value]);
-            }
-
-            return (
-              <CheckboxGroup>
-                {interiorsScopeOptions.map((option) => (
-                  <CheckboxItem key={option.value}>
-                    <input
-                      type="checkbox"
-                      checked={selectedValues.includes(option.value)}
-                      onChange={() => toggleValue(option.value)}
-                    />
-                    <span>{option.label}</span>
-                  </CheckboxItem>
-                ))}
-              </CheckboxGroup>
-            );
-          }}
-        />
-
-        {errors.interiors?.includedItems && (
-          <ErrorText>{String(errors.interiors.includedItems.message)}</ErrorText>
-        )}
-      </Field>
-
-      {hasOther && (
-        <Field>
-          <Label htmlFor="interiors.includedItemsOther">Outro item</Label>
-          <Input
-            id="interiors.includedItemsOther"
-            {...register("interiors.includedItemsOther")}
+              return (
+                <CheckboxGroup>
+                  {interiorsScopeOptions.map((option) => (
+                    <CheckboxItem key={option.value}>
+                      <input
+                        type="checkbox"
+                        checked={selectedValues.includes(option.value)}
+                        onChange={() => toggleValue(option.value)}
+                      />
+                      <span>{option.label}</span>
+                    </CheckboxItem>
+                  ))}
+                </CheckboxGroup>
+              );
+            }}
           />
+
+          {errors.interiors?.includedItems && (
+            <ErrorText>{String(errors.interiors.includedItems.message)}</ErrorText>
+          )}
         </Field>
-      )}
+
+        {hasOther && (
+          <Field>
+            <Label htmlFor="interiors.includedItemsOther">
+              Descreva o outro item
+            </Label>
+            <Input
+              id="interiors.includedItemsOther"
+              {...register("interiors.includedItemsOther")}
+            />
+            {errors.interiors?.includedItemsOther && (
+              <ErrorText>{String(errors.interiors.includedItemsOther.message)}</ErrorText>
+            )}
+          </Field>
+        )}
+      </Column>
 
       <Field>
         <Label htmlFor="interiors.environments">

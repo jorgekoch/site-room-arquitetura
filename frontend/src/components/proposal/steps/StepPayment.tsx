@@ -1,5 +1,6 @@
+import styled from "styled-components";
 import { useFormContext } from "react-hook-form";
-import type { ProposalSchemaValue } from "../../../schemas/proposalSchema";
+import type { ProposalSchemaValues } from "../../../schemas/proposalSchema";
 import { paymentMethodOptions } from "../../../data/proposalOptions";
 import {
   StepWrapper,
@@ -17,12 +18,17 @@ import {
   CheckboxItem,
 } from "../ProposalFields";
 
+const Column = styled.div`
+  display: grid;
+  gap: 1rem;
+`;
+
 export function StepPayment() {
   const {
     register,
     watch,
     formState: { errors },
-  } = useFormContext<ProposalSchemaValue>();
+  } = useFormContext<ProposalSchemaValues>();
 
   const paymentMethod = watch("paymentMethod");
 
@@ -69,37 +75,41 @@ export function StepPayment() {
         )}
       </Field>
 
-      <Field>
-        <Label>Qual a melhor forma de pagamento da taxa para você?</Label>
-        <RadioGroup>
-          {paymentMethodOptions.map((option) => (
-            <RadioItem key={option.value}>
-              <input
-                type="radio"
-                value={option.value}
-                {...register("paymentMethod")}
-              />
-              <span>{option.label}</span>
-            </RadioItem>
-          ))}
-        </RadioGroup>
-        {errors.paymentMethod && (
-          <ErrorText>{String(errors.paymentMethod.message)}</ErrorText>
-        )}
-      </Field>
-
-      {paymentMethod === "outro" && (
+      <Column>
         <Field>
-          <Label htmlFor="paymentMethodOther">Descreva a forma de pagamento</Label>
-          <Input
-            id="paymentMethodOther"
-            {...register("paymentMethodOther")}
-          />
-          {errors.paymentMethodOther && (
-            <ErrorText>{String(errors.paymentMethodOther.message)}</ErrorText>
+          <Label>Qual a melhor forma de pagamento da taxa para você?</Label>
+          <RadioGroup>
+            {paymentMethodOptions.map((option) => (
+              <RadioItem key={option.value}>
+                <input
+                  type="radio"
+                  value={option.value}
+                  {...register("paymentMethod")}
+                />
+                <span>{option.label}</span>
+              </RadioItem>
+            ))}
+          </RadioGroup>
+          {errors.paymentMethod && (
+            <ErrorText>{String(errors.paymentMethod.message)}</ErrorText>
           )}
         </Field>
-      )}
+
+        {paymentMethod === "outro" && (
+          <Field>
+            <Label htmlFor="paymentMethodOther">
+              Descreva a forma de pagamento
+            </Label>
+            <Input
+              id="paymentMethodOther"
+              {...register("paymentMethodOther")}
+            />
+            {errors.paymentMethodOther && (
+              <ErrorText>{String(errors.paymentMethodOther.message)}</ErrorText>
+            )}
+          </Field>
+        )}
+      </Column>
     </StepWrapper>
   );
 }

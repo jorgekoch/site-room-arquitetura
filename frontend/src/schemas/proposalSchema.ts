@@ -4,23 +4,33 @@ export const proposalSchema = z
   .object({
     email: z.string().email("Digite um e-mail válido."),
     fullName: z.string().min(3, "Informe o nome completo."),
-    cpf: z.string().min(11, "Informe um CPF válido."),
+    cpf: z.string().min(14, "Informe um CPF válido."),
     address: z.string().min(10, "Informe o endereço completo."),
-    birthDate: z.string().min(1, "Informe a data de nascimento."),
-    phone: z.string().min(8, "Informe um telefone válido."),
+    birthDate: z.string().min(10, "Informe a data de nascimento."),
+    phone: z.string().min(14, "Informe um telefone válido."),
     socialProfile: z.string().optional(),
+
     preferredContactMethod: z.string().min(1, "Selecione a melhor forma de contato."),
+    preferredContactMethodOther: z.string().optional(),
+
     referralSource: z.string().min(1, "Selecione como conheceu a ROOM."),
+    referralSourceOther: z.string().optional(),
+
     desiredWorkStart: z.string().min(1, "Informe o prazo desejado."),
+
     projectType: z.string().min(1, "Selecione o tipo de projeto."),
+    projectTypeOther: z.string().optional(),
 
     newConstruction: z.object({
       terrainSize: z.string().optional(),
       terrainSlope: z.string().optional(),
+      terrainSlopeOther: z.string().optional(),
       terrainZone: z.string().optional(),
+      terrainZoneOther: z.string().optional(),
       terrainAddress: z.string().optional(),
       scopeDescription: z.string().optional(),
       floors: z.string().optional(),
+      floorsOther: z.string().optional(),
       desiredArea: z.string().optional(),
       definedBudget: z.string().optional(),
       wantsEngineeringPartnership: z.string().optional(),
@@ -53,8 +63,34 @@ export const proposalSchema = z
     taxAgreement: z.boolean(),
     paymentMethod: z.string().min(1, "Selecione a forma de pagamento."),
     paymentMethodOther: z.string().optional(),
+
+    reviewConfirmed: z.boolean(),
   })
   .superRefine((data, ctx) => {
+    if (data.preferredContactMethod === "outro" && !data.preferredContactMethodOther?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["preferredContactMethodOther"],
+        message: "Descreva a outra forma de contato.",
+      });
+    }
+
+    if (data.referralSource === "outro" && !data.referralSourceOther?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["referralSourceOther"],
+        message: "Descreva como conheceu a ROOM.",
+      });
+    }
+
+    if (data.projectType === "other" && !data.projectTypeOther?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["projectTypeOther"],
+        message: "Descreva o outro tipo de projeto.",
+      });
+    }
+
     if (data.projectType === "new-construction") {
       if (!data.newConstruction.terrainSize) {
         ctx.addIssue({
@@ -70,11 +106,25 @@ export const proposalSchema = z
           message: "Selecione a inclinação do terreno.",
         });
       }
+      if (data.newConstruction.terrainSlope === "outro" && !data.newConstruction.terrainSlopeOther?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["newConstruction", "terrainSlopeOther"],
+          message: "Descreva a outra inclinação.",
+        });
+      }
       if (!data.newConstruction.terrainZone) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["newConstruction", "terrainZone"],
           message: "Selecione se o terreno é rural ou urbano.",
+        });
+      }
+      if (data.newConstruction.terrainZone === "outro" && !data.newConstruction.terrainZoneOther?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["newConstruction", "terrainZoneOther"],
+          message: "Descreva a outra zona do terreno.",
         });
       }
       if (!data.newConstruction.terrainAddress) {
@@ -96,6 +146,13 @@ export const proposalSchema = z
           code: z.ZodIssueCode.custom,
           path: ["newConstruction", "floors"],
           message: "Selecione a quantidade de pavimentos.",
+        });
+      }
+      if (data.newConstruction.floors === "outro" && !data.newConstruction.floorsOther?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["newConstruction", "floorsOther"],
+          message: "Descreva a outra opção de pavimentos.",
         });
       }
       if (!data.newConstruction.wantsEngineeringPartnership) {
@@ -127,6 +184,13 @@ export const proposalSchema = z
           code: z.ZodIssueCode.custom,
           path: ["interiors", "includedItems"],
           message: "Selecione pelo menos um item.",
+        });
+      }
+      if (data.interiors.includedItems.includes("outro") && !data.interiors.includedItemsOther?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["interiors", "includedItemsOther"],
+          message: "Descreva o outro item.",
         });
       }
       if (!data.interiors.environments) {
@@ -208,7 +272,14 @@ export const proposalSchema = z
         message: "Descreva a outra forma de pagamento.",
       });
     }
+
+    if (!data.reviewConfirmed) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["reviewConfirmed"],
+        message: "Confirme que os dados estão corretos para enviar.",
+      });
+    }
   });
 
-  export type ProposalSchemaValue = 
-  z.infer<typeof proposalSchema>;
+export type ProposalSchemaValues = z.infer<typeof proposalSchema>;

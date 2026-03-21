@@ -36,18 +36,20 @@ const Grid = styled.div`
 
   @media ${media.laptop} {
     grid-template-columns: 1.1fr 0.9fr;
-    align-items: start;
+    align-items: stretch;
   }
 `;
 
 const Column = styled.div`
   display: grid;
   gap: 1rem;
+  height: 100%;
 `;
 
 const HighlightCard = styled(Card)`
   display: grid;
   gap: 1rem;
+  height: 100%;
 `;
 
 const Title = styled.h3`
@@ -55,14 +57,19 @@ const Title = styled.h3`
   line-height: 1.15;
 `;
 
-const SubTitle = styled.h4`
-  font-size: 1.05rem;
-  line-height: 1.35;
-`;
-
 const Text = styled.p`
   color: ${({ theme }) => theme.colors.textSoft};
   line-height: 1.8;
+`;
+
+const BulletGroup = styled.div`
+  display: grid;
+  gap: 0.75rem;
+`;
+
+const BulletGroupTitle = styled.h4`
+  font-size: 0.98rem;
+  line-height: 1.35;
 `;
 
 const BulletList = styled.ul`
@@ -91,35 +98,15 @@ const Bullet = styled.li`
   }
 `;
 
-const List = styled.ul`
-  display: grid;
-  gap: 0.85rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-`;
-
-const Item = styled.li`
-  padding: 1rem;
-  border-radius: ${({ theme }) => theme.radius.md};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  background: ${({ theme }) => theme.colors.surface};
-  color: ${({ theme }) => theme.colors.textSoft};
-  line-height: 1.7;
-  transition:
-    transform ${({ theme }) => theme.transitions.default},
-    border-color ${({ theme }) => theme.transitions.default},
-    background ${({ theme }) => theme.transitions.default};
-
-  &:hover {
-    border-color: ${({ theme }) => theme.colors.secondary};
-    background: ${({ theme }) => theme.colors.surfaceHover};
-    transform: translateY(-2px);
-  }
+const Divider = styled.div`
+  height: 1px;
+  background: ${({ theme }) => theme.colors.border};
+  margin: 0.25rem 0;
 `;
 
 const ImageCard = styled.div`
   position: relative;
+  height: 100%;
   min-height: 260px;
   border-radius: ${({ theme }) => theme.radius.lg};
   overflow: hidden;
@@ -201,11 +188,31 @@ export function AboutSectionBase({
               ))}
 
               {bullets.length > 0 && (
-                <BulletList>
-                  {bullets.map((bullet, index) => (
-                    <Bullet key={index}>{bullet}</Bullet>
-                  ))}
-                </BulletList>
+                <BulletGroup>
+                  <BulletGroupTitle>Destaques da filosofia</BulletGroupTitle>
+                  <BulletList>
+                    {bullets.map((bullet, index) => (
+                      <Bullet key={index}>{bullet}</Bullet>
+                    ))}
+                  </BulletList>
+                </BulletGroup>
+              )}
+
+              {sideItems.length > 0 && (
+                <>
+                  <Divider />
+                  <BulletGroup>
+                    {(sideTag || sideTitle) && (
+                      <BulletGroupTitle>{sideTitle || sideTag}</BulletGroupTitle>
+                    )}
+
+                    <BulletList>
+                      {sideItems.map((item, index) => (
+                        <Bullet key={index}>{item}</Bullet>
+                      ))}
+                    </BulletList>
+                  </BulletGroup>
+                </>
               )}
             </HighlightCard>
           </Column>
@@ -222,19 +229,6 @@ export function AboutSectionBase({
                 )}
               </ImageCard>
             )}
-
-            <Card>
-              {sideTag && <Tag>{sideTag}</Tag>}
-              {sideTitle && <SubTitle>{sideTitle}</SubTitle>}
-
-              {sideItems.length > 0 && (
-                <List>
-                  {sideItems.map((item, index) => (
-                    <Item key={index}>{item}</Item>
-                  ))}
-                </List>
-              )}
-            </Card>
           </Column>
         </Grid>
       </Container>

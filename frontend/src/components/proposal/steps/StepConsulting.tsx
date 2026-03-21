@@ -1,5 +1,5 @@
 import { useFormContext } from "react-hook-form";
-import type { ProposalSchemaValue } from "../../../schemas/proposalSchema";
+import type { ProposalSchemaValues } from "../../../schemas/proposalSchema";
 import {
   StepWrapper,
   StepHeader,
@@ -9,13 +9,17 @@ import {
   Label,
   Textarea,
   ErrorText,
+  Input,
 } from "../ProposalFields";
 
 export function StepConsulting() {
   const {
     register,
+    watch,
     formState: { errors },
-  } = useFormContext<ProposalSchemaValue>();
+  } = useFormContext<ProposalSchemaValues>();
+
+  const projectType = watch("projectType");
 
   return (
     <StepWrapper>
@@ -25,6 +29,16 @@ export function StepConsulting() {
           Descreva sua solicitação da maneira mais detalhada que puder.
         </StepDescription>
       </StepHeader>
+
+      {projectType === "other" && (
+        <Field>
+          <Label htmlFor="projectTypeOther">Qual é o outro tipo de projeto?</Label>
+          <Input id="projectTypeOther" {...register("projectTypeOther")} />
+          {errors.projectTypeOther && (
+            <ErrorText>{String(errors.projectTypeOther.message)}</ErrorText>
+          )}
+        </Field>
+      )}
 
       <Field>
         <Label htmlFor="consulting.requestDescription">Sua solicitação</Label>

@@ -1,4 +1,7 @@
+import { images } from "../assets/images";
+
 export type PortfolioItem = {
+  slug: string;
   title: string;
   location: string;
   description: string;
@@ -25,39 +28,44 @@ export const portfolioData: PortfolioData = {
 
   items: [
     {
-      title: "Casa Aurora",
-      location: "Rio do Sul/SC",
-      description: "Casa em terreno inclinado com foco em iluminação natural.",
-      cover: "",
-      images: [],
+      slug: "casa-b-612",
+      title: "Casa B-612",
+      location: "Adicionar cidade",
+      description: "Adicionar descrição de acordo.",
+      cover: images.portfolio.casaB612[0],
+      images: images.portfolio.casaB612,
     },
     {
-      title: "Casa Horizonte",
-      location: "Santa Catarina",
-      description: "Integração com natureza e ventilação cruzada.",
-      cover: "",
-      images: [],
+      slug: "casa-bia-leo",
+      title: "Casa Bia e Leo",
+      location: "Adicionar localidade",
+      description: "Adicionar descrição de acordo.",
+      cover: images.portfolio.casaBiaLeo[0],
+      images: images.portfolio.casaBiaLeo,
     },
     {
-      title: "Casa Brisa",
-      location: "Litoral",
-      description: "Casa leve, com linguagem mais praiana.",
-      cover: "",
-      images: [],
+      slug: "casa-carol-renner",
+      title: "Casa Carol e Renner",
+      location: "Adicionar localidade",
+      description: "Adicionar descrição de acordo.",
+      cover: images.portfolio.casaCarolRenner[0],
+      images: images.portfolio.casaCarolRenner,
     },
     {
-      title: "Casa Raiz",
-      location: "Interior",
-      description: "Uso de materiais locais e conexão com o entorno.",
-      cover: "",
-      images: [],
+      slug: "casa-da-jabuticabeira",
+      title: "Casa da Jabuticabeira",
+      location: "Adicionar localidade",
+      description: "Adicionar descrição de acordo.",
+      cover: images.portfolio.casaDaJabuticabeira[0],
+      images: images.portfolio.casaDaJabuticabeira,
     },
     {
-      title: "Casa Essência",
-      location: "Brasil",
-      description: "Projeto centrado na identidade da família.",
-      cover: "",
-      images: [],
+      slug: "casa-sara-bernardo",
+      title: "Casa Sara e Bernardo",
+      location: "Adicionar localidade",
+      description: "Adicionar descrição de acordo.",
+      cover: images.portfolio.casaSaraBernardo[0],
+      images: images.portfolio.casaSaraBernardo,
     },
   ],
 };

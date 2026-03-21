@@ -1,5 +1,6 @@
+import styled from "styled-components";
 import { useFormContext } from "react-hook-form";
-import type { ProposalSchemaValue } from "../../../schemas/proposalSchema";
+import type { ProposalSchemaValues } from "../../../schemas/proposalSchema";
 import {
   floorsOptions,
   projectModeOptions,
@@ -22,11 +23,21 @@ import {
   RadioItem,
 } from "../ProposalFields";
 
+const Column = styled.div`
+  display: grid;
+  gap: 1rem;
+`;
+
 export function StepNewConstruction() {
   const {
     register,
+    watch,
     formState: { errors },
-  } = useFormContext<ProposalSchemaValue>();
+  } = useFormContext<ProposalSchemaValues>();
+
+  const terrainSlope = watch("newConstruction.terrainSlope");
+  const terrainZone = watch("newConstruction.terrainZone");
+  const floors = watch("newConstruction.floors");
 
   return (
     <StepWrapper>
@@ -52,41 +63,83 @@ export function StepNewConstruction() {
       </Field>
 
       <Inline>
-        <Field>
-          <Label htmlFor="newConstruction.terrainSlope">Seu terreno é plano ou inclinado?</Label>
-          <Select
-            id="newConstruction.terrainSlope"
-            {...register("newConstruction.terrainSlope")}
-          >
-            <option value="">Selecione</option>
-            {terrainSlopeOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
-          {errors.newConstruction?.terrainSlope && (
-            <ErrorText>{String(errors.newConstruction.terrainSlope.message)}</ErrorText>
-          )}
-        </Field>
+        <Column>
+          <Field>
+            <Label htmlFor="newConstruction.terrainSlope">
+              Seu terreno é plano ou inclinado?
+            </Label>
+            <Select
+              id="newConstruction.terrainSlope"
+              {...register("newConstruction.terrainSlope")}
+            >
+              <option value="">Selecione</option>
+              {terrainSlopeOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
+            {errors.newConstruction?.terrainSlope && (
+              <ErrorText>{String(errors.newConstruction.terrainSlope.message)}</ErrorText>
+            )}
+          </Field>
 
-        <Field>
-          <Label htmlFor="newConstruction.terrainZone">Seu terreno é rural ou urbano?</Label>
-          <Select
-            id="newConstruction.terrainZone"
-            {...register("newConstruction.terrainZone")}
-          >
-            <option value="">Selecione</option>
-            {terrainZoneOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
-          {errors.newConstruction?.terrainZone && (
-            <ErrorText>{String(errors.newConstruction.terrainZone.message)}</ErrorText>
+          {terrainSlope === "outro" && (
+            <Field>
+              <Label htmlFor="newConstruction.terrainSlopeOther">
+                Descreva a inclinação do terreno
+              </Label>
+              <Input
+                id="newConstruction.terrainSlopeOther"
+                {...register("newConstruction.terrainSlopeOther")}
+              />
+              {errors.newConstruction?.terrainSlopeOther && (
+                <ErrorText>
+                  {String(errors.newConstruction.terrainSlopeOther.message)}
+                </ErrorText>
+              )}
+            </Field>
           )}
-        </Field>
+        </Column>
+
+        <Column>
+          <Field>
+            <Label htmlFor="newConstruction.terrainZone">
+              Seu terreno é rural ou urbano?
+            </Label>
+            <Select
+              id="newConstruction.terrainZone"
+              {...register("newConstruction.terrainZone")}
+            >
+              <option value="">Selecione</option>
+              {terrainZoneOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
+            {errors.newConstruction?.terrainZone && (
+              <ErrorText>{String(errors.newConstruction.terrainZone.message)}</ErrorText>
+            )}
+          </Field>
+
+          {terrainZone === "outro" && (
+            <Field>
+              <Label htmlFor="newConstruction.terrainZoneOther">
+                Descreva a classificação do terreno
+              </Label>
+              <Input
+                id="newConstruction.terrainZoneOther"
+                {...register("newConstruction.terrainZoneOther")}
+              />
+              {errors.newConstruction?.terrainZoneOther && (
+                <ErrorText>
+                  {String(errors.newConstruction.terrainZoneOther.message)}
+                </ErrorText>
+              )}
+            </Field>
+          )}
+        </Column>
       </Inline>
 
       <Field>
@@ -116,24 +169,45 @@ export function StepNewConstruction() {
         )}
       </Field>
 
-      <Field>
-        <Label htmlFor="newConstruction.floors">Quantos pavimentos a construção terá?</Label>
-        <Select id="newConstruction.floors" {...register("newConstruction.floors")}>
-          <option value="">Selecione</option>
-          {floorsOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </Select>
-        {errors.newConstruction?.floors && (
-          <ErrorText>{String(errors.newConstruction.floors.message)}</ErrorText>
+      <Column>
+        <Field>
+          <Label htmlFor="newConstruction.floors">
+            Quantos pavimentos a construção terá?
+          </Label>
+          <Select id="newConstruction.floors" {...register("newConstruction.floors")}>
+            <option value="">Selecione</option>
+            {floorsOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </Select>
+          {errors.newConstruction?.floors && (
+            <ErrorText>{String(errors.newConstruction.floors.message)}</ErrorText>
+          )}
+        </Field>
+
+        {floors === "outro" && (
+          <Field>
+            <Label htmlFor="newConstruction.floorsOther">
+              Descreva a outra opção de pavimentos
+            </Label>
+            <Input
+              id="newConstruction.floorsOther"
+              {...register("newConstruction.floorsOther")}
+            />
+            {errors.newConstruction?.floorsOther && (
+              <ErrorText>{String(errors.newConstruction.floorsOther.message)}</ErrorText>
+            )}
+          </Field>
         )}
-      </Field>
+      </Column>
 
       <Inline>
         <Field>
-          <Label htmlFor="newConstruction.desiredArea">Metragem quadrada desejada (se já souber)</Label>
+          <Label htmlFor="newConstruction.desiredArea">
+            Metragem quadrada desejada (se já souber)
+          </Label>
           <Input
             id="newConstruction.desiredArea"
             placeholder="Ex.: 180m²"
@@ -142,7 +216,9 @@ export function StepNewConstruction() {
         </Field>
 
         <Field>
-          <Label htmlFor="newConstruction.definedBudget">Você já tem orçamento definido?</Label>
+          <Label htmlFor="newConstruction.definedBudget">
+            Você já tem orçamento definido?
+          </Label>
           <Input
             id="newConstruction.definedBudget"
             placeholder="Ex.: até 800 mil para a obra"
@@ -152,7 +228,9 @@ export function StepNewConstruction() {
       </Inline>
 
       <Field>
-        <Label>Você gostaria que a parceria de engenharia fizesse parte do projeto?</Label>
+        <Label>
+          Você gostaria que a parceria de engenharia fizesse parte do projeto?
+        </Label>
         <RadioGroup>
           <RadioItem>
             <input

@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { Container } from "../ui/Container";
 import { Button } from "../ui/Button";
@@ -21,7 +22,10 @@ type HeroBaseProps = {
   secondaryCta?: CtaLink;
   highlights?: HighlightItem[];
   image?: string;
+  slides?: string[];
 };
+
+const AUTOPLAY_INTERVAL = 5000;
 
 const Section = styled.section`
   position: relative;
@@ -181,6 +185,7 @@ const VisualCard = styled.div`
       rgba(0, 0, 0, 0.05),
       rgba(0, 0, 0, 0.25)
     );
+    pointer-events: none;
   }
 
   @media ${media.tablet} {
@@ -192,10 +197,26 @@ const VisualCard = styled.div`
   }
 `;
 
-const VisualImage = styled.img`
+const SlideLayer = styled.div`
+  position: absolute;
+  inset: 0;
+`;
+
+const SlideImage = styled.img<{ $active: boolean }>`
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  opacity: ${({ $active }) => ($active ? 1 : 0)};
+  transition: opacity 0.8s ease;
+`;
+
+const StaticImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 `;
 
 const Placeholder = styled.div`
@@ -203,6 +224,74 @@ const Placeholder = styled.div`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   text-align: center;
   padding: 1rem;
+  min-height: inherit;
+  display: grid;
+  place-items: center;
+`;
+
+const Controls = styled.div`
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+`;
+
+const ArrowGroup = styled.div`
+  display: flex;
+  gap: 0.5rem;
+`;
+
+const ArrowButton = styled.button`
+  width: 40px;
+  height: 40px;
+  border-radius: ${({ theme }) => theme.radius.pill};
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.28);
+  color: #fff;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition:
+    transform ${({ theme }) => theme.transitions.default},
+    background ${({ theme }) => theme.transitions.default},
+    border-color ${({ theme }) => theme.transitions.default};
+
+  &:hover {
+    transform: translateY(-1px);
+    background: rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.34);
+  }
+`;
+
+const Dots = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+`;
+
+const Dot = styled.button<{ $active: boolean }>`
+  width: ${({ $active }) => ($active ? "26px" : "9px")};
+  height: 9px;
+  border-radius: ${({ theme }) => theme.radius.pill};
+  border: 0;
+  padding: 0;
+  background: ${({ $active }) =>
+    $active ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.42)"};
+  cursor: pointer;
+  transition:
+    width 0.25s ease,
+    background 0.25s ease,
+    transform 0.25s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
 `;
 
 export function HeroBase({
@@ -213,7 +302,46 @@ export function HeroBase({
   secondaryCta,
   highlights = [],
   image,
+  slides = [],
 }: HeroBaseProps) {
+  const validSlides = useMemo(
+    () => slides.filter((slide) => Boolean(slide)),
+    [slides]
+  );
+
+  const hasSlides = validSlides.length > 0;
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    if (!hasSlides || validSlides.length <= 1) return;
+
+    const interval = window.setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % validSlides.length);
+    }, AUTOPLAY_INTERVAL);
+
+    return () => window.clearInterval(interval);
+  }, [hasSlides, validSlides.length]);
+
+  useEffect(() => {
+    if (currentSlide > validSlides.length - 1) {
+      setCurrentSlide(0);
+    }
+  }, [currentSlide, validSlides.length]);
+
+  function handlePrevSlide() {
+    if (!hasSlides) return;
+
+    setCurrentSlide((prev) =>
+      prev === 0 ? validSlides.length - 1 : prev - 1
+    );
+  }
+
+  function handleNextSlide() {
+    if (!hasSlides) return;
+
+    setCurrentSlide((prev) => (prev + 1) % validSlides.length);
+  }
+
   return (
     <Section>
       <Container>
@@ -248,8 +376,55 @@ export function HeroBase({
 
           <Visual>
             <VisualCard>
-              {image ? (
-                <VisualImage src={image} alt="" />
+              {hasSlides ? (
+                <>
+                  <SlideLayer>
+                    {validSlides.map((slide, index) => (
+                      <SlideImage
+                        key={`${slide}-${index}`}
+                        src={slide}
+                        alt=""
+                        $active={index === currentSlide}
+                      />
+                    ))}
+                  </SlideLayer>
+
+                  {validSlides.length > 1 && (
+                    <Controls>
+                      <ArrowGroup>
+                        <ArrowButton
+                          type="button"
+                          onClick={handlePrevSlide}
+                          aria-label="Imagem anterior"
+                        >
+                          ‹
+                        </ArrowButton>
+
+                        <ArrowButton
+                          type="button"
+                          onClick={handleNextSlide}
+                          aria-label="Próxima imagem"
+                        >
+                          ›
+                        </ArrowButton>
+                      </ArrowGroup>
+
+                      <Dots>
+                        {validSlides.map((_, index) => (
+                          <Dot
+                            key={index}
+                            type="button"
+                            $active={index === currentSlide}
+                            onClick={() => setCurrentSlide(index)}
+                            aria-label={`Ir para imagem ${index + 1}`}
+                          />
+                        ))}
+                      </Dots>
+                    </Controls>
+                  )}
+                </>
+              ) : image ? (
+                <StaticImage src={image} alt="" />
               ) : (
                 <Placeholder>Imagem do projeto ou ambiente</Placeholder>
               )}
