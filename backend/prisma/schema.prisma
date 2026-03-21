@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProposalStatus {
+  NEW
+  REVIEWING
+  AWAITING_PAYMENT
+  PAID
+  SCHEDULED
+  CLOSED
+  CANCELED
+}
+
+model ProposalRequest {
+  id                     String         @id @default(cuid())
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  status                 ProposalStatus @default(NEW)
+
+  email                  String
+  fullName               String
+  cpf                    String
+  address                String
+  birthDate              String
+  phone                  String
+  socialProfile          String?
+  preferredContactMethod String
+  referralSource         String
+  desiredWorkStart       String
+  projectType            String
+
+  taxAgreement           Boolean
+  paymentMethod          String
+  paymentMethodOther     String?
+
+  projectDetailsJson     Json
+
+  @@map("proposal_requests")
+}
