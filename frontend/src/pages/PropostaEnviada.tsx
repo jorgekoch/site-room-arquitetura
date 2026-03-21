@@ -88,21 +88,6 @@ const VideoBlock = styled.div`
   gap: 0.8rem;
 `;
 
-const VideoHeader = styled.div`
-  display: grid;
-  gap: 0.45rem;
-`;
-
-const VideoTitle = styled.h2`
-  font-size: clamp(1.2rem, 2.5vw, 1.55rem);
-  line-height: 1.2;
-`;
-
-const VideoText = styled.p`
-  color: ${({ theme }) => theme.colors.textSoft};
-  line-height: 1.75;
-`;
-
 const VideoFrame = styled.div`
   width: 100%;
   aspect-ratio: 16 / 9;
