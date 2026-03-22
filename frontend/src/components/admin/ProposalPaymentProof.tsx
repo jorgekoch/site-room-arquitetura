@@ -3,8 +3,6 @@ import styled from "styled-components";
 import { getAdminToken } from "../../lib/auth";
 import { apiFetch } from "../../lib/api";
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 const Wrapper = styled.div`
   display: grid;
   gap: 0.75rem;

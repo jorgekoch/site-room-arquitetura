@@ -36,8 +36,6 @@ const TopBar = styled.div`
   margin-bottom: 1rem;
 `;
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 const defaultValues: ProposalSchemaValues = {
   email: "",
   fullName: "",

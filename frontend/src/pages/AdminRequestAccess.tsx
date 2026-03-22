@@ -5,8 +5,6 @@ import { Container } from "../components/ui/Container";
 import { Button } from "../components/ui/Button";
 import { apiFetch } from "../lib/api";
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 const Section = styled.section`
   padding: 3rem 0 5rem;
 `;
