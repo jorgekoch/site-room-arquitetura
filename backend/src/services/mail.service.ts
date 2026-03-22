@@ -11,12 +11,11 @@ function createTransporter() {
   const transportOptions: SMTPTransport.Options = {
     host: env.smtpHost,
     port: Number(env.smtpPort),
-    secure: Number(env.smtpPort) === 465,
+    secure: env.smtpSecure,
     auth: {
       user: env.smtpUser,
       pass: env.smtpPass,
     },
-    name: "room-arquitetura",
     connectionTimeout: 10000,
     greetingTimeout: 10000,
     socketTimeout: 15000,
