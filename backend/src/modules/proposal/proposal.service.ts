@@ -50,17 +50,13 @@ export class ProposalService {
       },
     });
 
-    try {
-      await sendProposalNotificationEmail(proposal);
-    } catch (error) {
+    void sendProposalNotificationEmail(proposal).catch((error) => {
       console.error("Erro ao enviar e-mail interno da ROOM:", error);
-    }
+    });
 
-    try {
-      await sendProposalConfirmationEmail(proposal);
-    } catch (error) {
+    void sendProposalConfirmationEmail(proposal).catch((error) => {
       console.error("Erro ao enviar e-mail de confirmação ao cliente:", error);
-    }
+    });
 
     return proposal;
   }

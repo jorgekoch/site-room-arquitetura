@@ -1,21 +1,31 @@
 import nodemailer from "nodemailer";
+import SMTPTransport from "nodemailer/lib/smtp-transport";
 import { env } from "../config/env";
 
 function createTransporter() {
   if (!env.smtpHost || !env.smtpUser || !env.smtpPass || !env.mailFrom) {
+    console.warn("SMTP não configurado");
     return null;
   }
 
-  return nodemailer.createTransport({
+  const transportOptions: SMTPTransport.Options = {
     host: env.smtpHost,
-    port: env.smtpPort,
-    secure: env.smtpSecure,
+    port: Number(env.smtpPort),
+    secure: Number(env.smtpPort) === 465,
     auth: {
       user: env.smtpUser,
       pass: env.smtpPass,
     },
-  });
+    name: "room-arquitetura",
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
+  };
+
+  return nodemailer.createTransport(transportOptions);
 }
+
+export { createTransporter };
 
 type SendMailParams = {
   to: string;
