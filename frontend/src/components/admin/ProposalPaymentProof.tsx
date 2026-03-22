@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
 import { getAdminToken } from "../../lib/auth";
+import { apiFetch } from "../../lib/api";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -73,8 +74,7 @@ export function ProposalPaymentProof({
 
       const token = getAdminToken();
 
-      const response = await fetch(
-        `${API_URL}/proposal-requests/${proposalId}/payment-proof`,
+      const response = await apiFetch(`/proposal-requests/${proposalId}/payment-proof`,
         {
           method: "POST",
           headers: token

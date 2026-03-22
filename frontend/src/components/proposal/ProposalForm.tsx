@@ -17,6 +17,7 @@ import { ProposalNavigation } from "./ProposalNavigation";
 import { ProposalProgress } from "./ProposalProgress";
 import styled from "styled-components";
 import { Button } from "../ui/Button";
+import { publicApiFetch } from "../../lib/publicApi";
 
 const ErrorBox = styled.div`
   margin-top: 1rem;
@@ -198,7 +199,7 @@ export function ProposalForm() {
       setSubmitError("");
       setIsSubmitting(true);
 
-      const response = await fetch(`${API_URL}/proposal-requests`, {
+      const response = await publicApiFetch("/proposal-requests", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

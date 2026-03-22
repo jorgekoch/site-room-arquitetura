@@ -4,8 +4,7 @@ import styled from "styled-components";
 import { Container } from "../components/ui/Container";
 import { Button } from "../components/ui/Button";
 import { setAdminToken } from "../lib/auth";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { publicApiFetch } from "../lib/publicApi";
 
 const Section = styled.section`
   padding: 3rem 0 5rem;
@@ -109,10 +108,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     setIsSubmitting(true);
     setErrorMessage("");
 
-    console.log("API_URL:", API_URL);
-    console.log("LOGIN URL:", `${API_URL}/api/admin-auth/login`);
-
-    const response = await fetch(`${API_URL}/api/admin-auth/login`, {
+    const response = await publicApiFetch("/admin-auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -120,10 +116,7 @@ async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
       body: JSON.stringify({ email, password }),
     });
 
-    console.log("STATUS:", response.status);
-
     const data = await response.json().catch(() => null);
-    console.log("DATA:", data);
 
     if (!response.ok) {
       throw new Error(data?.message || "Não foi possível fazer login.");

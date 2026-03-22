@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Container } from "../components/ui/Container";
 import { Button } from "../components/ui/Button";
+import { apiFetch } from "../lib/api";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -107,7 +108,7 @@ export default function AdminRequestAccess() {
       setMessage("");
       setErrorMessage("");
 
-      const response = await fetch(`${API_URL}/admin-auth/register-request`, {
+      const response = await apiFetch("admin-auth/register-request", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
