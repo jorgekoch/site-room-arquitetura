@@ -29,6 +29,16 @@ const ErrorBox = styled.div`
   line-height: 1.6;
 `;
 
+const SuccessBox = styled.div`
+  margin-top: 1rem;
+  padding: 0.95rem 1rem;
+  border-radius: ${({ theme }) => theme.radius.md};
+  border: 1px solid rgba(72, 187, 120, 0.35);
+  background: rgba(72, 187, 120, 0.1);
+  color: ${({ theme }) => theme.colors.success};
+  line-height: 1.6;
+`;
+
 const TopBar = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -111,12 +121,11 @@ export function ProposalForm() {
 
   const [step, setStep] = useState(0);
   const [submitError, setSubmitError] = useState("");
+  const [submitSuccess, setSubmitSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const projectType = methods.watch("projectType");
-
-  const reviewConfirmed = 
-  methods.watch("reviewConfirmed");
+  const reviewConfirmed = methods.watch("reviewConfirmed");
 
   const steps = useMemo(() => {
     const base = ["personal", "context"];
@@ -195,6 +204,7 @@ export function ProposalForm() {
   async function onSubmit(values: ProposalSchemaValues) {
     try {
       setSubmitError("");
+      setSubmitSuccess("");
       setIsSubmitting(true);
 
       const response = await publicApiFetch("/proposal-requests", {
@@ -205,12 +215,19 @@ export function ProposalForm() {
         body: JSON.stringify(values),
       });
 
+      const data = await response.json().catch(() => null);
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || "Erro ao enviar solicitação.");
+        throw new Error(data?.message || "Erro ao enviar solicitação.");
       }
 
-      window.location.href = "/proposta-enviada";
+      setSubmitSuccess(
+        "Solicitação enviada com sucesso. Recebemos seus dados e já registramos suas informações no sistema. Você será direcionado para a próxima etapa."
+      );
+
+      setTimeout(() => {
+        window.location.href = "/proposta-enviada";
+      }, 1800);
     } catch (error) {
       setSubmitError(
         error instanceof Error
@@ -244,6 +261,7 @@ export function ProposalForm() {
         {currentStepKey === "payment" && <StepPayment />}
         {currentStepKey === "review" && <StepReview />}
 
+        {submitSuccess && <SuccessBox>{submitSuccess}</SuccessBox>}
         {submitError && <ErrorBox>{submitError}</ErrorBox>}
 
         <ProposalNavigation
@@ -253,7 +271,7 @@ export function ProposalForm() {
           onNext={handleNext}
           onSubmitStep={submitForm}
           isSubmitting={isSubmitting}
-          isSubmitDisabled={!reviewConfirmed}
+          isSubmitDisabled={!reviewConfirmed || Boolean(submitSuccess)}
         />
       </form>
     </FormProvider>
