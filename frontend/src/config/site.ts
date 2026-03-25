@@ -37,8 +37,8 @@ export const siteConfig: SiteConfig = {
   cta: {
     primaryLabel: "Solicitar proposta",
     primaryTo: "/contato",
-    secondaryLabel: "Falar no WhatsApp",
-    secondaryTo: "https://wa.me/5547997711663",
+    secondaryLabel: "Explorar projetos",
+    secondaryTo: "#portfolio",
   },
 
   footer: {

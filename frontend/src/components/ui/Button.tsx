@@ -1,93 +1,54 @@
 import { Link } from "react-router-dom";
 import styled, { css } from "styled-components";
-import type {
-  ReactNode,
-  ButtonHTMLAttributes,
-  AnchorHTMLAttributes,
-} from "react";
 
 type ButtonVariant = "primary" | "ghost";
 
-type BaseProps = {
-  children: ReactNode;
+type ButtonProps = {
+  to?: string;
+  children: React.ReactNode;
   variant?: ButtonVariant;
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
+  onClick?: React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>;
 };
-
-type ButtonAsButtonProps = BaseProps &
-  ButtonHTMLAttributes<HTMLButtonElement> & {
-    to?: never;
-    href?: never;
-  };
-
-type ButtonAsLinkProps = BaseProps & {
-  to: string;
-  href?: never;
-} & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href">;
-
-type ButtonAsAnchorProps = BaseProps &
-  AnchorHTMLAttributes<HTMLAnchorElement> & {
-    href: string;
-    to?: never;
-  };
-
-type ButtonProps = ButtonAsButtonProps | ButtonAsLinkProps | ButtonAsAnchorProps;
 
 const sharedStyles = css<{ $variant: ButtonVariant }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
-  min-height: 48px;
-  padding: 0.9rem 1.2rem;
+  min-height: 50px;
+  padding: 0.9rem 1.3rem;
   border-radius: ${({ theme }) => theme.radius.pill};
-  border: 1px solid transparent;
-  font-weight: 700;
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  cursor: pointer;
+  border: 1px solid
+    ${({ theme, $variant }) =>
+      $variant === "ghost" ? theme.colors.border : theme.colors.primary};
+  background: ${({ theme, $variant }) =>
+    $variant === "ghost" ? "transparent" : theme.colors.primary};
+  color: ${({ theme, $variant }) =>
+    $variant === "ghost" ? theme.colors.text : theme.colors.primaryContrast};
   text-decoration: none;
+  font-weight: 700;
+  cursor: pointer;
   transition:
     transform ${({ theme }) => theme.transitions.default},
-    background ${({ theme }) => theme.transitions.default},
     border-color ${({ theme }) => theme.transitions.default},
-    color ${({ theme }) => theme.transitions.default},
-    box-shadow ${({ theme }) => theme.transitions.default};
+    background ${({ theme }) => theme.transitions.default},
+    color ${({ theme }) => theme.transitions.default};
 
   &:hover {
     transform: translateY(-1px);
+    border-color: ${({ theme }) => theme.colors.secondary};
+    background: ${({ theme, $variant }) =>
+      $variant === "ghost" ? theme.colors.surface : theme.colors.secondary};
+    color: ${({ theme, $variant }) =>
+      $variant === "ghost" ? theme.colors.text : theme.colors.primaryContrast};
   }
 
-  &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(184, 111, 82, 0.18);
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
   }
-
-  ${({ theme, $variant }) =>
-    $variant === "ghost"
-      ? css`
-          background: transparent;
-          color: ${theme.colors.text};
-          border-color: ${theme.colors.border};
-
-          &:hover {
-            background: ${theme.colors.surface};
-            border-color: ${theme.colors.secondary};
-            color: ${theme.colors.secondary};
-          }
-        `
-      : css`
-          background: ${theme.colors.primary};
-          color: ${theme.colors.primaryContrast};
-          box-shadow: ${theme.shadow.glow};
-
-          &:hover {
-            background: ${theme.colors.primaryHover};
-            box-shadow: 0 10px 28px rgba(184, 111, 82, 0.16);
-          }
-        `}
-`;
-
-const StyledButton = styled.button<{ $variant: ButtonVariant }>`
-  ${sharedStyles}
 `;
 
 const StyledLink = styled(Link)<{ $variant: ButtonVariant }>`
@@ -98,34 +59,43 @@ const StyledAnchor = styled.a<{ $variant: ButtonVariant }>`
   ${sharedStyles}
 `;
 
-export function Button(props: ButtonProps) {
-  const { children, variant = "primary" } = props;
+const StyledButton = styled.button<{ $variant: ButtonVariant }>`
+  ${sharedStyles}
+`;
 
-  if ("to" in props && props.to) {
-    const { to, children: _children, variant: _variant, ...rest } = props;
+export function Button({
+  to,
+  children,
+  variant = "primary",
+  type = "button",
+  disabled,
+  onClick,
+}: ButtonProps) {
+  if (to) {
+    const isHashLink = to.startsWith("#") || to.includes("/#");
+
+    if (isHashLink) {
+      return (
+        <StyledAnchor href={to} $variant={variant} onClick={onClick}>
+          {children}
+        </StyledAnchor>
+      );
+    }
 
     return (
-      <StyledLink to={to} $variant={variant} {...rest}>
+      <StyledLink to={to} $variant={variant}>
         {children}
       </StyledLink>
     );
   }
 
-  if ("href" in props && props.href) {
-    const { href, children: _children, variant: _variant, ...rest } = props;
-
-    return (
-      <StyledAnchor href={href} $variant={variant} {...rest}>
-        {children}
-      </StyledAnchor>
-    );
-  }
-
-  const { children: _children, variant: _variant, ...rest } =
-    props as ButtonAsButtonProps;
-
   return (
-    <StyledButton type="button" $variant={variant} {...rest}>
+    <StyledButton
+      type={type}
+      $variant={variant}
+      disabled={disabled}
+      onClick={onClick}
+    >
       {children}
     </StyledButton>
   );

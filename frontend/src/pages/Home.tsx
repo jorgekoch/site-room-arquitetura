@@ -32,7 +32,6 @@ export function Home() {
             label: siteConfig.cta.secondaryLabel,
             to: siteConfig.cta.secondaryTo,
           }}
-          highlights={homeData.hero.highlights}
           slides={homeData.hero.slides}
         />
       </div>
