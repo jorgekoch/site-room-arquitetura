@@ -106,7 +106,7 @@ export default function AdminRequestAccess() {
       setMessage("");
       setErrorMessage("");
 
-      const response = await apiFetch("admin-auth/register-request", {
+      const response = await apiFetch("/admin-auth/register-request", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
