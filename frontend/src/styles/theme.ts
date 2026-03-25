@@ -15,7 +15,7 @@ export const theme = {
   primaryHover: "#68C79B",
   primaryContrast: "#0F1412",
 
-  secondary: "#C46E4E",
+  secondary: "#b3460d",
   secondaryHover: "#D88463",
   secondaryContrast: "#FFF8F2",
 
