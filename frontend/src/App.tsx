@@ -10,6 +10,7 @@ import AdminUsuarios from "./pages/AdminUsuarios";
 import { AdminRoute } from "./components/auth/AdminRoute";
 import ProjetoDetalhe from "./pages/ProjetoDetalhe";
 import { ScrollToTop } from "./components/utils/ScrollToTop";
+import { ProtectedSuccessRoute } from "./components/auth/ProtectedSuccessRoute";
 
 function App() {
   return (
@@ -27,7 +28,14 @@ function App() {
 
           <Route path="/contato" element={<Contato />} />
 
-          <Route path="/proposta-enviada" element={ <PropostaEnviada />} />
+          <Route
+            path="/proposta-enviada"
+            element={
+              <ProtectedSuccessRoute>
+                <PropostaEnviada />
+              </ProtectedSuccessRoute>
+            }
+          />
 
           <Route path="/projetos/:slug" element={<ProjetoDetalhe />} />
 

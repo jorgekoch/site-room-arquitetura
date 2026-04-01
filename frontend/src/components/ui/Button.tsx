@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import styled, { css } from "styled-components";
 
-type ButtonVariant = "primary" | "ghost";
+type ButtonVariant = "primary" | "ghost" | "ghostLight";
 
 type ButtonProps = {
   to?: string;
@@ -24,8 +24,24 @@ const sharedStyles = css<{ $variant: ButtonVariant }>`
       $variant === "ghost" ? theme.colors.border : theme.colors.primary};
   background: ${({ theme, $variant }) =>
     $variant === "ghost" ? "transparent" : theme.colors.primary};
-  color: ${({ theme, $variant }) =>
-    $variant === "ghost" ? theme.colors.text : theme.colors.primaryContrast};
+  color: ${({ theme, $variant }) => {
+    if ($variant === "ghostLight") return "#f6f1e8";
+    return $variant === "ghost"
+      ? theme.colors.text
+      : theme.colors.primaryContrast;
+  }};
+
+  border: 1px solid ${({ theme, $variant }) => {
+    if ($variant === "ghostLight") return "rgba(255,255,255,0.4)";
+    return $variant === "ghost"
+      ? theme.colors.border
+      : theme.colors.primary;
+  }};
+
+  background: ${({ theme, $variant }) => {
+    if ($variant === "ghostLight") return "rgba(255,255,255,0.04)";
+    return $variant === "ghost" ? "transparent" : theme.colors.primary;
+  }};
   text-decoration: none;
   font-weight: 700;
   cursor: pointer;
@@ -37,11 +53,25 @@ const sharedStyles = css<{ $variant: ButtonVariant }>`
 
   &:hover {
     transform: translateY(-1px);
-    border-color: ${({ theme }) => theme.colors.secondary};
-    background: ${({ theme, $variant }) =>
-      $variant === "ghost" ? theme.colors.surface : theme.colors.secondary};
-    color: ${({ theme, $variant }) =>
-      $variant === "ghost" ? theme.colors.text : theme.colors.primaryContrast};
+
+    border-color: ${({ theme, $variant }) =>
+      $variant === "ghostLight"
+        ? "rgba(255,255,255,0.7)"
+        : theme.colors.secondary};
+
+    background: ${({ theme, $variant }) => {
+      if ($variant === "ghostLight") return "rgba(255,255,255,0.08)";
+      return $variant === "ghost"
+        ? theme.colors.surface
+        : theme.colors.secondary;
+    }};
+
+    color: ${({ theme, $variant }) => {
+      if ($variant === "ghostLight") return "#ffffff";
+      return $variant === "ghost"
+        ? theme.colors.text
+        : theme.colors.primaryContrast;
+    }};
   }
 
   &:disabled {

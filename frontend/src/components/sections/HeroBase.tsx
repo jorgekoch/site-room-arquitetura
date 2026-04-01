@@ -63,15 +63,15 @@ const Overlay = styled.div`
   background:
     linear-gradient(
       90deg,
-      rgba(5, 10, 8, 0.92) 0%,
-      rgba(5, 10, 8, 0.84) 26%,
-      rgba(5, 10, 8, 0.58) 56%,
-      rgba(5, 10, 8, 0.72) 100%
+      rgba(8, 12, 11, 0.84) 0%,
+      rgba(8, 12, 11, 0.74) 24%,
+      rgba(8, 12, 11, 0.48) 56%,
+      rgba(8, 12, 11, 0.54) 100%
     ),
     linear-gradient(
       180deg,
-      rgba(0, 0, 0, 0.14) 0%,
-      rgba(0, 0, 0, 0.34) 100%
+      rgba(0, 0, 0, 0.16) 0%,
+      rgba(0, 0, 0, 0.38) 100%
     );
 `;
 
@@ -92,13 +92,14 @@ const Eyebrow = styled.span`
   width: fit-content;
   padding: 0.45rem 0.9rem;
   border-radius: ${({ theme }) => theme.radius.pill};
-  background: rgba(184, 111, 82, 0.12);
-  border: 1px solid rgba(184, 111, 82, 0.28);
-  color: ${({ theme }) => theme.colors.secondary};
+  background: rgba(184, 111, 82, 0.16);
+  border: 1px solid rgba(210, 137, 101, 0.34);
+  color: #d68d67;
   font-size: ${({ theme }) => theme.fontSizes.xs};
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 `;
 
 const Title = styled.h1`
@@ -107,6 +108,8 @@ const Title = styled.h1`
   line-height: 0.94;
   letter-spacing: -0.05em;
   text-wrap: balance;
+  color: #f6f1e8;
+  text-shadow: 0 10px 32px rgba(0, 0, 0, 0.24);
 
   @media ${media.tablet} {
     max-width: 840px;
@@ -117,7 +120,8 @@ const Description = styled.p`
   max-width: 560px;
   font-size: ${({ theme }) => theme.fontSizes.md};
   line-height: 1.85;
-  color: ${({ theme }) => theme.colors.textSoft};
+  color: rgba(246, 241, 232, 0.82);
+  text-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 
   @media ${media.tablet} {
     font-size: ${({ theme }) => theme.fontSizes.lg};
@@ -154,7 +158,7 @@ const SlideMeta = styled.div`
 
 const SlideCount = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.xs};
-  color: ${({ theme }) => theme.colors.textSoft};
+  color: rgba(246, 241, 232, 0.8);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 `;
@@ -246,7 +250,7 @@ export function HeroBase({
               )}
 
               {secondaryCta && (
-                <Button to={secondaryCta.to} variant="ghost">
+                <Button to={secondaryCta.to} variant="ghostLight">
                   {secondaryCta.label}
                 </Button>
               )}

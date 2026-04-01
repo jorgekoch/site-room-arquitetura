@@ -21,6 +21,7 @@ import {
   ErrorText,
   RadioGroup,
   RadioItem,
+  HelperText,
 } from "../ProposalFields";
 
 const Column = styled.div`
@@ -28,7 +29,94 @@ const Column = styled.div`
   gap: 1rem;
 `;
 
-export function StepNewConstruction() {
+const UploadBox = styled.div`
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+const UploadActions = styled.div`
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+`;
+
+const UploadLabel = styled.label`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.8rem 1rem;
+  border-radius: ${({ theme }) => theme.radius.pill};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: ${({ theme }) => theme.colors.surfaceSoft};
+  color: ${({ theme }) => theme.colors.text};
+  cursor: pointer;
+  transition:
+    transform ${({ theme }) => theme.transitions.default},
+    background ${({ theme }) => theme.transitions.default};
+
+  &:hover {
+    transform: translateY(-1px);
+    background: ${({ theme }) => theme.colors.surfaceHover};
+  }
+`;
+
+const HiddenInput = styled.input`
+  display: none;
+`;
+
+const FilesList = styled.div`
+  display: grid;
+  gap: 0.6rem;
+`;
+
+const FileItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.8rem 0.9rem;
+  border-radius: ${({ theme }) => theme.radius.sm};
+  background: ${({ theme }) => theme.colors.backgroundSoft};
+`;
+
+const FileName = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  color: ${({ theme }) => theme.colors.textSoft};
+  word-break: break-word;
+`;
+
+const RemoveButton = styled.button`
+  border: 0;
+  border-radius: ${({ theme }) => theme.radius.pill};
+  padding: 0.5rem 0.85rem;
+  cursor: pointer;
+  background: ${({ theme }) => theme.colors.secondary};
+  color: ${({ theme }) => theme.colors.secondaryContrast};
+  font-weight: 600;
+  transition: transform ${({ theme }) => theme.transitions.default};
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+`;
+
+type Props = {
+  referenceFiles: File[];
+  onAddReferenceFiles: (files: File[]) => void;
+  onRemoveReferenceFile: (index: number) => void;
+};
+
+export function StepNewConstruction({
+  referenceFiles,
+  onAddReferenceFiles,
+  onRemoveReferenceFile,
+}: Props) {
   const {
     register,
     watch,
@@ -39,12 +127,21 @@ export function StepNewConstruction() {
   const terrainZone = watch("newConstruction.terrainZone");
   const floors = watch("newConstruction.floors");
 
+  function handlePickFiles(event: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(event.target.files ?? []);
+    if (!files.length) return;
+
+    onAddReferenceFiles(files);
+    event.target.value = "";
+  }
+
   return (
     <StepWrapper>
       <StepHeader>
         <StepTitle>Projeto arquitetônico — construção nova</StepTitle>
         <StepDescription>
-          Quanto mais específico você for aqui, melhor a ROOM consegue entender o contexto e preparar a proposta.
+          Quanto mais específico você for aqui, melhor a ROOM consegue entender
+          o contexto e preparar a proposta.
         </StepDescription>
       </StepHeader>
 
@@ -174,7 +271,10 @@ export function StepNewConstruction() {
           <Label htmlFor="newConstruction.floors">
             Quantos pavimentos a construção terá?
           </Label>
-          <Select id="newConstruction.floors" {...register("newConstruction.floors")}>
+          <Select
+            id="newConstruction.floors"
+            {...register("newConstruction.floors")}
+          >
             <option value="">Selecione</option>
             {floorsOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -239,7 +339,8 @@ export function StepNewConstruction() {
               {...register("newConstruction.wantsEngineeringPartnership")}
             />
             <span>
-              Não, já tenho equipe/profissional em vista ou quero apenas orçamento para o Projeto Arquitetônico.
+              Não, já tenho equipe/profissional em vista ou quero apenas
+              orçamento para o Projeto Arquitetônico.
             </span>
           </RadioItem>
 
@@ -271,6 +372,48 @@ export function StepNewConstruction() {
         {errors.newConstruction?.referencesLinks && (
           <ErrorText>{String(errors.newConstruction.referencesLinks.message)}</ErrorText>
         )}
+      </Field>
+
+      <Field>
+        <Label>Arquivos de referência do projeto</Label>
+
+        <UploadBox>
+          <HelperText>
+            Você também pode enviar fotos do terreno, imagens de referência,
+            PDFs ou materiais de apoio diretamente por aqui.
+          </HelperText>
+
+          <UploadActions>
+            <UploadLabel htmlFor="new-construction-reference-files">
+              Adicionar arquivos
+            </UploadLabel>
+
+            <HiddenInput
+              id="new-construction-reference-files"
+              type="file"
+              accept=".jpg,.jpeg,.png,.webp,.pdf"
+              multiple
+              onChange={handlePickFiles}
+            />
+          </UploadActions>
+
+          {!!referenceFiles.length && (
+            <FilesList>
+              {referenceFiles.map((file, index) => (
+                <FileItem key={`${file.name}-${file.size}-${index}`}>
+                  <FileName>📎 {file.name}</FileName>
+
+                  <RemoveButton
+                    type="button"
+                    onClick={() => onRemoveReferenceFile(index)}
+                  >
+                    Remover
+                  </RemoveButton>
+                </FileItem>
+              ))}
+            </FilesList>
+          )}
+        </UploadBox>
       </Field>
 
       <Field>

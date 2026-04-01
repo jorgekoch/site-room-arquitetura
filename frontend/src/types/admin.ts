@@ -10,15 +10,15 @@ export type ProposalStatus =
 export type ProposalRequestAdmin = {
   id: string;
   createdAt: string;
-  updatedAt: string;
-  status: ProposalStatus;
+  updatedAt?: string;
+  status: string;
 
-  email: string;
   fullName: string;
+  email: string;
+  phone: string;
   cpf: string;
   address: string;
   birthDate: string;
-  phone: string;
   socialProfile?: string | null;
 
   preferredContactMethod: string;
@@ -32,12 +32,21 @@ export type ProposalRequestAdmin = {
   projectType: string;
   projectTypeOther?: string | null;
 
-  taxAgreement: boolean;
   paymentMethod: string;
   paymentMethodOther?: string | null;
 
-  projectDetailsJson: Record<string, unknown>;
+  projectDetailsJson: unknown;
   internalNotes?: string | null;
+
   paymentProofUrl?: string | null;
   paymentProofUploadedAt?: string | null;
+  pixKeySnapshot?: string | null;
+
+  referenceFilesJson?: Array<{
+    originalName: string;
+    fileName?: string;
+    mimeType?: string;
+    size?: number;
+    url: string;
+  }> | null;
 };

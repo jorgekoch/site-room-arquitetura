@@ -287,7 +287,7 @@ export default function AdminPropostas() {
       const data: ProposalRequestAdmin = await response.json();
 
       setSelected(data);
-      setStatusDraft(data.status);
+      setStatusDraft(data.status as ProposalStatus);
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "Erro ao carregar detalhes."

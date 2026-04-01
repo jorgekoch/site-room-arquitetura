@@ -18,6 +18,7 @@ import { ProposalProgress } from "./ProposalProgress";
 import styled from "styled-components";
 import { Button } from "../ui/Button";
 import { publicApiFetch } from "../../lib/publicApi";
+import { ThemeToggle } from "../ui/ThemeToggle";
 
 const ErrorBox = styled.div`
   margin-top: 1rem;
@@ -41,9 +42,11 @@ const SuccessBox = styled.div`
 
 const TopBar = styled.div`
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
+  gap: 1rem;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
 `;
 
 const defaultValues: ProposalSchemaValues = {
@@ -55,33 +58,33 @@ const defaultValues: ProposalSchemaValues = {
   phone: "",
   socialProfile: "",
 
-  preferredContactMethod: "whatsapp",
+  preferredContactMethod: "",
   preferredContactMethodOther: "",
 
-  referralSource: "instagram",
+  referralSource: "",
   referralSourceOther: "",
 
   desiredWorkStart: "",
 
-  projectType: "new-construction",
+  projectType: "",
   projectTypeOther: "",
 
   newConstruction: {
     terrainSize: "",
-    terrainSlope: "plano",
+    terrainSlope: "",
     terrainSlopeOther: "",
-    terrainZone: "urbano",
+    terrainZone: "",
     terrainZoneOther: "",
     terrainAddress: "",
     scopeDescription: "",
-    floors: "terrea",
+    floors: "",
     floorsOther: "",
     desiredArea: "",
     definedBudget: "",
     wantsEngineeringPartnership: "",
     referencesLinks: "",
     observations: "",
-    projectMode: "online",
+    projectMode: "",
   },
 
   interiors: {
@@ -90,7 +93,7 @@ const defaultValues: ProposalSchemaValues = {
     environments: "",
     referencesLinks: "",
     observations: "",
-    projectMode: "online",
+    projectMode: "",
   },
 
   renovation: {
@@ -98,7 +101,7 @@ const defaultValues: ProposalSchemaValues = {
     locationAddress: "",
     referencesLinks: "",
     observations: "",
-    projectMode: "online",
+    projectMode: "",
   },
 
   consulting: {
@@ -106,7 +109,7 @@ const defaultValues: ProposalSchemaValues = {
   },
 
   taxAgreement: false,
-  paymentMethod: "pix",
+  paymentMethod: "",
   paymentMethodOther: "",
 
   reviewConfirmed: false,
@@ -123,6 +126,8 @@ export function ProposalForm() {
   const [submitError, setSubmitError] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
+  const [referenceFiles, setReferenceFiles] = useState<File[]>([]);
 
   const projectType = methods.watch("projectType");
   const reviewConfirmed = methods.watch("reviewConfirmed");
@@ -191,7 +196,7 @@ export function ProposalForm() {
     };
 
     const currentFields = fieldsByStep[currentStepKey] ?? [];
-    const isValid = await methods.trigger(currentFields as any);
+    const isValid = await methods.trigger(currentFields as never[]);
 
     if (!isValid) return;
     if (step < steps.length - 1) setStep((prev) => prev + 1);
@@ -201,18 +206,70 @@ export function ProposalForm() {
     if (step > 0) setStep((prev) => prev - 1);
   }
 
+  function handleAddReferenceFiles(files: File[]) {
+    setReferenceFiles((prev) => [...prev, ...files]);
+  }
+
+  function handleRemoveReferenceFile(indexToRemove: number) {
+    setReferenceFiles((prev) =>
+      prev.filter((_, index) => index !== indexToRemove)
+    );
+  }
+
   async function onSubmit(values: ProposalSchemaValues) {
     try {
       setSubmitError("");
       setSubmitSuccess("");
       setIsSubmitting(true);
 
+      const formData = new FormData();
+
+      formData.append("email", values.email);
+      formData.append("fullName", values.fullName);
+      formData.append("cpf", values.cpf);
+      formData.append("address", values.address);
+      formData.append("birthDate", values.birthDate);
+      formData.append("phone", values.phone);
+      formData.append("socialProfile", values.socialProfile || "");
+
+      formData.append("preferredContactMethod", values.preferredContactMethod);
+      formData.append(
+        "preferredContactMethodOther",
+        values.preferredContactMethodOther || ""
+      );
+
+      formData.append("referralSource", values.referralSource);
+      formData.append("referralSourceOther", values.referralSourceOther || "");
+
+      formData.append("desiredWorkStart", values.desiredWorkStart);
+
+      formData.append("projectType", values.projectType);
+      formData.append("projectTypeOther", values.projectTypeOther || "");
+
+      formData.append("taxAgreement", String(values.taxAgreement));
+      formData.append("paymentMethod", values.paymentMethod);
+      formData.append("paymentMethodOther", values.paymentMethodOther || "");
+      formData.append("reviewConfirmed", String(values.reviewConfirmed));
+
+      formData.append(
+        "newConstruction",
+        JSON.stringify(values.newConstruction)
+      );
+      formData.append("interiors", JSON.stringify(values.interiors));
+      formData.append("renovation", JSON.stringify(values.renovation));
+      formData.append("consulting", JSON.stringify(values.consulting));
+
+      referenceFiles.forEach((file) => {
+        formData.append("referenceFiles", file);
+      });
+
+      if (paymentProofFile) {
+        formData.append("paymentProof", paymentProofFile);
+      }
+
       const response = await publicApiFetch("/proposal-requests", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
+        body: formData,
       });
 
       const data = await response.json().catch(() => null);
@@ -220,6 +277,8 @@ export function ProposalForm() {
       if (!response.ok) {
         throw new Error(data?.message || "Erro ao enviar solicitação.");
       }
+
+      sessionStorage.setItem("proposalSent", "true");
 
       setSubmitSuccess(
         "Solicitação enviada com sucesso. Recebemos seus dados e já registramos suas informações no sistema. Você será direcionado para a próxima etapa."
@@ -248,17 +307,49 @@ export function ProposalForm() {
           <Button to="/" variant="ghost">
             Voltar ao início
           </Button>
+
+          <ThemeToggle />
         </TopBar>
 
         <ProposalProgress currentStep={step} totalSteps={steps.length} />
 
         {currentStepKey === "personal" && <StepPersonalInfo />}
         {currentStepKey === "context" && <StepProjectContext />}
-        {currentStepKey === "new-construction" && <StepNewConstruction />}
-        {currentStepKey === "interiors" && <StepInteriors />}
-        {currentStepKey === "renovation" && <StepRenovation />}
+
+        {currentStepKey === "new-construction" && (
+          <StepNewConstruction
+            referenceFiles={referenceFiles}
+            onAddReferenceFiles={handleAddReferenceFiles}
+            onRemoveReferenceFile={handleRemoveReferenceFile}
+          />
+        )}
+
+        {currentStepKey === "interiors" && (
+          <StepInteriors
+            referenceFiles={referenceFiles}
+            onAddReferenceFiles={handleAddReferenceFiles}
+            onRemoveReferenceFile={handleRemoveReferenceFile}
+          />
+        )}
+
+        {currentStepKey === "renovation" && (
+          <StepRenovation
+            referenceFiles={referenceFiles}
+            onAddReferenceFiles={handleAddReferenceFiles}
+            onRemoveReferenceFile={handleRemoveReferenceFile}
+          />
+        )}
+
         {currentStepKey === "consulting" && <StepConsulting />}
-        {currentStepKey === "payment" && <StepPayment />}
+
+        {currentStepKey === "payment" && (
+          <StepPayment
+            pixKey="SUA_CHAVE_PIX_AQUI"
+            selectedProofFile={paymentProofFile}
+            onSelectProofFile={setPaymentProofFile}
+          />
+        )}
+
         {currentStepKey === "review" && <StepReview />}
 
         {submitSuccess && <SuccessBox>{submitSuccess}</SuccessBox>}

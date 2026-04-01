@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Container } from "../ui/Container";
 import { media } from "../../styles/breakpoints";
 import logoRoomHorizontal from "../../assets/images/ui/logo-room-horizontal.png";
+import { ThemeToggle } from "../ui/ThemeToggle";
 
 const NAV_ITEMS = [
   { label: "Início", href: "#topo", id: "topo" },
@@ -22,8 +23,9 @@ const Bar = styled.header`
   top: 0;
   z-index: 1000;
   backdrop-filter: blur(14px);
-  background: rgba(11, 11, 16, 0.86);
+  background: ${({ theme }) => theme.colors.surface};
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.04);
 `;
 
 const Inner = styled.div`
@@ -112,32 +114,38 @@ const NavLink = styled.a<{ $active: boolean }>`
   }
 `;
 
-const TopCta = styled.a`
+const DesktopRight = styled.div`
   display: none;
-  text-decoration: none;
 
   @media ${media.laptop} {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    min-height: 42px;
-    padding: 0.7rem 1rem;
-    border-radius: ${({ theme }) => theme.radius.pill};
-    background: ${({ theme }) => theme.colors.secondary};
-    color: #fff;
-    font-size: ${({ theme }) => theme.fontSizes.sm};
-    font-weight: 700;
-    white-space: nowrap;
-    width: fit-content;
     justify-self: end;
-    transition:
-      transform ${({ theme }) => theme.transitions.default},
-      opacity ${({ theme }) => theme.transitions.default};
+    gap: 0.75rem;
+  }
+`;
 
-    &:hover {
-      transform: translateY(-1px);
-      opacity: 0.95;
-    }
+const TopCta = styled.a`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.7rem 1rem;
+  border-radius: ${({ theme }) => theme.radius.pill};
+  background: ${({ theme }) => theme.colors.secondary};
+  color: #fff;
+  text-decoration: none;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: 700;
+  white-space: nowrap;
+  width: fit-content;
+  transition:
+    transform ${({ theme }) => theme.transitions.default},
+    opacity ${({ theme }) => theme.transitions.default};
+
+  &:hover {
+    transform: translateY(-1px);
+    opacity: 0.95;
   }
 `;
 
@@ -289,6 +297,12 @@ const DrawerHeader = styled.div`
 
 const DrawerTitle = styled.strong`
   font-size: 1rem;
+`;
+
+const DrawerHeaderActions = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 `;
 
 const DrawerClose = styled.button`
@@ -484,9 +498,13 @@ export function TopbarMobile() {
               </DesktopNav>
             </DesktopNavWrap>
 
-            <TopCta href="#contato">Solicitar proposta</TopCta>
+            <DesktopRight>
+              <ThemeToggle />
+              <TopCta href="#contato">Solicitar proposta</TopCta>
+            </DesktopRight>
 
             <MobileActions>
+              <ThemeToggle compact />
               <MobileCta href="#contato">Proposta</MobileCta>
 
               <MenuButton
@@ -509,13 +527,17 @@ export function TopbarMobile() {
       <MobileDrawer $open={menuOpen} aria-hidden={!menuOpen}>
         <DrawerHeader>
           <DrawerTitle>Menu</DrawerTitle>
-          <DrawerClose
-            type="button"
-            onClick={handleCloseMenu}
-            aria-label="Fechar menu"
-          >
-            ✕
-          </DrawerClose>
+
+          <DrawerHeaderActions>
+            <ThemeToggle compact />
+            <DrawerClose
+              type="button"
+              onClick={handleCloseMenu}
+              aria-label="Fechar menu"
+            >
+              ✕
+            </DrawerClose>
+          </DrawerHeaderActions>
         </DrawerHeader>
 
         <DrawerNav aria-label="Navegação mobile">

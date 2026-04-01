@@ -1,27 +1,27 @@
-export const theme = {
+export const darkTheme = {
   colors: {
-  background: "#121815",
-  backgroundSoft: "#18201C",
-  surface: "#1F2823",
-  surfaceSoft: "#26322B",
-  surfaceHover: "#2E3C34",
-  border: "#3A4A40",
+    background: "#121815",
+    backgroundSoft: "#18201C",
+    surface: "#1F2823",
+    surfaceSoft: "#26322B",
+    surfaceHover: "#2E3C34",
+    border: "#3A4A40",
 
-  text: "#F7F5F0",
-  textSoft: "#D6D0C5",
-  textMuted: "#AFA89B",
+    text: "#F7F5F0",
+    textSoft: "#D6D0C5",
+    textMuted: "#AFA89B",
 
-  primary: "#4FB286",
-  primaryHover: "#68C79B",
-  primaryContrast: "#0F1412",
+    primary: "#4FB286",
+    primaryHover: "#68C79B",
+    primaryContrast: "#0F1412",
 
-  secondary: "#b3460d",
-  secondaryHover: "#D88463",
-  secondaryContrast: "#FFF8F2",
+    secondary: "#B3460D",
+    secondaryHover: "#D88463",
+    secondaryContrast: "#FFF8F2",
 
-  danger: "#FF7A7A",
-  success: "#6ED3A3",
-},
+    danger: "#FF7A7A",
+    success: "#6ED3A3",
+  },
 
   fonts: {
     heading: "'Inter', system-ui, sans-serif",
@@ -72,4 +72,31 @@ export const theme = {
   },
 };
 
-export type AppTheme = typeof theme;
+export const lightTheme = {
+  ...darkTheme,
+  colors: {
+    background: "#F4F1EA",
+    backgroundSoft: "#ECE7DE",
+    surface: "#FFFCF7",
+    surfaceSoft: "#F6F0E7",
+    surfaceHover: "#EFE7DC",
+    border: "#D8CEC1",
+
+    text: "#1B1A18",
+    textSoft: "#3C3935",
+    textMuted: "#70695F",
+
+    primary: "#3F8F6C",
+    primaryHover: "#4FA27D",
+    primaryContrast: "#F9F7F2",
+
+    secondary: "#A65A33",
+    secondaryHover: "#BF7350",
+    secondaryContrast: "#FFF8F2",
+
+    danger: "#D35F5F",
+    success: "#4E9F74",
+  },
+};
+
+export type AppTheme = typeof darkTheme;

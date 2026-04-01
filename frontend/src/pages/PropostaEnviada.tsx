@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { Container } from "../components/ui/Container";
 import { Button } from "../components/ui/Button";
 import { media } from "../styles/breakpoints";
+import { useEffect } from "react";
 
 const VIDEO_URL = "https://www.youtube.com/embed/f2b24BQ4-3Q";
 
@@ -242,6 +243,14 @@ const Actions = styled.div`
 `;
 
 export default function PropostaEnviada() {
+  useEffect(() => {
+  const timeout = setTimeout(() => {
+    sessionStorage.removeItem("proposalSent");
+  }, 5 * 60 * 1000); // 5 minutos
+
+  return () => clearTimeout(timeout);
+}, []);
+
   return (
     <Section>
       <Container>
