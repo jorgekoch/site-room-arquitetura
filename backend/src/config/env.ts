@@ -24,6 +24,7 @@ const envSchema = z.object({
 
   frontendUrl: z.string(),
   backendUrl: z.string(),
+  pixKey: z.string().default(""),
 
   roomNotificationEmail: z.string().email(),
 
@@ -52,6 +53,7 @@ export const env = envSchema.parse({
 
   frontendUrl: process.env.FRONTEND_URL,
   backendUrl: process.env.BACKEND_URL,
+  pixKey: process.env.PIX_KEY,
 
   roomNotificationEmail: process.env.ROOM_NOTIFICATION_EMAIL,
 

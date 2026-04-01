@@ -11,15 +11,28 @@ import {
   sendProposalStatusChangedEmail,
 } from "./proposal.mail";
 import { AppError } from "../../utils/AppError";
+import { Prisma } from "@prisma/client";
 
 export class ProposalService {
-  async create(data: CreateProposalInput) {
+  async create(
+    data: CreateProposalInput,
+    files: Express.Multer.File[] = [],
+    paymentProofFileName: string | null = null
+  ) {
     const projectDetails = {
       newConstruction: data.newConstruction ?? null,
       interiors: data.interiors ?? null,
       renovation: data.renovation ?? null,
       consulting: data.consulting ?? null,
     };
+
+    const referenceFiles = files.map((file) => ({
+      originalName: file.originalname,
+      fileName: file.filename,
+      mimeType: file.mimetype,
+      size: file.size,
+      url: `${env.backendUrl}/${env.uploadDir}/${file.filename}`,
+    }));
 
     const proposal = await prisma.proposalRequest.create({
       data: {
@@ -47,6 +60,13 @@ export class ProposalService {
         paymentMethodOther: data.paymentMethodOther || null,
 
         projectDetailsJson: projectDetails,
+        referenceFilesJson: referenceFiles.length ? referenceFiles : Prisma.JsonNull,
+        pixKeySnapshot: data.paymentMethod === "pix" ? env.pixKey : null,
+
+        paymentProofUrl: paymentProofFileName
+          ? `${env.backendUrl}/${env.uploadDir}/${paymentProofFileName}`
+          : null,
+        paymentProofUploadedAt: paymentProofFileName ? new Date() : null,
       },
     });
 
@@ -137,7 +157,7 @@ export class ProposalService {
     });
 
     if (!proposal) {
-      throw new AppError("Proposal request not found", 404);
+      throw new AppError("Solicitação não encontrada", 404);
     }
 
     const fileUrl = `${env.backendUrl}/${env.uploadDir}/${fileName}`;

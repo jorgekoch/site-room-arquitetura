@@ -57,23 +57,26 @@ model ProposalRequest {
   paymentProofUrl             String?
   paymentProofUploadedAt      DateTime?
 
+  referenceFilesJson          Json?
+  pixKeySnapshot              String?
+
   @@map("proposal_requests")
 }
 
 model AdminUser {
-  id                    String    @id @default(cuid())
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  id                     String    @id @default(cuid())
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
 
-  name                  String
-  email                 String    @unique
-  passwordHash          String
+  name                   String
+  email                  String    @unique
+  passwordHash           String
 
-  role                  AdminRole @default(ADMIN)
-  approved              Boolean   @default(false)
-  isActive              Boolean   @default(false)
+  role                   AdminRole @default(ADMIN)
+  approved               Boolean   @default(false)
+  isActive               Boolean   @default(false)
 
-  approvalToken         String?   @unique
+  approvalToken          String?   @unique
   approvalTokenExpiresAt DateTime?
 
   @@map("admin_users")

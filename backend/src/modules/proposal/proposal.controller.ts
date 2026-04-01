@@ -9,14 +9,48 @@ import { AppError } from "../../utils/AppError";
 
 const proposalService = new ProposalService();
 
+function parseJsonField<T>(value: unknown, fallback: T): T {
+  if (!value || typeof value !== "string") return fallback;
+
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return fallback;
+  }
+}
+
 export class ProposalController {
   async create(request: Request, response: Response) {
-    const data = createProposalSchema.parse(request.body);
+    const body = {
+      ...request.body,
+      taxAgreement: request.body.taxAgreement === "true",
+      reviewConfirmed: request.body.reviewConfirmed === "true",
+      newConstruction: parseJsonField(request.body.newConstruction, {}),
+      interiors: parseJsonField(request.body.interiors, { includedItems: [] }),
+      renovation: parseJsonField(request.body.renovation, {}),
+      consulting: parseJsonField(request.body.consulting, {}),
+    };
 
-    const proposal = await proposalService.create(data);
+    const data = createProposalSchema.parse(body);
+
+    const uploadedFiles =
+      (request.files as
+        | {
+            [fieldname: string]: Express.Multer.File[];
+          }
+        | undefined) ?? {};
+
+    const referenceFiles = uploadedFiles.referenceFiles ?? [];
+    const paymentProofFile = uploadedFiles.paymentProof?.[0] ?? null;
+
+    const proposal = await proposalService.create(
+      data,
+      referenceFiles,
+      paymentProofFile?.filename ?? null
+    );
 
     return response.status(201).json({
-      message: "Proposal request created successfully",
+      message: "Solicitação enviada com sucesso",
       proposal,
     });
   }
@@ -37,13 +71,13 @@ export class ProposalController {
     const { id } = request.params;
 
     if (!id || Array.isArray(id)) {
-      throw new AppError("Invalid proposal request id", 400);
+      throw new AppError("ID de solicitação inválido", 400);
     }
 
     const proposal = await proposalService.findById(id);
 
     if (!proposal) {
-      throw new AppError("Proposal request not found", 404);
+      throw new AppError("Solicitação não encontrada", 404);
     }
 
     return response.json(proposal);
@@ -53,7 +87,7 @@ export class ProposalController {
     const { id } = request.params;
 
     if (!id || Array.isArray(id)) {
-      throw new AppError("Invalid proposal request id", 400);
+      throw new AppError("ID de solicitação inválido", 400);
     }
 
     const data = updateProposalStatusSchema.parse(request.body);
@@ -61,7 +95,7 @@ export class ProposalController {
     const proposal = await proposalService.updateStatus(id, data);
 
     return response.json({
-      message: "Proposal status updated successfully",
+      message: "Status atualizado com sucesso",
       proposal,
     });
   }
@@ -70,7 +104,7 @@ export class ProposalController {
     const { id } = request.params;
 
     if (!id || Array.isArray(id)) {
-      throw new AppError("Invalid proposal request id", 400);
+      throw new AppError("ID de solicitação inválido", 400);
     }
 
     const data = updateProposalNotesSchema.parse(request.body);
@@ -78,20 +112,20 @@ export class ProposalController {
     const proposal = await proposalService.updateNotes(id, data);
 
     return response.json({
-      message: "Proposal notes updated successfully",
+      message: "Observações atualizadas com sucesso",
       proposal,
     });
   }
 
-  async uploadPaymentProof(request: Request, response: Response) {
+  async uploadPaymentProofPublic(request: Request, response: Response) {
     const { id } = request.params;
 
     if (!id || Array.isArray(id)) {
-      throw new AppError("Invalid proposal request id", 400);
+      throw new AppError("ID de solicitação inválido", 400);
     }
 
     if (!request.file) {
-      throw new AppError("File not provided", 400);
+      throw new AppError("Comprovante não enviado", 400);
     }
 
     const proposal = await proposalService.uploadPaymentProof(
@@ -100,7 +134,29 @@ export class ProposalController {
     );
 
     return response.json({
-      message: "Payment proof uploaded successfully",
+      message: "Comprovante enviado com sucesso",
+      proposal,
+    });
+  }
+
+  async uploadPaymentProofAdmin(request: Request, response: Response) {
+    const { id } = request.params;
+
+    if (!id || Array.isArray(id)) {
+      throw new AppError("ID de solicitação inválido", 400);
+    }
+
+    if (!request.file) {
+      throw new AppError("Comprovante não enviado", 400);
+    }
+
+    const proposal = await proposalService.uploadPaymentProof(
+      id,
+      request.file.filename
+    );
+
+    return response.json({
+      message: "Comprovante enviado com sucesso",
       proposal,
     });
   }
