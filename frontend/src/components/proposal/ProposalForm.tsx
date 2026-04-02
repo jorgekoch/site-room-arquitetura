@@ -115,6 +115,15 @@ const defaultValues: ProposalSchemaValues = {
   reviewConfirmed: false,
 };
 
+type UploadedReferenceFile = {
+  originalName: string;
+  fileName: string;
+  mimeType: string;
+  size: number;
+  url: string;
+  storageKey: string;
+};
+
 export function ProposalForm() {
   const methods = useForm<ProposalSchemaValues>({
     resolver: zodResolver(proposalSchema),
@@ -131,6 +140,50 @@ export function ProposalForm() {
 
   const projectType = methods.watch("projectType");
   const reviewConfirmed = methods.watch("reviewConfirmed");
+
+  async function uploadFileToR2(file: File, kind: "reference" | "payment-proof") {
+    const createUploadResponse = await publicApiFetch("/proposal-requests/upload-url", {
+      method: "POST",
+      body: JSON.stringify({
+        fileName: file.name,
+        fileType: file.type,
+        kind,
+      }),
+    });
+
+    if (!createUploadResponse.ok) {
+      const errorData = await createUploadResponse.json().catch(() => null);
+      throw new Error(errorData?.message || "Erro ao gerar URL de upload.");
+    }
+
+    const {
+      uploadUrl,
+      fileUrl,
+      storageKey,
+      fileName,
+    } = await createUploadResponse.json();
+
+    const uploadResponse = await fetch(uploadUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type,
+      },
+      body: file,
+    });
+
+    if (!uploadResponse.ok) {
+      throw new Error(`Falha ao enviar arquivo para armazenamento (${file.name}).`);
+    }
+
+    return {
+      originalName: file.name,
+      fileName,
+      mimeType: file.type,
+      size: file.size,
+      url: fileUrl,
+      storageKey,
+    };
+  }
 
   const steps = useMemo(() => {
     const base = ["personal", "context"];
@@ -222,54 +275,57 @@ export function ProposalForm() {
       setSubmitSuccess("");
       setIsSubmitting(true);
 
-      const formData = new FormData();
-
-      formData.append("email", values.email);
-      formData.append("fullName", values.fullName);
-      formData.append("cpf", values.cpf);
-      formData.append("address", values.address);
-      formData.append("birthDate", values.birthDate);
-      formData.append("phone", values.phone);
-      formData.append("socialProfile", values.socialProfile || "");
-
-      formData.append("preferredContactMethod", values.preferredContactMethod);
-      formData.append(
-        "preferredContactMethodOther",
-        values.preferredContactMethodOther || ""
-      );
-
-      formData.append("referralSource", values.referralSource);
-      formData.append("referralSourceOther", values.referralSourceOther || "");
-
-      formData.append("desiredWorkStart", values.desiredWorkStart);
-
-      formData.append("projectType", values.projectType);
-      formData.append("projectTypeOther", values.projectTypeOther || "");
-
-      formData.append("taxAgreement", String(values.taxAgreement));
-      formData.append("paymentMethod", values.paymentMethod);
-      formData.append("paymentMethodOther", values.paymentMethodOther || "");
-      formData.append("reviewConfirmed", String(values.reviewConfirmed));
-
-      formData.append(
-        "newConstruction",
-        JSON.stringify(values.newConstruction)
-      );
-      formData.append("interiors", JSON.stringify(values.interiors));
-      formData.append("renovation", JSON.stringify(values.renovation));
-      formData.append("consulting", JSON.stringify(values.consulting));
-
-      referenceFiles.forEach((file) => {
-        formData.append("referenceFiles", file);
-      });
+      let uploadedPaymentProof: UploadedReferenceFile | null = null;
+      let uploadedReferenceFiles: UploadedReferenceFile[] = [];
 
       if (paymentProofFile) {
-        formData.append("paymentProof", paymentProofFile);
+        uploadedPaymentProof = await uploadFileToR2(paymentProofFile, "payment-proof");
       }
+
+      if (referenceFiles.length) {
+        uploadedReferenceFiles = await Promise.all(
+          referenceFiles.map((file) => uploadFileToR2(file, "reference"))
+        );
+      }
+
+      const payload = {
+        email: values.email,
+        fullName: values.fullName,
+        cpf: values.cpf,
+        address: values.address,
+        birthDate: values.birthDate,
+        phone: values.phone,
+        socialProfile: values.socialProfile || "",
+
+        preferredContactMethod: values.preferredContactMethod,
+        preferredContactMethodOther: values.preferredContactMethodOther || "",
+
+        referralSource: values.referralSource,
+        referralSourceOther: values.referralSourceOther || "",
+
+        desiredWorkStart: values.desiredWorkStart,
+
+        projectType: values.projectType,
+        projectTypeOther: values.projectTypeOther || "",
+
+        taxAgreement: values.taxAgreement,
+        paymentMethod: values.paymentMethod,
+        paymentMethodOther: values.paymentMethodOther || "",
+        reviewConfirmed: values.reviewConfirmed,
+
+        newConstruction: values.newConstruction,
+        interiors: values.interiors,
+        renovation: values.renovation,
+        consulting: values.consulting,
+
+        paymentProofUrl: uploadedPaymentProof?.url || null,
+        paymentProofStorageKey: uploadedPaymentProof?.storageKey || null,
+        referenceFilesJson: uploadedReferenceFiles,
+      };
 
       const response = await publicApiFetch("/proposal-requests", {
         method: "POST",
-        body: formData,
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json().catch(() => null);
@@ -344,7 +400,7 @@ export function ProposalForm() {
 
         {currentStepKey === "payment" && (
           <StepPayment
-            pixKey="SUA_CHAVE_PIX_AQUI"
+            pixKey="20.709.790/0001-96"
             selectedProofFile={paymentProofFile}
             onSelectProofFile={setPaymentProofFile}
           />
