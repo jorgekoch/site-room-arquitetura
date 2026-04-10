@@ -22,6 +22,7 @@ export const GlobalStyle = createGlobalStyle`
     background: ${({ theme }) => theme.colors.background};
     color: ${({ theme }) => theme.colors.text};
     font-family: ${({ theme }) => theme.fonts.body};
+    font-weight: 400;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -52,6 +53,7 @@ export const GlobalStyle = createGlobalStyle`
 
   p {
     color: ${({ theme }) => theme.colors.textSoft};
+    font-weight: 400;
   }
 
   ul,

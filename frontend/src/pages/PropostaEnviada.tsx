@@ -40,11 +40,11 @@ const Eyebrow = styled.span`
   width: fit-content;
   padding: 0.45rem 0.9rem;
   border-radius: ${({ theme }) => theme.radius.pill};
-  background: rgba(196, 110, 78, 0.12);
-  border: 1px solid rgba(196, 110, 78, 0.28);
+  background: ${({ theme }) => theme.colors.secondarySoft};
+  border: 1px solid ${({ theme }) => theme.colors.secondaryBorder};
   color: ${({ theme }) => theme.colors.secondary};
   font-size: ${({ theme }) => theme.fontSizes.xs};
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 `;
@@ -66,11 +66,11 @@ const PriorityCard = styled.div`
   gap: 0.7rem;
   padding: 1rem 1.1rem;
   border-radius: ${({ theme }) => theme.radius.md};
-  border: 1px solid rgba(196, 110, 78, 0.24);
+  border: 1px solid ${({ theme }) => theme.colors.secondaryBorder};
   background: linear-gradient(
     180deg,
-    rgba(196, 110, 78, 0.08),
-    rgba(196, 110, 78, 0.03)
+    ${({ theme }) => theme.colors.secondarySoft},
+    transparent
   );
 `;
 

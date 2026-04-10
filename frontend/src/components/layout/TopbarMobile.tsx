@@ -17,6 +17,7 @@ const NAV_ITEMS = [
 ];
 
 const HEADER_OFFSET = 110;
+const WIDE_DESKTOP = "(min-width: 1440px)";
 
 const Bar = styled.header`
   position: sticky;
@@ -28,16 +29,38 @@ const Bar = styled.header`
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.04);
 `;
 
+const HeaderContainer = styled(Container)`
+  width: min(100% - 1rem, ${({ theme }) => theme.layout.contentMaxWidth});
+
+  @media ${media.tablet} {
+    width: min(100% - 1.5rem, ${({ theme }) => theme.layout.contentMaxWidth});
+  }
+
+  @media ${media.desktop} {
+    width: min(100% - 2rem, ${({ theme }) => theme.layout.contentMaxWidth});
+  }
+`;
+
 const Inner = styled.div`
   min-height: 72px;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.85rem;
 
-  @media ${media.laptop} {
-    min-height: 82px;
+  @media ${media.tablet} {
     gap: 1rem;
+  }
+
+  @media ${media.desktop} {
+    grid-template-columns: 160px minmax(0, 1fr) auto;
+    min-height: 82px;
+    gap: 0.65rem;
+  }
+
+  @media ${WIDE_DESKTOP} {
+    grid-template-columns: 200px minmax(0, 1fr) auto;
+    gap: 0.9rem;
   }
 `;
 
@@ -47,19 +70,34 @@ const Brand = styled.a`
   text-decoration: none;
   color: ${({ theme }) => theme.colors.text};
   min-width: 0;
+  width: 100%;
+
+  @media ${media.desktop} {
+    width: 100%;
+    max-width: 100%;
+  }
 `;
 
 const BrandLogo = styled.img`
   display: block;
+  flex-shrink: 0;
   width: auto;
-  height: 60px;
+  height: 56px;
+  max-width: min(100%, 200px);
 
   @media ${media.tablet} {
-    height: 70px;
+    height: 64px;
+    max-width: 240px;
   }
 
-  @media ${media.laptop} {
-    height: 80px;
+  @media ${media.desktop} {
+    width: 100%;
+    height: auto;
+    max-width: 140px;
+  }
+
+  @media ${WIDE_DESKTOP} {
+    max-width: 160px;
   }
 `;
 
@@ -72,9 +110,16 @@ const BrandFallback = styled.span`
 const DesktopNavWrap = styled.div`
   display: none;
 
-  @media ${media.laptop} {
+  @media ${media.desktop} {
     display: block;
+    min-width: 0;
+    width: 100%;
+    padding-left: 0.65rem;
     overflow: visible;
+  }
+
+  @media ${WIDE_DESKTOP} {
+    padding-left: 1rem;
   }
 `;
 
@@ -82,7 +127,15 @@ const DesktopNav = styled.nav`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.5rem;
+  gap: 0.35rem;
+
+  @media ${media.desktop} {
+    gap: 0.2rem;
+  }
+
+  @media ${WIDE_DESKTOP} {
+    gap: 0.4rem;
+  }
 `;
 
 const NavLink = styled.a<{ $active: boolean }>`
@@ -93,35 +146,47 @@ const NavLink = styled.a<{ $active: boolean }>`
   border-radius: ${({ theme }) => theme.radius.pill};
   color: ${({ theme, $active }) =>
     $active ? theme.colors.text : theme.colors.textSoft};
-  background: ${({ $active }) =>
-    $active ? "rgba(184, 111, 82, 0.08)" : "transparent"};
+  background: ${({ theme, $active }) =>
+    $active ? theme.colors.secondarySoft : "transparent"};
   border: 1px solid
-    ${({ $active }) =>
-      $active ? "rgba(184, 111, 82, 0.6)" : "transparent"};
+    ${({ theme, $active }) =>
+      $active ? theme.colors.secondaryBorder : "transparent"};
   text-decoration: none;
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  font-weight: ${({ $active }) => ($active ? 700 : 600)};
+  font-weight: 600;
   white-space: nowrap;
   transition:
     color ${({ theme }) => theme.transitions.default},
     background ${({ theme }) => theme.transitions.default},
     border-color ${({ theme }) => theme.transitions.default};
 
+  @media ${media.desktop} {
+    padding: 0.45rem 0.58rem;
+  }
+
+  @media ${WIDE_DESKTOP} {
+    padding: 0.5rem 0.72rem;
+  }
+
   &:hover {
     color: ${({ theme }) => theme.colors.text};
-    background: rgba(184, 111, 82, 0.12);
-    border-color: rgba(184, 111, 82, 0.4);
+    background: ${({ theme }) => theme.colors.secondarySoft};
+    border-color: ${({ theme }) => theme.colors.secondaryBorder};
   }
 `;
 
 const DesktopRight = styled.div`
   display: none;
 
-  @media ${media.laptop} {
+  @media ${media.desktop} {
     display: inline-flex;
     align-items: center;
     justify-self: end;
-    gap: 0.75rem;
+    gap: 0.45rem;
+  }
+
+  @media ${WIDE_DESKTOP} {
+    gap: 0.65rem;
   }
 `;
 
@@ -133,15 +198,23 @@ const TopCta = styled.a`
   padding: 0.7rem 1rem;
   border-radius: ${({ theme }) => theme.radius.pill};
   background: ${({ theme }) => theme.colors.secondary};
-  color: #fff;
+  color: ${({ theme }) => theme.colors.secondaryContrast};
   text-decoration: none;
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  font-weight: 700;
+  font-weight: 600;
   white-space: nowrap;
   width: fit-content;
   transition:
     transform ${({ theme }) => theme.transitions.default},
     opacity ${({ theme }) => theme.transitions.default};
+
+  @media ${media.desktop} {
+    padding: 0.65rem 0.8rem;
+  }
+
+  @media ${WIDE_DESKTOP} {
+    padding: 0.7rem 0.95rem;
+  }
 
   &:hover {
     transform: translateY(-1px);
@@ -155,7 +228,7 @@ const MobileActions = styled.div`
   justify-content: flex-end;
   gap: 0.45rem;
 
-  @media ${media.laptop} {
+  @media ${media.desktop} {
     display: none;
   }
 `;
@@ -168,10 +241,10 @@ const MobileCta = styled.a`
   padding: 0.45rem 0.75rem;
   border-radius: ${({ theme }) => theme.radius.pill};
   background: ${({ theme }) => theme.colors.secondary};
-  color: #fff;
+  color: ${({ theme }) => theme.colors.secondaryContrast};
   text-decoration: none;
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 600;
   white-space: nowrap;
   width: fit-content;
   max-width: 120px;
@@ -260,7 +333,7 @@ const MobileOverlay = styled.div<{ $open: boolean }>`
   pointer-events: ${({ $open }) => ($open ? "auto" : "none")};
   transition: opacity 0.25s ease;
 
-  @media ${media.laptop} {
+  @media ${media.desktop} {
     display: none;
   }
 `;
@@ -281,7 +354,7 @@ const MobileDrawer = styled.aside<{ $open: boolean }>`
   grid-template-rows: auto 1fr auto;
   padding: 1rem;
 
-  @media ${media.laptop} {
+  @media ${media.desktop} {
     display: none;
   }
 `;
@@ -332,11 +405,11 @@ const DrawerLink = styled.a<{ $active: boolean }>`
   color: ${({ theme, $active }) =>
     $active ? theme.colors.text : theme.colors.textSoft};
   border: 1px solid
-    ${({ $active }) =>
-      $active ? "rgba(184, 111, 82, 0.6)" : "transparent"};
-  background: ${({ $active }) =>
-    $active ? "rgba(184, 111, 82, 0.08)" : "transparent"};
-  font-weight: ${({ $active }) => ($active ? 700 : 600)};
+    ${({ theme, $active }) =>
+      $active ? theme.colors.secondaryBorder : "transparent"};
+  background: ${({ theme, $active }) =>
+    $active ? theme.colors.secondarySoft : "transparent"};
+  font-weight: 600;
 `;
 
 const DrawerFooter = styled.div`
@@ -355,8 +428,8 @@ const DrawerCta = styled.a`
   border-radius: ${({ theme }) => theme.radius.pill};
   text-decoration: none;
   background: ${({ theme }) => theme.colors.secondary};
-  color: #fff;
-  font-weight: 700;
+  color: ${({ theme }) => theme.colors.secondaryContrast};
+  font-weight: 600;
 `;
 
 const DrawerMeta = styled.span`
@@ -470,7 +543,7 @@ export function TopbarMobile() {
   return (
     <>
       <Bar>
-        <Container>
+        <HeaderContainer>
           <Inner>
             <Brand href="#topo" aria-label="ROOM Arquitetura Sustentável">
               {logoRoomHorizontal ? (
@@ -519,7 +592,7 @@ export function TopbarMobile() {
               </MenuButton>
             </MobileActions>
           </Inner>
-        </Container>
+        </HeaderContainer>
       </Bar>
 
       <MobileOverlay $open={menuOpen} onClick={handleCloseMenu} />

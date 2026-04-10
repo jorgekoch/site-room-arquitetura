@@ -55,8 +55,8 @@ const Eyebrow = styled.span`
   width: fit-content;
   padding: 0.42rem 0.85rem;
   border-radius: ${({ theme }) => theme.radius.pill};
-  background: rgba(184, 111, 82, 0.12);
-  border: 1px solid rgba(184, 111, 82, 0.26);
+  background: ${({ theme }) => theme.colors.secondarySoft};
+  border: 1px solid ${({ theme }) => theme.colors.secondaryBorder};
   color: ${({ theme }) => theme.colors.secondary};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   font-weight: 700;

@@ -25,25 +25,25 @@ const sharedStyles = css<{ $variant: ButtonVariant }>`
   background: ${({ theme, $variant }) =>
     $variant === "ghost" ? "transparent" : theme.colors.primary};
   color: ${({ theme, $variant }) => {
-    if ($variant === "ghostLight") return "#f6f1e8";
+    if ($variant === "ghostLight") return theme.colors.primaryContrast;
     return $variant === "ghost"
       ? theme.colors.text
       : theme.colors.primaryContrast;
   }};
 
   border: 1px solid ${({ theme, $variant }) => {
-    if ($variant === "ghostLight") return "rgba(255,255,255,0.4)";
+    if ($variant === "ghostLight") return theme.colors.primaryBorder;
     return $variant === "ghost"
       ? theme.colors.border
       : theme.colors.primary;
   }};
 
   background: ${({ theme, $variant }) => {
-    if ($variant === "ghostLight") return "rgba(255,255,255,0.04)";
+    if ($variant === "ghostLight") return theme.colors.primarySoft;
     return $variant === "ghost" ? "transparent" : theme.colors.primary;
   }};
   text-decoration: none;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   transition:
     transform ${({ theme }) => theme.transitions.default},
@@ -56,21 +56,19 @@ const sharedStyles = css<{ $variant: ButtonVariant }>`
 
     border-color: ${({ theme, $variant }) =>
       $variant === "ghostLight"
-        ? "rgba(255,255,255,0.7)"
+        ? theme.colors.secondaryBorder
         : theme.colors.secondary};
 
     background: ${({ theme, $variant }) => {
-      if ($variant === "ghostLight") return "rgba(255,255,255,0.08)";
+      if ($variant === "ghostLight") return theme.colors.secondarySoft;
       return $variant === "ghost"
         ? theme.colors.surface
         : theme.colors.secondary;
     }};
 
     color: ${({ theme, $variant }) => {
-      if ($variant === "ghostLight") return "#ffffff";
-      return $variant === "ghost"
-        ? theme.colors.text
-        : theme.colors.primaryContrast;
+      if ($variant === "ghostLight") return theme.colors.secondaryContrast;
+      return $variant === "ghost" ? theme.colors.text : theme.colors.primaryContrast;
     }};
   }
 

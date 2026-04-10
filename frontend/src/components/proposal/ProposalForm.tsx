@@ -24,8 +24,8 @@ const ErrorBox = styled.div`
   margin-top: 1rem;
   padding: 0.95rem 1rem;
   border-radius: ${({ theme }) => theme.radius.md};
-  border: 1px solid rgba(255, 107, 107, 0.35);
-  background: rgba(255, 107, 107, 0.08);
+  border: 1px solid ${({ theme }) => theme.colors.dangerBorder};
+  background: ${({ theme }) => theme.colors.dangerSoft};
   color: ${({ theme }) => theme.colors.danger};
   line-height: 1.6;
 `;
@@ -34,8 +34,8 @@ const SuccessBox = styled.div`
   margin-top: 1rem;
   padding: 0.95rem 1rem;
   border-radius: ${({ theme }) => theme.radius.md};
-  border: 1px solid rgba(72, 187, 120, 0.35);
-  background: rgba(72, 187, 120, 0.1);
+  border: 1px solid ${({ theme }) => theme.colors.successBorder};
+  background: ${({ theme }) => theme.colors.successSoft};
   color: ${({ theme }) => theme.colors.success};
   line-height: 1.6;
 `;

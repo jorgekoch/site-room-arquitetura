@@ -25,11 +25,11 @@ const Eyebrow = styled.span`
   margin: 0 auto;
   padding: 0.45rem 0.9rem;
   border-radius: ${({ theme }) => theme.radius.pill};
-  background: rgba(196, 110, 78, 0.12);
-  border: 1px solid rgba(196, 110, 78, 0.28);
+  background: ${({ theme }) => theme.colors.secondarySoft};
+  border: 1px solid ${({ theme }) => theme.colors.secondaryBorder};
   color: ${({ theme }) => theme.colors.secondary};
   font-size: ${({ theme }) => theme.fontSizes.xs};
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 `;

@@ -18,7 +18,11 @@ const FooterWrapper = styled.footer`
   padding: 4rem 0 1.5rem;
   border-top: 1px solid ${({ theme }) => theme.colors.border};
   background:
-    radial-gradient(circle at top, rgba(184, 111, 82, 0.08), transparent 32%),
+    radial-gradient(
+      circle at top,
+      ${({ theme }) => theme.colors.secondarySoft},
+      transparent 32%
+    ),
     ${({ theme }) => theme.colors.background};
 `;
 
@@ -66,8 +70,8 @@ const BrandMarkFallback = styled.div`
   border-radius: ${({ theme }) => theme.radius.md};
   display: grid;
   place-items: center;
-  background: rgba(184, 111, 82, 0.12);
-  border: 1px solid rgba(184, 111, 82, 0.24);
+  background: ${({ theme }) => theme.colors.secondarySoft};
+  border: 1px solid ${({ theme }) => theme.colors.secondaryBorder};
   color: ${({ theme }) => theme.colors.secondary};
   font-weight: 800;
   font-size: ${({ theme }) => theme.fontSizes.md};

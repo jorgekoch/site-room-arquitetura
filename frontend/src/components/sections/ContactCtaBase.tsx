@@ -28,8 +28,8 @@ const Card = styled.div`
   background:
     linear-gradient(
       180deg,
-      rgba(184, 111, 82, 0.08),
-      rgba(184, 111, 82, 0.02)
+      ${({ theme }) => theme.colors.secondarySoft},
+      transparent
     ),
     ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
@@ -44,7 +44,7 @@ const Card = styled.div`
   &:hover {
     transform: translateY(-2px);
     border-color: ${({ theme }) => theme.colors.secondary};
-    box-shadow: 0 14px 32px rgba(184, 111, 82, 0.1);
+    box-shadow: 0 14px 32px ${({ theme }) => theme.colors.secondaryGlow};
   }
 
   @media ${media.tablet} {
@@ -68,11 +68,11 @@ const Eyebrow = styled.span`
   width: fit-content;
   padding: 0.45rem 0.9rem;
   border-radius: ${({ theme }) => theme.radius.pill};
-  background: rgba(184, 111, 82, 0.12);
-  border: 1px solid rgba(184, 111, 82, 0.28);
+  background: ${({ theme }) => theme.colors.secondarySoft};
+  border: 1px solid ${({ theme }) => theme.colors.secondaryBorder};
   color: ${({ theme }) => theme.colors.secondary};
   font-size: ${({ theme }) => theme.fontSizes.xs};
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 `;

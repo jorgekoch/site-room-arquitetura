@@ -84,7 +84,12 @@ const ContentWrap = styled.div`
 const Content = styled.div`
   display: grid;
   gap: 1.5rem;
-  max-width: 760px;
+  width: 100%;
+
+  @media ${media.laptop} {
+    grid-template-columns: minmax(0, 1.15fr) minmax(220px, 0.85fr);
+    align-items: start;
+  }
 `;
 
 const Eyebrow = styled.span`
@@ -92,27 +97,32 @@ const Eyebrow = styled.span`
   width: fit-content;
   padding: 0.45rem 0.9rem;
   border-radius: ${({ theme }) => theme.radius.pill};
-  background: rgba(184, 111, 82, 0.16);
-  border: 1px solid rgba(210, 137, 101, 0.34);
-  color: #d68d67;
+  background: ${({ theme }) => theme.colors.secondarySoft};
+  border: 1px solid ${({ theme }) => theme.colors.secondaryBorder};
+  color: ${({ theme }) => theme.colors.secondaryContrast};
   font-size: ${({ theme }) => theme.fontSizes.xs};
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+
+  @media ${media.laptop} {
+    grid-column: 1 / 2;
+  }
 `;
 
 const Title = styled.h1`
-  max-width: 760px;
+  width: 100%;
+  max-width: none;
   font-size: clamp(2.9rem, 8vw, 6.4rem);
   line-height: 0.94;
   letter-spacing: -0.05em;
   text-wrap: balance;
-  color: #f6f1e8;
+  color: ${({ theme }) => theme.colors.primaryContrast};
   text-shadow: 0 10px 32px rgba(0, 0, 0, 0.24);
 
-  @media ${media.tablet} {
-    max-width: 840px;
+  @media ${media.laptop} {
+    grid-column: 1 / -1;
   }
 `;
 
@@ -120,11 +130,16 @@ const Description = styled.p`
   max-width: 560px;
   font-size: ${({ theme }) => theme.fontSizes.md};
   line-height: 1.85;
-  color: rgba(246, 241, 232, 0.82);
+  color: rgba(247, 243, 235, 0.82);
   text-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 
   @media ${media.tablet} {
     font-size: ${({ theme }) => theme.fontSizes.lg};
+  }
+
+  @media ${media.laptop} {
+    max-width: 640px;
+    grid-column: 1 / 2;
   }
 `;
 
@@ -141,6 +156,10 @@ const Actions = styled.div`
       width: auto;
     }
   }
+
+  @media ${media.laptop} {
+    grid-column: 1 / 2;
+  }
 `;
 
 const SlideMeta = styled.div`
@@ -152,13 +171,17 @@ const SlideMeta = styled.div`
   padding: 0.55rem 0.7rem;
   border-radius: ${({ theme }) => theme.radius.pill};
   background: rgba(10, 16, 13, 0.36);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid ${({ theme }) => theme.colors.primaryBorder};
   backdrop-filter: blur(10px);
+
+  @media ${media.laptop} {
+    grid-column: 1 / 2;
+  }
 `;
 
 const SlideCount = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.xs};
-  color: rgba(246, 241, 232, 0.8);
+  color: rgba(247, 243, 235, 0.8);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 `;
@@ -175,8 +198,8 @@ const Dot = styled.button<{ $active: boolean }>`
   border-radius: 999px;
   border: 0;
   padding: 0;
-  background: ${({ $active }) =>
-    $active ? "rgba(255,255,255,0.96)" : "rgba(255,255,255,0.38)"};
+  background: ${({ theme, $active }) =>
+    $active ? theme.colors.secondaryContrast : "rgba(247, 243, 235, 0.38)"};
   cursor: pointer;
   transition:
     width 0.25s ease,

@@ -17,7 +17,7 @@ const Wrapper = styled.aside`
     position: fixed;
     inset: 0 auto 0 0;
     padding: 2rem 1.5rem;
-    background: rgba(10, 10, 14, 0.92);
+    background: rgba(16, 20, 13, 0.92);
     backdrop-filter: blur(14px);
     border-right: 1px solid ${({ theme }) => theme.colors.border};
     overflow-y: auto;
@@ -41,7 +41,7 @@ const BrandBadge = styled.div`
   background: linear-gradient(
     135deg,
     ${({ theme }) => theme.colors.primary},
-    #6d45d8
+    ${({ theme }) => theme.colors.secondary}
   );
   color: ${({ theme }) => theme.colors.primaryContrast};
   display: grid;

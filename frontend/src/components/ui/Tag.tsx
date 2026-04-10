@@ -9,10 +9,10 @@ export const Tag = styled.span`
   white-space: nowrap;
   padding: 0.45rem 0.9rem;
   border-radius: ${({ theme }) => theme.radius.pill};
-  background: rgba(184, 111, 82, 0.12);
-  border: 1px solid rgba(184, 111, 82, 0.28);
+  background: ${({ theme }) => theme.colors.secondarySoft};
+  border: 1px solid ${({ theme }) => theme.colors.secondaryBorder};
   color: ${({ theme }) => theme.colors.secondary};
   font-size: ${({ theme }) => theme.fontSizes.xs};
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1;
 `;

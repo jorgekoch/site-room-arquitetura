@@ -27,11 +27,11 @@ const Eyebrow = styled.span`
   width: fit-content;
   padding: 0.45rem 0.9rem;
   border-radius: ${({ theme }) => theme.radius.pill};
-  background: rgba(196, 110, 78, 0.12);
-  border: 1px solid rgba(196, 110, 78, 0.28);
+  background: ${({ theme }) => theme.colors.secondarySoft};
+  border: 1px solid ${({ theme }) => theme.colors.secondaryBorder};
   color: ${({ theme }) => theme.colors.secondary};
   font-size: ${({ theme }) => theme.fontSizes.xs};
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 `;
@@ -58,7 +58,7 @@ const Field = styled.div`
 
 const Label = styled.label`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  font-weight: 700;
+  font-weight: 600;
 `;
 
 const Input = styled.input`
@@ -74,8 +74,8 @@ const Input = styled.input`
 const ErrorBox = styled.div`
   padding: 0.95rem 1rem;
   border-radius: ${({ theme }) => theme.radius.md};
-  border: 1px solid rgba(255, 107, 107, 0.35);
-  background: rgba(255, 107, 107, 0.08);
+  border: 1px solid ${({ theme }) => theme.colors.dangerBorder};
+  background: ${({ theme }) => theme.colors.dangerSoft};
   color: ${({ theme }) => theme.colors.danger};
   line-height: 1.6;
 `;

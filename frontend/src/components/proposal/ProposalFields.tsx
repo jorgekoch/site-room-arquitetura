@@ -46,7 +46,7 @@ export const Field = styled.div`
 
 export const Label = styled.label`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.4;
 `;
 
@@ -70,7 +70,7 @@ export const Input = styled.input`
   &:focus {
     outline: none;
     border-color: ${({ theme }) => theme.colors.primary};
-    box-shadow: 0 0 0 3px rgba(79, 178, 134, 0.18);
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.primaryRing};
     background: ${({ theme }) => theme.colors.surface};
   }
 `;
@@ -91,7 +91,7 @@ export const Select = styled.select`
   &:focus {
     outline: none;
     border-color: ${({ theme }) => theme.colors.primary};
-    box-shadow: 0 0 0 3px rgba(79, 178, 134, 0.18);
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.primaryRing};
     background: ${({ theme }) => theme.colors.surface};
   }
 `;
@@ -117,7 +117,7 @@ export const Textarea = styled.textarea`
   &:focus {
     outline: none;
     border-color: ${({ theme }) => theme.colors.primary};
-    box-shadow: 0 0 0 3px rgba(79, 178, 134, 0.18);
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.primaryRing};
     background: ${({ theme }) => theme.colors.surface};
   }
 `;

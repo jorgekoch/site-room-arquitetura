@@ -1,31 +1,41 @@
 export const darkTheme = {
   colors: {
-    background: "#121815",
-    backgroundSoft: "#18201C",
-    surface: "#1F2823",
-    surfaceSoft: "#26322B",
-    surfaceHover: "#2E3C34",
-    border: "#3A4A40",
+    background: "#10140D",
+    backgroundSoft: "#171D14",
+    surface: "#1C2318",
+    surfaceSoft: "#232C1F",
+    surfaceHover: "#2B3624",
+    border: "#48543B",
 
-    text: "#F7F5F0",
-    textSoft: "#D6D0C5",
-    textMuted: "#AFA89B",
+    text: "#F7F3EB",
+    textSoft: "#D8D0C1",
+    textMuted: "#AA9F8D",
 
-    primary: "#4FB286",
-    primaryHover: "#68C79B",
-    primaryContrast: "#0F1412",
+    primary: "#344203",
+    primaryHover: "#455707",
+    primaryContrast: "#F7F3EB",
+    primarySoft: "rgba(52, 66, 3, 0.12)",
+    primaryBorder: "rgba(52, 66, 3, 0.28)",
+    primaryRing: "rgba(52, 66, 3, 0.18)",
 
     secondary: "#B3460D",
-    secondaryHover: "#D88463",
-    secondaryContrast: "#FFF8F2",
+    secondaryHover: "#C65A21",
+    secondaryContrast: "#FFF7F1",
+    secondarySoft: "rgba(179, 70, 13, 0.12)",
+    secondaryBorder: "rgba(179, 70, 13, 0.28)",
+    secondaryGlow: "rgba(179, 70, 13, 0.12)",
 
-    danger: "#FF7A7A",
-    success: "#6ED3A3",
+    danger: "#D66B6B",
+    dangerSoft: "rgba(214, 107, 107, 0.08)",
+    dangerBorder: "rgba(214, 107, 107, 0.35)",
+    success: "#5F7820",
+    successSoft: "rgba(95, 120, 32, 0.12)",
+    successBorder: "rgba(95, 120, 32, 0.35)",
   },
 
   fonts: {
-    heading: "'Inter', system-ui, sans-serif",
-    body: "'Inter', system-ui, sans-serif",
+    heading: "'Poppins', system-ui, sans-serif",
+    body: "'Poppins', system-ui, sans-serif",
   },
 
   fontSizes: {
@@ -58,7 +68,7 @@ export const darkTheme = {
   shadow: {
     sm: "0 6px 20px rgba(0, 0, 0, 0.15)",
     md: "0 12px 28px rgba(0, 0, 0, 0.22)",
-    glow: "0 10px 28px rgba(79, 178, 134, 0.35)",
+    glow: "0 10px 28px rgba(52, 66, 3, 0.28)",
   },
 
   layout: {
@@ -75,27 +85,37 @@ export const darkTheme = {
 export const lightTheme = {
   ...darkTheme,
   colors: {
-    background: "#F4F1EA",
-    backgroundSoft: "#ECE7DE",
-    surface: "#FFFCF7",
-    surfaceSoft: "#F6F0E7",
-    surfaceHover: "#EFE7DC",
-    border: "#D8CEC1",
+    background: "#F4EFE5",
+    backgroundSoft: "#ECE5D8",
+    surface: "#FFFCF6",
+    surfaceSoft: "#F6F0E4",
+    surfaceHover: "#EEE5D6",
+    border: "#D7CCB7",
 
-    text: "#1B1A18",
-    textSoft: "#3C3935",
-    textMuted: "#70695F",
+    text: "#1E1A14",
+    textSoft: "#433B31",
+    textMuted: "#746957",
 
-    primary: "#3F8F6C",
-    primaryHover: "#4FA27D",
-    primaryContrast: "#F9F7F2",
+    primary: "#344203",
+    primaryHover: "#455707",
+    primaryContrast: "#F7F3EB",
+    primarySoft: "rgba(52, 66, 3, 0.1)",
+    primaryBorder: "rgba(52, 66, 3, 0.22)",
+    primaryRing: "rgba(52, 66, 3, 0.16)",
 
-    secondary: "#A65A33",
-    secondaryHover: "#BF7350",
-    secondaryContrast: "#FFF8F2",
+    secondary: "#B3460D",
+    secondaryHover: "#C65A21",
+    secondaryContrast: "#FFF7F1",
+    secondarySoft: "rgba(179, 70, 13, 0.1)",
+    secondaryBorder: "rgba(179, 70, 13, 0.22)",
+    secondaryGlow: "rgba(179, 70, 13, 0.1)",
 
-    danger: "#D35F5F",
-    success: "#4E9F74",
+    danger: "#C85C5C",
+    dangerSoft: "rgba(200, 92, 92, 0.08)",
+    dangerBorder: "rgba(200, 92, 92, 0.28)",
+    success: "#4F651A",
+    successSoft: "rgba(79, 101, 26, 0.1)",
+    successBorder: "rgba(79, 101, 26, 0.28)",
   },
 };
 
