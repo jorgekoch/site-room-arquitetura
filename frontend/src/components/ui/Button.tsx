@@ -3,7 +3,7 @@ import styled, { css } from "styled-components";
 
 type ButtonVariant = "primary" | "ghost" | "ghostLight";
 
-type ButtonProps = {
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   to?: string;
   children: React.ReactNode;
   variant?: ButtonVariant;
