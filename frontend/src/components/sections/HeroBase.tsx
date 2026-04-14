@@ -273,7 +273,7 @@ export function HeroBase({
               )}
 
               {secondaryCta && (
-                <Button to={secondaryCta.to} variant="ghostLight">
+                <Button to={secondaryCta.to} variant="ghostLight" contrastText>
                   {secondaryCta.label}
                 </Button>
               )}

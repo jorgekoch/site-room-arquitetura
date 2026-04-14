@@ -132,7 +132,7 @@ export function ContactCtaBase({
           <Actions>
             {primaryCta && <Button to={primaryCta.to}>{primaryCta.label}</Button>}
             {secondaryCta && (
-              <Button to={secondaryCta.to} variant="ghost">
+              <Button to={secondaryCta.to} variant="ghostLight">
                 {secondaryCta.label}
               </Button>
             )}

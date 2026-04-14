@@ -10,9 +10,10 @@ type ButtonProps = {
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>;
+  contrastText?: boolean;
 };
 
-const sharedStyles = css<{ $variant: ButtonVariant }>`
+const sharedStyles = css<{ $variant: ButtonVariant; $contrastText?: boolean }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -24,8 +25,9 @@ const sharedStyles = css<{ $variant: ButtonVariant }>`
       $variant === "ghost" ? theme.colors.border : theme.colors.primary};
   background: ${({ theme, $variant }) =>
     $variant === "ghost" ? "transparent" : theme.colors.primary};
-  color: ${({ theme, $variant }) => {
-    if ($variant === "ghostLight") return theme.colors.primaryContrast;
+  color: ${({ theme, $variant, $contrastText }) => {
+    if ($variant === "ghostLight")
+      return $contrastText ? theme.colors.primaryContrast : theme.colors.text;
     return $variant === "ghost"
       ? theme.colors.text
       : theme.colors.primaryContrast;
@@ -66,8 +68,9 @@ const sharedStyles = css<{ $variant: ButtonVariant }>`
         : theme.colors.secondary;
     }};
 
-    color: ${({ theme, $variant }) => {
-      if ($variant === "ghostLight") return theme.colors.secondaryContrast;
+    color: ${({ theme, $variant, $contrastText }) => {
+      if ($variant === "ghostLight")
+        return $contrastText ? theme.colors.primaryContrast : theme.colors.text;
       return $variant === "ghost" ? theme.colors.text : theme.colors.primaryContrast;
     }};
   }
@@ -79,15 +82,15 @@ const sharedStyles = css<{ $variant: ButtonVariant }>`
   }
 `;
 
-const StyledLink = styled(Link)<{ $variant: ButtonVariant }>`
+const StyledLink = styled(Link)<{ $variant: ButtonVariant; $contrastText?: boolean }>`
   ${sharedStyles}
 `;
 
-const StyledAnchor = styled.a<{ $variant: ButtonVariant }>`
+const StyledAnchor = styled.a<{ $variant: ButtonVariant; $contrastText?: boolean }>`
   ${sharedStyles}
 `;
 
-const StyledButton = styled.button<{ $variant: ButtonVariant }>`
+const StyledButton = styled.button<{ $variant: ButtonVariant; $contrastText?: boolean }>`
   ${sharedStyles}
 `;
 
@@ -98,20 +101,26 @@ export function Button({
   type = "button",
   disabled,
   onClick,
+  contrastText = false,
 }: ButtonProps) {
   if (to) {
     const isHashLink = to.startsWith("#") || to.includes("/#");
 
     if (isHashLink) {
       return (
-        <StyledAnchor href={to} $variant={variant} onClick={onClick}>
+        <StyledAnchor
+          href={to}
+          $variant={variant}
+          $contrastText={contrastText}
+          onClick={onClick}
+        >
           {children}
         </StyledAnchor>
       );
     }
 
     return (
-      <StyledLink to={to} $variant={variant}>
+      <StyledLink to={to} $variant={variant} $contrastText={contrastText}>
         {children}
       </StyledLink>
     );
@@ -121,6 +130,7 @@ export function Button({
     <StyledButton
       type={type}
       $variant={variant}
+      $contrastText={contrastText}
       disabled={disabled}
       onClick={onClick}
     >
