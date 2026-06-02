@@ -4,7 +4,7 @@ import { Button } from "../components/ui/Button";
 import { media } from "../styles/breakpoints";
 import { useEffect } from "react";
 
-const VIDEO_URL = "https://www.youtube.com/embed/f2b24BQ4-3Q";
+const VIDEO_URL = "https://www.youtube.com/watch?v=GRyIROMKGVY";
 
 const Section = styled.section`
   padding: 2rem 0 5rem;

@@ -12,7 +12,7 @@ type Props = {
 };
 
 const Section = styled.section`
-  padding: 1rem 0 5rem;
+  padding: 2rem 0 6rem;
   scroll-margin-top: 92px;
 `;
 

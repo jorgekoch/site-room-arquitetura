@@ -19,10 +19,10 @@ type AuthoritySectionBaseProps = {
 };
 
 const Section = styled.section`
-  padding: 1rem 0 4rem;
+  padding: 2rem 0 5.5rem;
 
   @media ${media.laptop} {
-    padding: 1rem 0 5rem;
+    padding: 2.5rem 0 7rem;
   }
 `;
 

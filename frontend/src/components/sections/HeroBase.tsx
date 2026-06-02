@@ -26,14 +26,14 @@ const Section = styled.section`
   display: flex;
   align-items: center;
   overflow: hidden;
-  padding: 7.5rem 0 4rem;
+  padding: 7.5rem 0 5rem;
 
   @media ${media.tablet} {
-    padding: 8.5rem 0 4.5rem;
+    padding: 8.5rem 0 5.5rem;
   }
 
   @media ${media.laptop} {
-    padding: 9rem 0 5.5rem;
+    padding: 9rem 0 6.5rem;
   }
 `;
 

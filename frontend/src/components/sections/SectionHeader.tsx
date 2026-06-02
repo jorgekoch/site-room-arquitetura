@@ -10,7 +10,7 @@ const Wrapper = styled.div`
   display: grid;
   gap: 0.8rem;
   margin-bottom: 2rem;
-  max-width: 760px;
+  width: 100%;
 `;
 
 const Eyebrow = styled.span`
@@ -30,7 +30,8 @@ const Eyebrow = styled.span`
 const Title = styled.h2`
   font-size: clamp(1.8rem, 3vw, 3rem);
   line-height: 1.12;
-  max-width: 720px;
+  width: 100%;
+  max-width: none;
 `;
 
 const Description = styled.p`
