@@ -28,6 +28,22 @@ export const createProposalSchema = z.object({
   taxAgreement: z.boolean(),
   paymentMethod: z.string().min(1),
   paymentMethodOther: z.string().optional().nullable(),
+
+  paymentProofUrl: z.string().url().nullable().optional(),
+  paymentProofStorageKey: z.string().nullable().optional(),
+  referenceFilesJson: z
+    .array(
+      z.object({
+        originalName: z.string(),
+        fileName: z.string(),
+        mimeType: z.string(),
+        size: z.number(),
+        url: z.string().url(),
+        storageKey: z.string(),
+      })
+    )
+    .optional()
+    .default([]),
 });
 
 export const updateProposalStatusSchema = z.object({

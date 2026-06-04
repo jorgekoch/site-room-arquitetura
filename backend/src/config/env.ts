@@ -43,6 +43,12 @@ const envSchema = z.object({
   ownerAdminPasswordHash: z.string(),
 
   uploadDir: z.string().default("uploads"),
+
+  r2Endpoint: z.string(),
+  r2Bucket: z.string(),
+  r2AccessKeyId: z.string(),
+  r2SecretAccessKey: z.string(),
+  r2PublicUrl: z.string(),
 });
 
 export const env = envSchema.parse({
@@ -72,4 +78,10 @@ export const env = envSchema.parse({
   ownerAdminPasswordHash: process.env.OWNER_ADMIN_PASSWORD_HASH,
 
   uploadDir: process.env.UPLOAD_DIR,
+
+  r2Endpoint: process.env.R2_ENDPOINT,
+  r2Bucket: process.env.R2_BUCKET,
+  r2AccessKeyId: process.env.R2_ACCESS_KEY_ID,
+  r2SecretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+  r2PublicUrl: process.env.R2_PUBLIC_URL,
 });

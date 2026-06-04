@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../database/prisma";
 import { env } from "../../config/env";
 import type {
@@ -11,28 +12,17 @@ import {
   sendProposalStatusChangedEmail,
 } from "./proposal.mail";
 import { AppError } from "../../utils/AppError";
-import { Prisma } from "@prisma/client";
 
 export class ProposalService {
-  async create(
-    data: CreateProposalInput,
-    files: Express.Multer.File[] = [],
-    paymentProofFileName: string | null = null
-  ) {
-    const projectDetails = {
-      newConstruction: data.newConstruction ?? null,
-      interiors: data.interiors ?? null,
-      renovation: data.renovation ?? null,
-      consulting: data.consulting ?? null,
-    };
-
-    const referenceFiles = files.map((file) => ({
-      originalName: file.originalname,
-      fileName: file.filename,
-      mimeType: file.mimetype,
-      size: file.size,
-      url: `${env.backendUrl}/${env.uploadDir}/${file.filename}`,
-    }));
+  async create(data: CreateProposalInput) {
+    const projectDetails =
+      data.projectType === "new-construction"
+        ? { newConstruction: data.newConstruction ?? null }
+        : data.projectType === "interiors"
+        ? { interiors: data.interiors ?? null }
+        : data.projectType === "renovation"
+        ? { renovation: data.renovation ?? null }
+        : { consulting: data.consulting ?? null };
 
     const proposal = await prisma.proposalRequest.create({
       data: {
@@ -60,13 +50,14 @@ export class ProposalService {
         paymentMethodOther: data.paymentMethodOther || null,
 
         projectDetailsJson: projectDetails,
-        referenceFilesJson: referenceFiles.length ? referenceFiles : Prisma.JsonNull,
+        referenceFilesJson:
+          data.referenceFilesJson?.length
+            ? data.referenceFilesJson
+            : Prisma.JsonNull,
         pixKeySnapshot: data.paymentMethod === "pix" ? env.pixKey : null,
 
-        paymentProofUrl: paymentProofFileName
-          ? `${env.backendUrl}/${env.uploadDir}/${paymentProofFileName}`
-          : null,
-        paymentProofUploadedAt: paymentProofFileName ? new Date() : null,
+        paymentProofUrl: data.paymentProofUrl || null,
+        paymentProofUploadedAt: data.paymentProofUrl ? new Date() : null,
       },
     });
 

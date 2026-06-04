@@ -6,13 +6,12 @@ import { upload } from "../../config/upload";
 const proposalRoutes = Router();
 const proposalController = new ProposalController();
 
-proposalRoutes.post(
-  "/",
-  upload.fields([
-    { name: "referenceFiles", maxCount: 10 },
-    { name: "paymentProof", maxCount: 1 },
-  ]),
-  (request, response) => proposalController.create(request, response)
+proposalRoutes.post("/upload-url", (request, response) =>
+  proposalController.getUploadUrl(request, response)
+);
+
+proposalRoutes.post("/", (request, response) =>
+  proposalController.create(request, response)
 );
 
 proposalRoutes.post(
