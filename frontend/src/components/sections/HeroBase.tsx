@@ -73,6 +73,22 @@ const Overlay = styled.div`
       rgba(0, 0, 0, 0.16) 0%,
       rgba(0, 0, 0, 0.38) 100%
     );
+
+  html[data-theme="light"] & {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(255, 252, 246, 0.78) 0%,
+        rgba(255, 252, 246, 0.64) 28%,
+        rgba(255, 252, 246, 0.32) 58%,
+        rgba(255, 252, 246, 0.12) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(255, 252, 246, 0.08) 0%,
+        rgba(255, 252, 246, 0.42) 100%
+      );
+  }
 `;
 
 const ContentWrap = styled.div`
@@ -106,6 +122,10 @@ const Eyebrow = styled.span`
   text-transform: uppercase;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 
+  html[data-theme="light"] & {
+    color: ${({ theme }) => theme.colors.secondary};
+  }
+
   @media ${media.laptop} {
     grid-column: 1 / 2;
   }
@@ -121,6 +141,11 @@ const Title = styled.h1`
   color: ${({ theme }) => theme.colors.primaryContrast};
   text-shadow: 0 10px 32px rgba(0, 0, 0, 0.24);
 
+  html[data-theme="light"] & {
+    color: ${({ theme }) => theme.colors.text};
+    text-shadow: 0 10px 32px rgba(255, 252, 246, 0.34);
+  }
+
   @media ${media.laptop} {
     grid-column: 1 / -1;
   }
@@ -132,6 +157,11 @@ const Description = styled.p`
   line-height: 1.85;
   color: rgba(247, 243, 235, 0.82);
   text-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+
+  html[data-theme="light"] & {
+    color: ${({ theme }) => theme.colors.textSoft};
+    text-shadow: 0 8px 24px rgba(255, 252, 246, 0.4);
+  }
 
   @media ${media.tablet} {
     font-size: ${({ theme }) => theme.fontSizes.lg};
@@ -174,6 +204,11 @@ const SlideMeta = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.primaryBorder};
   backdrop-filter: blur(10px);
 
+  html[data-theme="light"] & {
+    background: rgba(255, 252, 246, 0.68);
+    border-color: ${({ theme }) => theme.colors.border};
+  }
+
   @media ${media.laptop} {
     grid-column: 1 / 2;
   }
@@ -184,6 +219,10 @@ const SlideCount = styled.span`
   color: rgba(247, 243, 235, 0.8);
   letter-spacing: 0.06em;
   text-transform: uppercase;
+
+  html[data-theme="light"] & {
+    color: ${({ theme }) => theme.colors.textSoft};
+  }
 `;
 
 const Dots = styled.div`
@@ -208,6 +247,11 @@ const Dot = styled.button<{ $active: boolean }>`
 
   &:hover {
     transform: translateY(-1px);
+  }
+
+  html[data-theme="light"] & {
+    background: ${({ theme, $active }) =>
+      $active ? theme.colors.text : "rgba(30, 26, 20, 0.28)"};
   }
 `;
 
@@ -273,7 +317,7 @@ export function HeroBase({
               )}
 
               {secondaryCta && (
-                <Button to={secondaryCta.to} variant="ghostLight" contrastText>
+                <Button to={secondaryCta.to} variant="ghostLight">
                   {secondaryCta.label}
                 </Button>
               )}
