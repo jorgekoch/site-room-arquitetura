@@ -29,10 +29,16 @@ const Grid = styled.div`
   @media ${media.tablet} {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  @media ${media.laptop} {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+  }
 `;
 
 const Card = styled.div`
   padding: 1.2rem;
+  height: 100%;
   border-radius: ${({ theme }) => theme.radius.md};
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};

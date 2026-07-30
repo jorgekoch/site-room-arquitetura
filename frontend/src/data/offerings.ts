@@ -25,10 +25,10 @@ export const offeringsData: OfferingsData = {
 
   items: [
     {
-      tag: "Essencial",
-      title: "Base clara para começar com segurança",
+      tag: "Econômico",
+      title: "Pacote Econômico, o essencial para construir com segurança e inteligência",
       description:
-        "Ideal para quem precisa organizar as decisões principais do projeto com clareza, identidade e direcionamento técnico consistente.",
+        "Ideal para quem busca um projeto arquitetônico completo, mas deseja investir apenas no que é indispensável para executar a obra com qualidade. Você recebe todas as definições arquitetônicas necessárias para construir, mantendo o foco em funcionalidade, sustentabilidade e viabilidade econômica, sem incluir recursos voltados à apresentação visual ou detalhamentos mais específicos.",
       bullets: [
         "Definições centrais do projeto",
         "Mais segurança para as primeiras decisões",
@@ -36,10 +36,10 @@ export const offeringsData: OfferingsData = {
       ],
     },
     {
-      tag: "Completo",
-      title: "O formato mais equilibrado para desenvolver a casa com profundidade",
+      tag: "Padrão",
+      title: "Pacote Padrão, a experiência completa de projeto da ROOM.",
       description:
-        "Uma experiência mais completa para clientes que desejam maturar melhor o projeto, visualizar os espaços com mais clareza e avançar com segurança.",
+        "Nossa opção mais escolhida. Além de um projeto arquitetônico totalmente desenvolvido, você acompanha cada decisão por meio de imagens realistas, estudos detalhados e soluções pensadas para proporcionar conforto, economia, funcionalidade e uma arquitetura verdadeiramente personalizada. É a melhor escolha para quem deseja visualizar sua futura casa antes mesmo da construção começar e tomar decisões com muito mais segurança.",
       bullets: [
         "Desenvolvimento aprofundado das soluções",
         "Melhor visualização e amadurecimento do projeto",
@@ -47,10 +47,10 @@ export const offeringsData: OfferingsData = {
       ],
     },
     {
-      tag: "Premium",
-      title: "Experiência mais imersiva, estratégica e personalizada",
+      tag: "Completo",
+      title: "Pacote Completo, um único lugar para projetar toda a sua obra.",
       description:
-        "Pensado para projetos que pedem maior aprofundamento, mais acompanhamento e uma construção ainda mais cuidadosa entre história, terreno e modo de viver.",
+        "A solução mais completa para quem deseja iniciar a construção com o máximo de planejamento. Além do Projeto Arquitetônico Completo, inclui os principais projetos complementares, planilha orçamentária e cronograma de obra, garantindo maior integração entre as disciplinas, redução de retrabalhos e mais previsibilidade de custos e prazos. É a opção indicada para quem quer centralizar o desenvolvimento técnico do empreendimento e começar a obra com muito mais tranquilidade.",
       bullets: [
         "Processo mais imersivo",
         "Maior personalização e refinamento",
