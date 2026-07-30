@@ -13,7 +13,7 @@ export type AudienceData = {
 export const audienceData: AudienceData = {
   section: {
     eyebrow: "Para quem é",
-    title: "A ROOM faz sentido para quem quer construir com mais identidade, clareza e pertencimento",
+    title: "A ROOM faz sentido para quem quer construir, reformar, ampliar ou decorar com mais identidade, economia, clareza e pertencimento",
     description:
       "A proposta da ROOM conversa principalmente com pessoas que estão planejando a primeira casa e desejam um projeto mais consciente, funcional e conectado à própria forma de viver.",
   },
@@ -22,22 +22,32 @@ export const audienceData: AudienceData = {
     {
       title: "Casais e famílias em uma nova fase",
       description:
-        "Pessoas que estão planejando a primeira casa e querem que esse espaço represente de verdade quem são e como vivem.",
+        "que vão construir ou reformar e desejam uma casa pensada para durar muitos anos, com conforto térmico, iluminação natural, funcionalidade e menores custos de operação ao longo do tempo.",
     },
     {
-      title: "Quem busca conforto com sentido",
+      title: "Pessoas que valorizam a sustentabilidade de forma prática",
       description:
-        "Clientes que valorizam bem-estar, praticidade, acolhimento e uma casa pensada para a vida real, não só para ficar bonita.",
+        "buscando reduzir desperdícios, consumo de energia e impactos ambientais sem abrir mão da estética.",
     },
     {
-      title: "Quem quer construir com mais consciência",
+      title: "Clientes que querem um projeto personalizado",
       description:
-        "Pessoas atentas ao terreno, ao contexto, ao uso inteligente de recursos e ao impacto das escolhas ao longo do tempo.",
+        "desenvolvido a partir da forma como vivem, e não baseado em soluções prontas ou tendências passageiras.",
     },
     {
-      title: "Quem valoriza um processo claro",
+      title: "Empreendedores que entendem que o ambiente influencia diretamente a experiência do cliente",
       description:
-        "Clientes que querem entender bem cada etapa, tomar decisões com segurança e se sentir acompanhados durante todo o projeto.",
+        "a eficiência da equipe e os resultados do negócio. A própria atuação da ROOM contempla projetos comerciais e institucionais com esse enfoque.",
+    },
+        {
+      title: "Quem busca um processo claro e atendimento próximo e colaborativo",
+      description:
+        "participando das decisões do projeto em vez de apenas aprovar desenhos",
+    },
+        {
+      title: "Pessoas que se identificam com negócios de impacto",
+      description:
+        "preferindo contratar empresas cujos valores estejam alinhados à responsabilidade social e ambiental.",
     },
   ],
 };

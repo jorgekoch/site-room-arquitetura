@@ -69,7 +69,6 @@ export function AudienceSection({
   id,
   eyebrow,
   title = "Pra quem é",
-  description,
   items = [],
 }: Props) {
   return (
@@ -78,7 +77,6 @@ export function AudienceSection({
         <SectionHeader
           eyebrow={eyebrow}
           title={title}
-          description={description}
         />
 
         <Grid>
