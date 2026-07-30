@@ -17,11 +17,13 @@ export const processData: ProcessData = {
 
   steps: [
     "Solicitação de proposta",
-    "Orientação inicial",
-    "Reunião de imersão",
+    "Conversa inicial",
+    "Fechamento de contrato",
     "Levantamento de dados",
-    "Estudo preliminar",
+    "Reunião de imersão",
+    "Estudo Preliminar",
+    "Estudo de Viabilidade Financeira",
     "Anteprojeto",
-    "Projeto executivo",
+    "Projeto Executivo",
   ],
 };
