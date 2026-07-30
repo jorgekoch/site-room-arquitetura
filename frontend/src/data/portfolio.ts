@@ -21,9 +21,9 @@ export type PortfolioData = {
 export const portfolioData: PortfolioData = {
   section: {
     eyebrow: "Projetos",
-    title: "Projetos selecionados",
+    title: "Conheça alguns de nossos projetos",
     description:
-      "Casas pensadas a partir da escuta, do lugar e da identidade de quem vive cada espaço.",
+      "Espaços pensadas a partir da escuta, do lugar e da identidade de quem vive cada espaço.",
   },
 
   items: [
