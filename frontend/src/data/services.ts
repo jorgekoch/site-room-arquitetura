@@ -65,17 +65,6 @@ export const servicesData: ServicesData = {
         "Redução de impacto ambiental",
       ],
     },
-    {
-      tag: "Processo",
-      title: "Clareza em cada etapa",
-      description:
-        "Você entende exatamente o que está acontecendo em cada fase do projeto.",
-      bullets: [
-        "Estudo preliminar (2D)",
-        "Anteprojeto (3D)",
-        "Projeto executivo",
-      ],
-    },
   ],
 
   sectionCta: {

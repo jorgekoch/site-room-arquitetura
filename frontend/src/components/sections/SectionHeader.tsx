@@ -37,7 +37,8 @@ const Title = styled.h2`
 const Description = styled.p`
   color: ${({ theme }) => theme.colors.textSoft};
   line-height: 1.75;
-  max-width: 520px;
+  width: 100%;
+  max-width: none;
   font-size: ${({ theme }) => theme.fontSizes.md};
 `;
 
