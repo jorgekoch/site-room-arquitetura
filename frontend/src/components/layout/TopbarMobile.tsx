@@ -16,6 +16,19 @@ const NAV_ITEMS = [
   { label: "Contato", href: "#contato", id: "contato" },
 ];
 
+type NavItem = (typeof NAV_ITEMS)[number];
+
+type NavGroup = NavItem & {
+  children?: NavItem[];
+};
+
+const NAV_GROUPS: NavGroup[] = [
+  NAV_ITEMS[0],
+  { ...NAV_ITEMS[1], children: [NAV_ITEMS[2]] },
+  { ...NAV_ITEMS[3], children: [NAV_ITEMS[4], NAV_ITEMS[5]] },
+  { ...NAV_ITEMS[6], children: [NAV_ITEMS[7]] },
+];
+
 const HEADER_OFFSET = 110;
 const WIDE_DESKTOP = "(min-width: 1440px)";
 
@@ -172,6 +185,63 @@ const NavLink = styled.a<{ $active: boolean }>`
     color: ${({ theme }) => theme.colors.text};
     background: ${({ theme }) => theme.colors.secondarySoft};
     border-color: ${({ theme }) => theme.colors.secondaryBorder};
+  }
+`;
+
+const NavGroupItem = styled.div`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+
+  &:hover > div,
+  &:focus-within > div {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+`;
+
+const NavTrigger = styled(NavLink)`
+  gap: 0.35rem;
+
+  &::after {
+    content: "";
+    width: 0.42rem;
+    height: 0.42rem;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-0.15rem) rotate(45deg);
+  }
+`;
+
+const NavDropdown = styled.div`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1002;
+  min-width: 190px;
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.45rem;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: ${({ theme }) => theme.colors.surface};
+  box-shadow: ${({ theme }) => theme.shadow.md};
+  opacity: 0;
+  transform: translateY(-0.35rem);
+  pointer-events: none;
+  transition:
+    opacity ${({ theme }) => theme.transitions.default},
+    transform ${({ theme }) => theme.transitions.default};
+`;
+
+const NavDropdownLink = styled(NavLink)`
+  width: 100%;
+  justify-content: flex-start;
+  border-radius: ${({ theme }) => theme.radius.sm};
+
+  @media ${media.desktop} {
+    padding: 0.65rem 0.75rem;
   }
 `;
 
@@ -558,16 +628,53 @@ export function TopbarMobile() {
 
             <DesktopNavWrap>
               <DesktopNav aria-label="Navegação principal">
-                {NAV_ITEMS.map((item) => (
-                  <NavLink
-                    key={item.href}
-                    href={item.href}
-                    $active={activeSection === item.id}
-                    aria-current={activeSection === item.id ? "page" : undefined}
-                  >
-                    {item.label}
-                  </NavLink>
-                ))}
+                {NAV_GROUPS.map((item) => {
+                  const childActive = item.children?.some(
+                    (child) => activeSection === child.id,
+                  );
+                  const itemActive = activeSection === item.id || Boolean(childActive);
+
+                  if (!item.children?.length) {
+                    return (
+                      <NavLink
+                        key={item.href}
+                        href={item.href}
+                        $active={itemActive}
+                        aria-current={activeSection === item.id ? "page" : undefined}
+                      >
+                        {item.label}
+                      </NavLink>
+                    );
+                  }
+
+                  return (
+                    <NavGroupItem key={item.href}>
+                      <NavTrigger
+                        href={item.href}
+                        $active={itemActive}
+                        aria-current={activeSection === item.id ? "page" : undefined}
+                        aria-haspopup="true"
+                      >
+                        {item.label}
+                      </NavTrigger>
+
+                      <NavDropdown>
+                        {item.children.map((child) => (
+                          <NavDropdownLink
+                            key={child.href}
+                            href={child.href}
+                            $active={activeSection === child.id}
+                            aria-current={
+                              activeSection === child.id ? "page" : undefined
+                            }
+                          >
+                            {child.label}
+                          </NavDropdownLink>
+                        ))}
+                      </NavDropdown>
+                    </NavGroupItem>
+                  );
+                })}
               </DesktopNav>
             </DesktopNavWrap>
 
