@@ -40,6 +40,19 @@ const SuccessBox = styled.div`
   line-height: 1.6;
 `;
 
+const WarningBox = styled.div`
+  margin-top: 1rem;
+  padding: 0.95rem 1rem;
+  border-radius: ${({ theme }) => theme.radius.md};
+
+  border: 1px solid #facc15;
+  background: #fef9c3;
+  color: #92400e;
+
+  line-height: 1.6;
+  white-space: pre-line;
+`;
+
 const TopBar = styled.div`
   display: flex;
   justify-content: space-between;
@@ -133,6 +146,7 @@ export function ProposalForm() {
 
   const [step, setStep] = useState(0);
   const [submitError, setSubmitError] = useState("");
+  const [fileWarning, setFileWarning] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
@@ -141,19 +155,43 @@ export function ProposalForm() {
   const projectType = methods.watch("projectType");
   const reviewConfirmed = methods.watch("reviewConfirmed");
 
-  async function uploadFileToR2(file: File, kind: "reference" | "payment-proof") {
-    const createUploadResponse = await publicApiFetch("/proposal-requests/upload-url", {
-      method: "POST",
-      body: JSON.stringify({
-        fileName: file.name,
-        fileType: file.type,
-        kind,
-      }),
-    });
+  async function uploadFileToR2(
+    file: File,
+    kind: "reference" | "payment-proof"
+  ): Promise<UploadedReferenceFile> {
+    const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+
+    if (file.size > MAX_FILE_SIZE) {
+      throw new Error(
+        `O arquivo "${file.name}" ultrapassa o limite de 20 MB.`
+      );
+    }
+
+    if (!file.type) {
+      throw new Error(
+        `Não foi possível identificar o tipo do arquivo "${file.name}".`
+      );
+    }
+
+    const createUploadResponse = await publicApiFetch(
+      "/proposal-requests/upload-url",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          fileName: file.name,
+          fileType: file.type,
+          kind,
+        }),
+      }
+    );
 
     if (!createUploadResponse.ok) {
-      const errorData = await createUploadResponse.json().catch(() => null);
-      throw new Error(errorData?.message || "Erro ao gerar URL de upload.");
+      const error = await createUploadResponse.json().catch(() => null);
+
+      throw new Error(
+        error?.message ??
+          "Não foi possível preparar o upload do arquivo."
+      );
     }
 
     const {
@@ -172,7 +210,13 @@ export function ProposalForm() {
     });
 
     if (!uploadResponse.ok) {
-      throw new Error(`Falha ao enviar arquivo para armazenamento (${file.name}).`);
+      const message = await uploadResponse.text().catch(() => "");
+
+      console.error("Erro do Cloudflare R2:", message);
+
+      throw new Error(
+        `Falha ao enviar "${file.name}" para o armazenamento.`
+      );
     }
 
     return {
@@ -260,90 +304,170 @@ export function ProposalForm() {
   }
 
   function handleAddReferenceFiles(files: File[]) {
-    setReferenceFiles((prev) => [...prev, ...files]);
-  }
+    setFileWarning("");
 
-  function handleRemoveReferenceFile(indexToRemove: number) {
-    setReferenceFiles((prev) =>
-      prev.filter((_, index) => index !== indexToRemove)
-    );
-  }
+    const MAX_REFERENCE_FILES = 20;
+    const MAX_REFERENCE_SIZE = 20 * 1024 * 1024;
 
-  async function onSubmit(values: ProposalSchemaValues) {
+    const ignoredFiles: string[] = [];
+
+    setReferenceFiles((previousFiles) => {
+      const updatedFiles = [...previousFiles];
+
+      for (const newFile of files) {
+        if (updatedFiles.length >= MAX_REFERENCE_FILES) {
+          ignoredFiles.push(
+            `"${newFile.name}" (limite máximo atingido)`
+          );
+          continue;
+        }
+
+        if (newFile.size > MAX_REFERENCE_SIZE) {
+          ignoredFiles.push(
+            `"${newFile.name}" (maior que 20 MB)`
+          );
+          continue;
+        }
+
+        const duplicate = updatedFiles.some(
+          (existingFile) =>
+            existingFile.name === newFile.name &&
+            existingFile.size === newFile.size &&
+            existingFile.lastModified === newFile.lastModified
+        );
+
+        if (duplicate) {
+          ignoredFiles.push(
+            `"${newFile.name}" (duplicado)`
+          );
+          continue;
+        }
+
+        updatedFiles.push(newFile);
+      }
+
+      return updatedFiles;
+    });
+
+    if (ignoredFiles.length) {
+      setFileWarning(
+        `Os seguintes arquivos não foram adicionados:\n\n${ignoredFiles.join("\n")}`
+      );
+    }
+    }
+
+    function handleRemoveReferenceFile(indexToRemove: number) {
+      setFileWarning("");
+      setSubmitError("");
+
+      setReferenceFiles((previousFiles) =>
+        previousFiles.filter(
+          (_, index) => index !== indexToRemove
+        )
+      );
+    }
+
+    async function onSubmit(values: ProposalSchemaValues) {
     try {
       setSubmitError("");
       setSubmitSuccess("");
       setIsSubmitting(true);
 
       let uploadedPaymentProof: UploadedReferenceFile | null = null;
-      let uploadedReferenceFiles: UploadedReferenceFile[] = [];
+      const uploadedReferenceFiles: UploadedReferenceFile[] = [];
 
+      /*
+      * Upload do comprovante (caso exista)
+      */
       if (paymentProofFile) {
-        uploadedPaymentProof = await uploadFileToR2(paymentProofFile, "payment-proof");
-      }
-
-      if (referenceFiles.length) {
-        uploadedReferenceFiles = await Promise.all(
-          referenceFiles.map((file) => uploadFileToR2(file, "reference"))
+        uploadedPaymentProof = await uploadFileToR2(
+          paymentProofFile,
+          "payment-proof"
         );
       }
 
-      const payload = {
-        email: values.email,
-        fullName: values.fullName,
-        cpf: values.cpf,
-        address: values.address,
-        birthDate: values.birthDate,
-        phone: values.phone,
-        socialProfile: values.socialProfile || "",
-
-        preferredContactMethod: values.preferredContactMethod,
-        preferredContactMethodOther: values.preferredContactMethodOther || "",
-
-        referralSource: values.referralSource,
-        referralSourceOther: values.referralSourceOther || "",
-
-        desiredWorkStart: values.desiredWorkStart,
-
-        projectType: values.projectType,
-        projectTypeOther: values.projectTypeOther || "",
-
-        taxAgreement: values.taxAgreement,
-        paymentMethod: values.paymentMethod,
-        paymentMethodOther: values.paymentMethodOther || "",
-        reviewConfirmed: values.reviewConfirmed,
-
-        newConstruction: values.newConstruction,
-        interiors: values.interiors,
-        renovation: values.renovation,
-        consulting: values.consulting,
-
-        paymentProofUrl: uploadedPaymentProof?.url || null,
-        paymentProofStorageKey: uploadedPaymentProof?.storageKey || null,
-        referenceFilesJson: uploadedReferenceFiles,
-      };
-
-      const response = await publicApiFetch("/proposal-requests", {
-        method: "POST",
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        throw new Error(data?.message || "Erro ao enviar solicitação.");
+      /*
+      * Upload sequencial das referências
+      */
+      for (const file of referenceFiles) {
+        try {
+          const uploaded = await uploadFileToR2(file, "reference");
+          uploadedReferenceFiles.push(uploaded);
+        } catch (error) {
+          throw new Error(
+            `Erro ao enviar "${file.name}". ${
+              error instanceof Error
+                ? error.message
+                : ""
+            }`
+          );
+        }
       }
 
-      sessionStorage.setItem("proposalSent", "true");
+      const payload = {
+        ...values,
+
+        socialProfile: values.socialProfile || "",
+
+        preferredContactMethodOther:
+          values.preferredContactMethodOther || "",
+
+        referralSourceOther:
+          values.referralSourceOther || "",
+
+        projectTypeOther:
+          values.projectTypeOther || "",
+
+        paymentMethodOther:
+          values.paymentMethodOther || "",
+
+        paymentProofUrl:
+          uploadedPaymentProof?.url ?? null,
+
+        paymentProofStorageKey:
+          uploadedPaymentProof?.storageKey ?? null,
+
+        referenceFilesJson: uploadedReferenceFiles,
+
+        referenceFilesCount:
+          uploadedReferenceFiles.length,
+      };
+
+      const response = await publicApiFetch(
+        "/proposal-requests",
+        {
+          method: "POST",
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await response
+        .json()
+        .catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(
+          data?.message ??
+            "Não foi possível enviar sua solicitação."
+        );
+      }
+
+      sessionStorage.setItem(
+        "proposalSent",
+        "true"
+      );
 
       setSubmitSuccess(
-        "Solicitação enviada com sucesso. Recebemos seus dados e já registramos suas informações no sistema. Você será direcionado para a próxima etapa."
+        "Solicitação enviada com sucesso. Recebemos seus dados e em instantes você será redirecionado."
       );
 
       setTimeout(() => {
-        window.location.href = "/proposta-enviada";
+        window.location.href =
+          "/proposta-enviada";
       }, 1800);
     } catch (error) {
+      console.error(error);
+
       setSubmitError(
         error instanceof Error
           ? error.message
@@ -408,8 +532,17 @@ export function ProposalForm() {
 
         {currentStepKey === "review" && <StepReview />}
 
-        {submitSuccess && <SuccessBox>{submitSuccess}</SuccessBox>}
-        {submitError && <ErrorBox>{submitError}</ErrorBox>}
+        {submitSuccess && (
+          <SuccessBox>{submitSuccess}</SuccessBox>
+        )}
+
+        {fileWarning && (
+          <WarningBox>{fileWarning}</WarningBox>
+        )}
+
+        {submitError && (
+          <ErrorBox>{submitError}</ErrorBox>
+        )}
 
         <ProposalNavigation
           currentStep={step}
