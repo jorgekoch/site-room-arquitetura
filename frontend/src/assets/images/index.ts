@@ -4,7 +4,9 @@ import heroCarousel3 from "./hero/carrossel/carrossel-3.jpg";
 import heroCarousel4 from "./hero/carrossel/carrossel-4.jpg";
 import heroCarousel5 from "./hero/carrossel/carrossel-5.jpg";
 
-import aboutImage1 from "./sobre/sobre-1.png";
+import aboutRoomImage from "./sobre/ROOM.jpg";
+import aboutManuImage from "./sobre/MANU.jpg";
+import aboutDudaImage from "./sobre/DUDA.jpg";
 
 import casaB612_1 from "./portfolio/casa-b-612/casa-b-612-1.jpg";
 import casaB612_2 from "./portfolio/casa-b-612/casa-b-612-2.jpg";
@@ -53,7 +55,9 @@ export const images = {
   },
 
   about: {
-    main: aboutImage1,
+    room: aboutRoomImage,
+    manu: aboutManuImage,
+    duda: aboutDudaImage,
   },
 
   portfolio: {

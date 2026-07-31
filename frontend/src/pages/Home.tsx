@@ -4,7 +4,7 @@ import { ServiceSectionBase } from "../components/sections/ServiceSectionBase";
 import { PortfolioSection } from "../components/sections/PortfolioSection";
 import { ProcessSection } from "../components/sections/ProcessSection";
 import { OfferingsSection } from "../components/sections/OfferingsSection";
-import { AboutSectionBase } from "../components/sections/AboutSectionBase";
+import { AboutPageSection } from "../components/sections/AboutPageSection";
 import { ContactCtaBase } from "../components/sections/ContactCtaBase";
 import { siteConfig } from "../config/site";
 import { homeData } from "../data/home";
@@ -13,7 +13,7 @@ import { servicesData } from "../data/services";
 import { portfolioData } from "../data/portfolio";
 import { processData } from "../data/process";
 import { offeringsData } from "../data/offerings";
-import { aboutData } from "../data/about";
+import { aboutPageData } from "../data/about";
 import { Reveal } from "../components/motion/Reveal";
 
 export function Home() {
@@ -87,22 +87,9 @@ export function Home() {
         </Reveal>
 
         <Reveal>
-          <AboutSectionBase
-            id="sobre"
-            eyebrow={aboutData.section.eyebrow}
-            title={aboutData.section.title}
-            description={aboutData.section.description}
-            mainTag={aboutData.content.mainTag}
-            mainTitle={aboutData.content.mainTitle}
-            paragraphs={aboutData.content.paragraphs}
-            bullets={aboutData.content.bullets}
-            sideTag={aboutData.content.sideTag}
-            sideTitle={aboutData.content.sideTitle}
-            sideItems={aboutData.content.sideItems}
-            profiles={aboutData.content.profiles}
-            image={aboutData.content.image}
-            showImage
-          />
+          <div id="sobre">
+            <AboutPageSection data={aboutPageData} />
+          </div>
         </Reveal>
 
         <Reveal>
