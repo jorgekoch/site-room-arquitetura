@@ -38,7 +38,9 @@ export class ProposalController {
       .replace(/[^a-zA-Z0-9._-]/g, "");
 
     const folder = kind === "payment-proof" ? "payment-proofs" : "references";
-    const storageKey = `proposals/${folder}/${Date.now()}-${safeFileName}`;
+    const timestamp = Date.now();
+
+    const storageKey = `proposals/${folder}/${timestamp}-${safeFileName}`;
 
     const command = new PutObjectCommand({
       Bucket: env.r2Bucket,
@@ -51,7 +53,7 @@ export class ProposalController {
     return response.json({
       uploadUrl,
       storageKey,
-      fileName: `${Date.now()}-${safeFileName}`,
+      fileName: `${timestamp}-${safeFileName}`,
       fileUrl: `${env.r2PublicUrl}/${storageKey}`,
     });
   }
@@ -157,47 +159,4 @@ export class ProposalController {
     });
   }
 
-  async uploadPaymentProofPublic(request: Request, response: Response) {
-    const { id } = request.params;
-
-    if (!id || Array.isArray(id)) {
-      throw new AppError("ID de solicitação inválido", 400);
-    }
-
-    if (!request.file) {
-      throw new AppError("Comprovante não enviado", 400);
-    }
-
-    const proposal = await proposalService.uploadPaymentProof(
-      id,
-      request.file.filename
-    );
-
-    return response.json({
-      message: "Comprovante enviado com sucesso",
-      proposal,
-    });
-  }
-
-  async uploadPaymentProofAdmin(request: Request, response: Response) {
-    const { id } = request.params;
-
-    if (!id || Array.isArray(id)) {
-      throw new AppError("ID de solicitação inválido", 400);
-    }
-
-    if (!request.file) {
-      throw new AppError("Comprovante não enviado", 400);
-    }
-
-    const proposal = await proposalService.uploadPaymentProof(
-      id,
-      request.file.filename
-    );
-
-    return response.json({
-      message: "Comprovante enviado com sucesso",
-      proposal,
-    });
-  }
 }

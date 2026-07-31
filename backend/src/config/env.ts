@@ -44,11 +44,11 @@ const envSchema = z.object({
 
   uploadDir: z.string().default("uploads"),
 
-  r2Endpoint: z.string(),
   r2Bucket: z.string(),
+  r2Endpoint: z.string(),
+  r2PublicUrl: z.string(),
   r2AccessKeyId: z.string(),
   r2SecretAccessKey: z.string(),
-  r2PublicUrl: z.string(),
 });
 
 export const env = envSchema.parse({

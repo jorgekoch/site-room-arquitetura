@@ -1,28 +1,37 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../database/prisma";
 import { env } from "../../config/env";
+
 import type {
   CreateProposalInput,
   UpdateProposalNotesInput,
   UpdateProposalStatusInput,
 } from "./proposal.schema";
+
 import {
   sendProposalConfirmationEmail,
   sendProposalNotificationEmail,
   sendProposalStatusChangedEmail,
 } from "./proposal.mail";
-import { AppError } from "../../utils/AppError";
 
 export class ProposalService {
   async create(data: CreateProposalInput) {
     const projectDetails =
       data.projectType === "new-construction"
-        ? { newConstruction: data.newConstruction ?? null }
+        ? {
+            newConstruction: data.newConstruction ?? null,
+          }
         : data.projectType === "interiors"
-        ? { interiors: data.interiors ?? null }
+        ? {
+            interiors: data.interiors ?? null,
+          }
         : data.projectType === "renovation"
-        ? { renovation: data.renovation ?? null }
-        : { consulting: data.consulting ?? null };
+        ? {
+            renovation: data.renovation ?? null,
+          }
+        : {
+            consulting: data.consulting ?? null,
+          };
 
     const proposal = await prisma.proposalRequest.create({
       data: {
@@ -35,7 +44,8 @@ export class ProposalService {
         socialProfile: data.socialProfile || null,
 
         preferredContactMethod: data.preferredContactMethod,
-        preferredContactMethodOther: data.preferredContactMethodOther || null,
+        preferredContactMethodOther:
+          data.preferredContactMethodOther || null,
 
         referralSource: data.referralSource,
         referralSourceOther: data.referralSourceOther || null,
@@ -46,36 +56,67 @@ export class ProposalService {
         projectTypeOther: data.projectTypeOther || null,
 
         taxAgreement: data.taxAgreement,
+
         paymentMethod: data.paymentMethod,
         paymentMethodOther: data.paymentMethodOther || null,
 
         projectDetailsJson: projectDetails,
+
         referenceFilesJson:
           data.referenceFilesJson?.length
             ? data.referenceFilesJson
             : Prisma.JsonNull,
-        pixKeySnapshot: data.paymentMethod === "pix" ? env.pixKey : null,
 
-        paymentProofUrl: data.paymentProofUrl || null,
-        paymentProofUploadedAt: data.paymentProofUrl ? new Date() : null,
+        pixKeySnapshot:
+          data.paymentMethod === "pix"
+            ? env.pixKey || null
+            : null,
+
+        paymentProofUrl:
+          data.paymentProofUrl || null,
+
+        paymentProofUploadedAt:
+          data.paymentProofUrl
+            ? new Date()
+            : null,
       },
     });
 
     void sendProposalNotificationEmail(proposal).catch((error) => {
-      console.error("Erro ao enviar e-mail interno da ROOM:", error);
+      console.error(
+        "Erro ao enviar e-mail interno da ROOM:",
+        error
+      );
     });
 
     void sendProposalConfirmationEmail(proposal).catch((error) => {
-      console.error("Erro ao enviar e-mail de confirmação ao cliente:", error);
+      console.error(
+        "Erro ao enviar confirmação ao cliente:",
+        error
+      );
     });
 
     return proposal;
   }
 
-  async list(filters?: { status?: string; projectType?: string; search?: string }) {
+  async list(filters?: {
+    status?: string;
+    projectType?: string;
+    search?: string;
+  }) {
     const where = {
-      ...(filters?.status ? { status: filters.status as any } : {}),
-      ...(filters?.projectType ? { projectType: filters.projectType } : {}),
+      ...(filters?.status
+        ? {
+            status: filters.status as any,
+          }
+        : {}),
+
+      ...(filters?.projectType
+        ? {
+            projectType: filters.projectType,
+          }
+        : {}),
+
       ...(filters?.search
         ? {
             OR: [
@@ -112,13 +153,20 @@ export class ProposalService {
 
   async findById(id: string) {
     return prisma.proposalRequest.findUnique({
-      where: { id },
+      where: {
+        id,
+      },
     });
   }
 
-  async updateStatus(id: string, data: UpdateProposalStatusInput) {
+  async updateStatus(
+    id: string,
+    data: UpdateProposalStatusInput
+  ) {
     const proposal = await prisma.proposalRequest.update({
-      where: { id },
+      where: {
+        id,
+      },
       data: {
         status: data.status,
       },
@@ -127,38 +175,32 @@ export class ProposalService {
     try {
       await sendProposalStatusChangedEmail(proposal);
     } catch (error) {
-      console.error("Erro ao enviar e-mail de mudança de status:", error);
+      console.error(
+        "Erro ao enviar e-mail de mudança de status:",
+        error
+      );
     }
 
     return proposal;
   }
 
-  async updateNotes(id: string, data: UpdateProposalNotesInput) {
+  async updateNotes(
+    id: string,
+    data: UpdateProposalNotesInput
+  ) {
     return prisma.proposalRequest.update({
-      where: { id },
+      where: {
+        id,
+      },
       data: {
         internalNotes: data.internalNotes || "",
       },
     });
   }
 
-  async uploadPaymentProof(id: string, fileName: string) {
-    const proposal = await prisma.proposalRequest.findUnique({
-      where: { id },
-    });
-
-    if (!proposal) {
-      throw new AppError("Solicitação não encontrada", 404);
-    }
-
-    const fileUrl = `${env.backendUrl}/${env.uploadDir}/${fileName}`;
-
-    return prisma.proposalRequest.update({
-      where: { id },
-      data: {
-        paymentProofUrl: fileUrl,
-        paymentProofUploadedAt: new Date(),
-      },
-    });
-  }
+  /**
+   * Atualiza o comprovante enviado pelo cliente
+   * (cliente ou administrador).
+   */
+  
 }

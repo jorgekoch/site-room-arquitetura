@@ -53,12 +53,14 @@ model ProposalRequest {
 
   projectDetailsJson          Json
 
-  internalNotes               String?
-  paymentProofUrl             String?
-  paymentProofUploadedAt      DateTime?
+  internalNotes          String?
 
-  referenceFilesJson          Json?
-  pixKeySnapshot              String?
+  paymentProofUrl        String?
+  paymentProofStorageKey String?
+  paymentProofUploadedAt DateTime?
+
+  referenceFilesJson     Json?
+  pixKeySnapshot         String?
 
   @@map("proposal_requests")
 }
