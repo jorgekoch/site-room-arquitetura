@@ -15,14 +15,14 @@ export const audienceData: AudienceData = {
     eyebrow: "Para quem é",
     title: "A ROOM faz sentido para quem quer construir, reformar, ampliar ou decorar com mais identidade, economia, clareza e pertencimento",
     description:
-      "A proposta da ROOM conversa principalmente com pessoas que estão planejando a primeira casa e desejam um projeto mais consciente, funcional e conectado à própria forma de viver.",
+      "A proposta da ROOM conversa principalmente com pessoas que estão planejando o primeiro projeto e desejam um projeto mais consciente, funcional e conectado à própria forma de viver.",
   },
 
   items: [
     {
       title: "Casais e famílias em uma nova fase",
       description:
-        "que vão construir ou reformar e desejam uma casa pensada para durar muitos anos, com conforto térmico, iluminação natural, funcionalidade e menores custos de operação ao longo do tempo.",
+        "que vão construir ou reformar e desejam um projeto pensado para durar muitos anos, com conforto térmico, iluminação natural, funcionalidade e menores custos de operação ao longo do tempo.",
     },
     {
       title: "Pessoas que valorizam a sustentabilidade de forma prática",

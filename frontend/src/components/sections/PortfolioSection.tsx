@@ -180,7 +180,7 @@ const ExploreText = styled.span`
 export function PortfolioSection({
   eyebrow = "Projetos",
   title = "Projetos selecionados",
-  description = "Casas pensadas a partir da escuta, do lugar e da identidade de quem vive cada espaço.",
+  description = "Projetos pensados a partir da escuta, do lugar e da identidade de quem vive cada espaço.",
   items = [],
 }: PortfolioSectionProps) {
   return (

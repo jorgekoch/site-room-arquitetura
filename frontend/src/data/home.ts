@@ -20,16 +20,16 @@ export const homeData: HomeData = {
   hero: {
     eyebrow: "ROOM Arquitetura Sustentável",
     title:
-      "Casas com identidade, pensadas para a vida que vai acontecer dentro delas",
+      "Projetos com identidade, pensados para a vida que vai acontecer dentro deles",
     description:
-      "A ROOM desenvolve projetos residenciais com escuta profunda, leitura do terreno e estratégias sustentáveis para criar casas mais conscientes, funcionais e conectadas à vida de cada família.",
+      "A ROOM desenvolve projetos residenciais com escuta profunda, leitura do terreno e estratégias sustentáveis para criar projetos mais conscientes, funcionais e conectados à vida de cada família.",
     slides: images.hero.carousel,
   },
 
   finalCta: {
     eyebrow: "Próximo passo",
     title:
-      "Se a sua casa precisa refletir quem você é, o projeto precisa começar pela escuta",
+      "Se o seu projeto precisa refletir quem você é, o processo precisa começar pela escuta",
     description:
       "Preencha o formulário de proposta para iniciar esse processo com clareza, direção e atenção ao que realmente importa para a sua rotina.",
   },

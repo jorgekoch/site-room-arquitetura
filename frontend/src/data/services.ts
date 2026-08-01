@@ -26,7 +26,7 @@ export type ServicesData = {
 export const servicesData: ServicesData = {
   section: {
     eyebrow: "Como a ROOM projeta",
-    title: "Mais do que desenhar uma casa, a ROOM constrói entendimento",
+    title: "Mais do que desenhar um projeto, a ROOM constrói entendimento",
     description:
       "Cada projeto nasce de uma escuta profunda, da leitura do terreno e de decisões que equilibram estética, funcionalidade e sustentabilidade.",
   },

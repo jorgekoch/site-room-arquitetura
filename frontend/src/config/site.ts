@@ -25,7 +25,7 @@ export const siteConfig: SiteConfig = {
     name: "ROOM Arquitetura Sustentável",
     initials: "RM",
     tagline:
-      "Casas com identidade, guiadas pelo terreno e pela história de quem vai viver nelas.",
+      "Projetos com identidade, guiados pelo terreno e pela história de quem vai viver neles.",
   },
 
   contact: {

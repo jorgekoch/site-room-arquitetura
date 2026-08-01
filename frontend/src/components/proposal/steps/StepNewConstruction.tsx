@@ -258,7 +258,7 @@ export function StepNewConstruction({
         </Label>
         <Textarea
           id="newConstruction.scopeDescription"
-          placeholder="Descreva a casa, os ambientes, a atmosfera desejada, referências, necessidades práticas e tudo o que for importante."
+          placeholder="Descreva o projeto, os ambientes, a atmosfera desejada, referências, necessidades práticas e tudo o que for importante."
           {...register("newConstruction.scopeDescription")}
         />
         {errors.newConstruction?.scopeDescription && (

@@ -18,7 +18,7 @@ export type OfferingsData = {
 export const offeringsData: OfferingsData = {
   section: {
     eyebrow: "Formatos de atendimento",
-    title: "Diferentes formas de conduzir o projeto, conforme a profundidade que sua casa precisa",
+    title: "Diferentes formas de conduzir o projeto, conforme a profundidade que seu projeto precisa",
     description:
       "A ROOM estrutura o atendimento de forma personalizada, mas pode trabalhar com diferentes níveis de aprofundamento conforme o momento, a complexidade e o tipo de entrega ideal para cada cliente.",
   },
@@ -39,7 +39,7 @@ export const offeringsData: OfferingsData = {
       tag: "Padrão",
       title: "Pacote Padrão, a experiência de projeto modo ROOM.",
       description:
-        "Nossa opção mais escolhida. Além de um projeto arquitetônico totalmente desenvolvido, você acompanha cada decisão por meio de imagens realistas, estudos detalhados e soluções pensadas para proporcionar conforto, economia, funcionalidade e uma arquitetura verdadeiramente personalizada. É a melhor escolha para quem deseja visualizar sua futura casa antes mesmo da construção começar e tomar decisões com muito mais segurança.",
+        "Nossa opção mais escolhida. Além de um projeto arquitetônico totalmente desenvolvido, você acompanha cada decisão por meio de imagens realistas, estudos detalhados e soluções pensadas para proporcionar conforto, economia, funcionalidade e uma arquitetura verdadeiramente personalizada. É a melhor escolha para quem deseja visualizar seu futuro projeto antes mesmo da construção começar e tomar decisões com muito mais segurança.",
       bullets: [
         "Desenvolvimento aprofundado das soluções",
         "Melhor visualização e amadurecimento do projeto",
