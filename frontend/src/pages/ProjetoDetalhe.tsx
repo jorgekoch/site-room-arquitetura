@@ -77,15 +77,103 @@ const Meta = styled.div`
   gap: 0.45rem;
 `;
 
-const Location = styled.p`
-  color: ${({ theme }) => theme.colors.textMuted};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
+const DetailsSection = styled.div`
+  display: grid;
+  gap: 1rem;
+  margin-top: 0.5rem;
+
+  @media ${media.laptop} {
+    grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+    align-items: start;
+  }
 `;
 
-const Description = styled.p`
+const InfoCard = styled.div`
+  padding: 1.25rem;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: ${({ theme }) => theme.colors.surface};
+  box-shadow: ${({ theme }) => theme.shadow.sm};
+`;
+
+const CardTitle = styled.h3`
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+`;
+
+const InfoList = styled.dl`
+  display: grid;
+  gap: 0.8rem;
+  margin: 0;
+`;
+
+const InfoItem = styled.div`
+  display: grid;
+  gap: 0.2rem;
+`;
+
+const InfoLabel = styled.dt`
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+`;
+
+const InfoValue = styled.dd`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.text};
+  line-height: 1.6;
+`;
+
+const DescriptionSection = styled.div`
+  margin-top: 1.5rem;
+  width: 100%;
+`;
+
+const DescriptionCard = styled.div`
+  padding: 1.25rem;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: ${({ theme }) => theme.colors.surface};
+  box-shadow: ${({ theme }) => theme.shadow.sm};
+`;
+
+const DescriptionText = styled.p`
   color: ${({ theme }) => theme.colors.textSoft};
   line-height: 1.85;
-  max-width: 720px;
+  margin: 0.75rem 0 0;
+`;
+
+const VideoCard = styled.div`
+  padding: 1.25rem;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: ${({ theme }) => theme.colors.surface};
+  box-shadow: ${({ theme }) => theme.shadow.sm};
+  display: grid;
+  gap: 0.8rem;
+`;
+
+const VideoPlaceholder = styled.div`
+  min-height: 220px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  border: 1px dashed ${({ theme }) => theme.colors.border};
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  color: ${({ theme }) => theme.colors.textMuted};
+  text-align: center;
+  line-height: 1.7;
+`;
+
+const VideoFrame = styled.iframe`
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 260px;
+  border: 0;
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: ${({ theme }) => theme.colors.surfaceHover};
 `;
 
 const HeroImageCard = styled.div`
@@ -127,6 +215,7 @@ const HeroImage = styled.img`
 const GallerySection = styled.div`
   display: grid;
   gap: 1rem;
+  margin-top: 2rem;
 `;
 
 const GalleryHeader = styled.div`
@@ -307,6 +396,20 @@ export default function ProjetoDetalhe() {
 
   const otherProjects = portfolioData.items.filter((item) => item.slug !== slug);
 
+  const getYouTubeEmbedUrl = (url?: string) => {
+    if (!url) return "";
+
+    const match = url.match(/(?:youtube\.com\/watch\?v=|youtube\.com\/embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+
+    if (match?.[1]) {
+      return `https://www.youtube.com/embed/${match[1]}`;
+    }
+
+    return url;
+  };
+
+  const videoEmbedUrl = getYouTubeEmbedUrl(project.videoUrl);
+
   return (
     <Section>
       <Container>
@@ -319,8 +422,34 @@ export default function ProjetoDetalhe() {
             <Title>{project.title}</Title>
 
             <Meta>
-              <Location>{project.location}</Location>
-              <Description>{project.description}</Description>
+              <DetailsSection>
+                <InfoCard>
+                  <CardTitle>Informações do projeto</CardTitle>
+                  <InfoList>
+                    <InfoItem>
+                      <InfoLabel>Áreaconstruída</InfoLabel>
+                      <InfoValue>{project.areaConstruida}</InfoValue>
+                    </InfoItem>
+                    <InfoItem>
+                      <InfoLabel>Terreno</InfoLabel>
+                      <InfoValue>{project.terreno}</InfoValue>
+                    </InfoItem>
+                    <InfoItem>
+                      <InfoLabel>Local</InfoLabel>
+                      <InfoValue>{project.local}</InfoValue>
+                    </InfoItem>
+                    <InfoItem>
+                      <InfoLabel>Projeto</InfoLabel>
+                      <InfoValue>{project.projeto}</InfoValue>
+                    </InfoItem>
+                    <InfoItem>
+                      <InfoLabel>Ano</InfoLabel>
+                      <InfoValue>{project.year}</InfoValue>
+                    </InfoItem>
+                  </InfoList>
+
+                </InfoCard>
+              </DetailsSection>
             </Meta>
           </HeroContent>
 
@@ -331,6 +460,13 @@ export default function ProjetoDetalhe() {
             />
           </HeroImageCard>
         </Hero>
+
+        <DescriptionSection>
+          <DescriptionCard>
+            <InfoLabel>Descrição</InfoLabel>
+            <DescriptionText>{project.description}</DescriptionText>
+          </DescriptionCard>
+        </DescriptionSection>
 
         <GallerySection>
           <GalleryHeader>
@@ -352,6 +488,27 @@ export default function ProjetoDetalhe() {
               </GalleryImageCard>
             ))}
           </Gallery>
+
+          {videoEmbedUrl ? (
+            <VideoCard>
+              <CardTitle>Vídeo do projeto</CardTitle>
+              <VideoFrame
+                src={videoEmbedUrl}
+                title={`Vídeo do projeto ${project.title}`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </VideoCard>
+          ) : (
+            <VideoCard>
+              <CardTitle>Vídeo do projeto</CardTitle>
+              <VideoPlaceholder>
+                Ainda não há vídeo para este projeto.
+                <br />
+                Adicione o link do YouTube na propriedade videoUrl do item correspondente em [frontend/src/data/portfolio.ts](frontend/src/data/portfolio.ts).
+              </VideoPlaceholder>
+            </VideoCard>
+          )}
         </GallerySection>
 
         <Divider />
