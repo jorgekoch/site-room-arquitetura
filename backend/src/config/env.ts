@@ -44,11 +44,18 @@ const envSchema = z.object({
 
   uploadDir: z.string().default("uploads"),
 
-  r2Bucket: z.string(),
-  r2Endpoint: z.string(),
-  r2PublicUrl: z.string(),
-  r2AccessKeyId: z.string(),
-  r2SecretAccessKey: z.string(),
+  r2Bucket: z.string().trim().min(1),
+  r2Endpoint: z
+    .string()
+    .trim()
+    .url("R2_ENDPOINT deve ser uma URL válida.")
+    .refine(
+      (value) => new URL(value).hostname.endsWith(".r2.cloudflarestorage.com"),
+      "R2_ENDPOINT deve usar o endpoint S3 do Cloudflare R2."
+    ),
+  r2PublicUrl: z.string().trim().url("R2_PUBLIC_URL deve ser uma URL válida."),
+  r2AccessKeyId: z.string().trim().min(1),
+  r2SecretAccessKey: z.string().trim().min(1),
 });
 
 export const env = envSchema.parse({
