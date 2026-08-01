@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styled from "styled-components";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { Container } from "../components/ui/Container";
@@ -242,12 +243,14 @@ const Gallery = styled.div`
   }
 `;
 
-const GalleryImageCard = styled.div`
+const GalleryImageCard = styled.button`
   border-radius: ${({ theme }) => theme.radius.lg};
   overflow: hidden;
   border: 1px solid ${({ theme }) => theme.colors.border};
   background: ${({ theme }) => theme.colors.surface};
   box-shadow: ${({ theme }) => theme.shadow.sm};
+  padding: 0;
+  cursor: pointer;
   transition:
     transform ${({ theme }) => theme.transitions.default},
     border-color ${({ theme }) => theme.transitions.default};
@@ -271,6 +274,49 @@ const GalleryImage = styled.img`
   @media ${media.laptop} {
     height: 360px;
   }
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+`;
+
+const ModalContent = styled.div`
+  width: min(100%, 980px);
+  max-height: 90vh;
+  display: grid;
+  gap: 1rem;
+`;
+
+const ModalImage = styled.img`
+  width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  background: ${({ theme }) => theme.colors.surface};
+`;
+
+const ModalControls = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+`;
+
+const ModalButton = styled.button`
+  border: 0;
+  border-radius: ${({ theme }) => theme.radius.pill};
+  background: rgba(255, 255, 255, 0.95);
+  color: ${({ theme }) => theme.colors.text};
+  padding: 0.7rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
 `;
 
 const Divider = styled.div`
@@ -409,6 +455,29 @@ export default function ProjetoDetalhe() {
   };
 
   const videoEmbedUrl = getYouTubeEmbedUrl(project.videoUrl);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const openImage = (image: string, index: number) => {
+    setSelectedImage(image);
+    setSelectedIndex(index);
+  };
+
+  const closeImage = () => {
+    setSelectedImage(null);
+  };
+
+  const goToPrevious = () => {
+    const nextIndex = selectedIndex > 0 ? selectedIndex - 1 : project.images.length - 1;
+    setSelectedImage(project.images[nextIndex]);
+    setSelectedIndex(nextIndex);
+  };
+
+  const goToNext = () => {
+    const nextIndex = selectedIndex < project.images.length - 1 ? selectedIndex + 1 : 0;
+    setSelectedImage(project.images[nextIndex]);
+    setSelectedIndex(nextIndex);
+  };
 
   return (
     <Section>
@@ -479,7 +548,12 @@ export default function ProjetoDetalhe() {
 
           <Gallery>
             {project.images.map((image, index) => (
-              <GalleryImageCard key={`${project.slug}-${index}`}>
+              <GalleryImageCard
+                key={`${project.slug}-${index}`}
+                type="button"
+                onClick={() => openImage(image, index)}
+                aria-label={`Abrir imagem ${index + 1} de ${project.title}`}
+              >
                 <GalleryImage
                   src={image}
                   alt={`${project.title} ${index + 1}`}
@@ -510,6 +584,33 @@ export default function ProjetoDetalhe() {
             </VideoCard>
           )}
         </GallerySection>
+
+        {selectedImage ? (
+          <ModalOverlay onClick={closeImage}>
+            <ModalContent onClick={(event) => event.stopPropagation()}>
+              <ModalImage src={selectedImage} alt={project.title} />
+              <ModalControls>
+                <ModalButton
+                  type="button"
+                  onClick={goToPrevious}
+                  disabled={project.images.length <= 1}
+                >
+                  ← Anterior
+                </ModalButton>
+                <span style={{ color: "#fff" }}>
+                  {selectedIndex + 1} / {project.images.length}
+                </span>
+                <ModalButton
+                  type="button"
+                  onClick={goToNext}
+                  disabled={project.images.length <= 1}
+                >
+                  Próxima →
+                </ModalButton>
+              </ModalControls>
+            </ModalContent>
+          </ModalOverlay>
+        ) : null}
 
         <Divider />
 
