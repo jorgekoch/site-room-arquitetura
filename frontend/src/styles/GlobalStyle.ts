@@ -22,7 +22,7 @@ export const GlobalStyle = createGlobalStyle`
     background: ${({ theme }) => theme.colors.background};
     color: ${({ theme }) => theme.colors.text};
     font-family: ${({ theme }) => theme.fonts.body};
-    font-weight: 400;
+    font-weight: 300;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -47,13 +47,13 @@ export const GlobalStyle = createGlobalStyle`
   h5,
   h6 {
     font-family: ${({ theme }) => theme.fonts.heading};
-    font-weight: 700;
+    font-weight: 800;
     color: ${({ theme }) => theme.colors.text};
   }
 
   p {
     color: ${({ theme }) => theme.colors.textSoft};
-    font-weight: 400;
+    font-weight: 300;
   }
 
   ul,
