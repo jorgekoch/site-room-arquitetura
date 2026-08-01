@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { AboutPageData } from "../../data/about";
 import { media } from "../../styles/breakpoints";
 import { Container } from "../ui/Container";
-import { Tag } from "../ui/Tag";
 
 type AboutPageSectionProps = { data: AboutPageData };
 
@@ -14,6 +13,18 @@ const Header = styled.div`
   display: grid;
   gap: 0.75rem;
   margin-bottom: 2rem;
+`;
+const Eyebrow = styled.span`
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.45rem 0.9rem;
+  border-radius: ${({ theme }) => theme.radius.pill};
+  background: ${({ theme }) => theme.colors.secondarySoft};
+  border: 1px solid ${({ theme }) => theme.colors.secondaryBorder};
+  color: ${({ theme }) => theme.colors.secondary};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: 600;
+  line-height: 1;
 `;
 
 const Title = styled.h1`
@@ -71,7 +82,7 @@ export function AboutPageSection({ data }: AboutPageSectionProps) {
   return (
     <Section><Container>
       <Header>
-        <Tag>Sobre</Tag>
+        <Eyebrow>Sobre</Eyebrow>
         <Title>{data.title}</Title>
       </Header>
       <Row>

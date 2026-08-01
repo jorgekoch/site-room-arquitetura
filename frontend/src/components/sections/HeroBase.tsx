@@ -116,7 +116,7 @@ const Eyebrow = styled.span`
   background: ${({ theme }) => theme.colors.secondarySoft};
   border: 1px solid ${({ theme }) => theme.colors.secondaryBorder};
   color: ${({ theme }) => theme.colors.secondaryContrast};
-  font-size: ${({ theme }) => theme.fontSizes.xs};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
