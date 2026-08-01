@@ -288,18 +288,29 @@ const ModalOverlay = styled.div`
 `;
 
 const ModalContent = styled.div`
-  width: min(100%, 980px);
+  width: min(100%, 1120px);
   max-height: 90vh;
   display: grid;
   gap: 1rem;
 `;
 
-const ModalImage = styled.img`
+const ModalImageFrame = styled.div`
   width: 100%;
-  max-height: 70vh;
-  object-fit: contain;
+  height: min(78vh, 760px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: ${({ theme }) => theme.radius.lg};
   background: ${({ theme }) => theme.colors.surface};
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+`;
+
+const ModalImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 `;
 
 const ModalControls = styled.div`
@@ -588,7 +599,9 @@ export default function ProjetoDetalhe() {
         {selectedImage ? (
           <ModalOverlay onClick={closeImage}>
             <ModalContent onClick={(event) => event.stopPropagation()}>
-              <ModalImage src={selectedImage} alt={project.title} />
+              <ModalImageFrame>
+                <ModalImage src={selectedImage} alt={project.title} />
+              </ModalImageFrame>
               <ModalControls>
                 <ModalButton
                   type="button"
