@@ -432,7 +432,7 @@ export default function AdminPropostas() {
                     <ItemTitle>{item.fullName}</ItemTitle>
                     <ItemMeta>{item.email}</ItemMeta>
                     <ItemMeta>
-                      {item.projectType} • {item.status}
+                      {item.projectType} • {proposalStatusOptions.find((option) => option.value === item.status)?.label ?? item.status}
                     </ItemMeta>
                   </ItemButton>
                 ))}
