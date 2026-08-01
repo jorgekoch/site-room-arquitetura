@@ -3,6 +3,7 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import {
   createProposalSchema,
+  uploadUrlSchema,
   updateProposalNotesSchema,
   updateProposalStatusSchema,
 } from "./proposal.schema";
@@ -23,19 +24,49 @@ function parseJsonField<T>(value: unknown, fallback: T): T {
   }
 }
 
+function getPublicFileUrl(storageKey: string) {
+  return `${env.r2PublicUrl.replace(/\/$/, "")}/${storageKey}`;
+}
+
+function ensureStoredFilesBelongToR2(
+  data: ReturnType<typeof createProposalSchema.parse>
+) {
+  if (data.paymentProofUrl || data.paymentProofStorageKey) {
+    const isValidPaymentProof =
+      Boolean(data.paymentProofUrl) &&
+      Boolean(data.paymentProofStorageKey) &&
+      data.paymentProofStorageKey!.startsWith("proposals/payment-proofs/") &&
+      data.paymentProofUrl === getPublicFileUrl(data.paymentProofStorageKey!);
+
+    if (!isValidPaymentProof) {
+      throw new AppError("Comprovante de pagamento inválido.", 400);
+    }
+  }
+
+  const hasInvalidReference = data.referenceFilesJson.some(
+    (file) =>
+      !file.storageKey.startsWith("proposals/references/") ||
+      file.url !== getPublicFileUrl(file.storageKey)
+  );
+
+  if (hasInvalidReference) {
+    throw new AppError("Arquivo de referência inválido.", 400);
+  }
+}
+
 export class ProposalController {
   async getUploadUrl(request: Request, response: Response) {
-    const { fileName, fileType, kind } = request.body;
-
-    if (!fileName || !fileType) {
-      throw new AppError("Dados do arquivo não enviados.", 400);
-    }
+    const { fileName, fileType, kind } = uploadUrlSchema.parse(request.body);
 
     const safeFileName = String(fileName)
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/\s+/g, "-")
       .replace(/[^a-zA-Z0-9._-]/g, "");
+
+    if (!safeFileName) {
+      throw new AppError("Nome de arquivo inválido.", 400);
+    }
 
     const folder = kind === "payment-proof" ? "payment-proofs" : "references";
     const timestamp = Date.now();
@@ -88,6 +119,7 @@ export class ProposalController {
     };
 
     const data = createProposalSchema.parse(body);
+    ensureStoredFilesBelongToR2(data);
 
     const proposal = await proposalService.create(data);
 

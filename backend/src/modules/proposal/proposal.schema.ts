@@ -1,5 +1,23 @@
 import { z } from "zod";
 
+const storageKeySchema = z
+  .string()
+  .regex(
+    /^proposals\/(?:payment-proofs|references)\/[A-Za-z0-9._-]+$/,
+    "Chave de armazenamento inválida."
+  );
+
+export const uploadUrlSchema = z.object({
+  fileName: z.string().trim().min(1).max(120),
+  fileType: z.enum([
+    "application/pdf",
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+  ]),
+  kind: z.enum(["payment-proof", "reference"]).default("reference"),
+});
+
 export const createProposalSchema = z.object({
   email: z.string().email(),
   fullName: z.string().min(3),
@@ -30,7 +48,7 @@ export const createProposalSchema = z.object({
   paymentMethodOther: z.string().optional().nullable(),
 
   paymentProofUrl: z.string().url().nullable().optional(),
-  paymentProofStorageKey: z.string().nullable().optional(),
+  paymentProofStorageKey: storageKeySchema.nullable().optional(),
   referenceFilesJson: z
     .array(
       z.object({
@@ -39,7 +57,7 @@ export const createProposalSchema = z.object({
         mimeType: z.string(),
         size: z.number(),
         url: z.string().url(),
-        storageKey: z.string(),
+        storageKey: storageKeySchema,
       })
     )
     .optional()

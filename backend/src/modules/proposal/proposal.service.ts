@@ -75,6 +75,9 @@ export class ProposalService {
         paymentProofUrl:
           data.paymentProofUrl || null,
 
+        paymentProofStorageKey:
+          data.paymentProofStorageKey || null,
+
         paymentProofUploadedAt:
           data.paymentProofUrl
             ? new Date()
