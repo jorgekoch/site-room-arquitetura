@@ -589,8 +589,6 @@ export default function ProjetoDetalhe() {
               <CardTitle>Vídeo do projeto</CardTitle>
               <VideoPlaceholder>
                 Ainda não há vídeo para este projeto.
-                <br />
-                Adicione o link do YouTube na propriedade videoUrl do item correspondente em [frontend/src/data/portfolio.ts](frontend/src/data/portfolio.ts).
               </VideoPlaceholder>
             </VideoCard>
           )}
