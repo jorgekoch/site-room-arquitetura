@@ -89,7 +89,6 @@ export function AboutPageSection({ data }: AboutPageSectionProps) {
         <Portrait image={data.introduction.image} imageAlt={data.introduction.imageAlt} />
         <Copy>{data.introduction.paragraphs.map((paragraph) => <Text key={paragraph}>{paragraph}</Text>)}</Copy>
       </Row>
-      <ArchitectsTitle>{data.architects.title}</ArchitectsTitle>
       {data.architects.profiles.map((profile, index) => (
         <Row key={profile.name} $reverse={index % 2 === 0}>
           <Portrait image={profile.image} imageAlt={profile.imageAlt} />
