@@ -32,11 +32,7 @@ const Title = styled.h1`
   line-height: 1.12;
   margin: 0;
 `;
-const ArchitectsTitle = styled.h2`
-  font-size: clamp(1.55rem, 2.5vw, 2.4rem);
-  line-height: 1.15;
-  margin: 4rem 0 1.5rem;
-`;
+
 const Row = styled.article<{ $reverse?: boolean }>`
   display: grid;
   gap: 1.5rem;
