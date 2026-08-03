@@ -37,7 +37,7 @@ export const audienceData: AudienceData = {
     {
       title: "Empreendedores que entendem que o ambiente influencia diretamente a experiência do cliente",
       description:
-        "a eficiência da equipe e os resultados do negócio. A própria atuação da ROOM contempla projetos comerciais e institucionais com esse enfoque.",
+        "a eficiência da equipe e os resultados do negócio.",
     },
         {
       title: "Quem busca um processo claro e atendimento próximo e colaborativo",

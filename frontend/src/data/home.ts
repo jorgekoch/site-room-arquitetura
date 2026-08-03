@@ -22,7 +22,7 @@ export const homeData: HomeData = {
     title:
       "Projetos com identidade, pensados para a vida que vai acontecer dentro deles",
     description:
-      "A ROOM desenvolve projetos residenciais com escuta profunda, leitura do terreno e estratégias sustentáveis para criar projetos mais conscientes, funcionais e conectados à vida de cada família.",
+      "A ROOM desenvolve projetos com escuta profunda, leitura do terreno e estratégias sustentáveis para criar projetos mais conscientes, funcionais e conectados à vida de cada cliente.",
     slides: images.hero.carousel,
   },
 

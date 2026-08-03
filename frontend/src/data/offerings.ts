@@ -18,7 +18,7 @@ export type OfferingsData = {
 export const offeringsData: OfferingsData = {
   section: {
     eyebrow: "Formatos de atendimento",
-    title: "Diferentes formas de conduzir o projeto, conforme a profundidade que seu projeto precisa",
+    title: "Diferentes formas de conduzir o projeto, conforme a profundidade que você precisa",
     description:
       "A ROOM estrutura o atendimento de forma personalizada, mas pode trabalhar com diferentes níveis de aprofundamento conforme o momento, a complexidade e o tipo de entrega ideal para cada cliente.",
   },
