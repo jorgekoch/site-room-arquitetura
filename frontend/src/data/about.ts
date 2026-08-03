@@ -33,7 +33,6 @@ export type AboutPageData = {
     paragraphs: string[];
   };
   architects: {
-    title: string;
     profiles: Array<{
       name: string;
       text: string;
@@ -55,7 +54,6 @@ export const aboutPageData: AboutPageData = {
     ],
   },
   architects: {
-    title: "As Arquitetas",
     profiles: [
       {
         name: "Emanuela Bilk Lopes, a Manu",
