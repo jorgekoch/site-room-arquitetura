@@ -88,12 +88,6 @@ const BrandTitle = styled.strong`
   line-height: 1.2;
 `;
 
-const BrandSubtitle = styled.span`
-  color: ${({ theme }) => theme.colors.textMuted};
-  line-height: 1.5;
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-`;
-
 const BrandText = styled.p`
   color: ${({ theme }) => theme.colors.textSoft};
   line-height: 1.8;
@@ -188,7 +182,6 @@ export function Footer() {
 
               <BrandInfo>
                 <BrandTitle>ROOM Arquitetura Sustentável</BrandTitle>
-                <BrandSubtitle>Arquitetura com propósito e sentimento</BrandSubtitle>
               </BrandInfo>
             </BrandRow>
 
