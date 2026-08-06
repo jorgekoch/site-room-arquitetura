@@ -9,6 +9,7 @@ import AdminPropostas from "./pages/AdminPropostas";
 import AdminUsuarios from "./pages/AdminUsuarios";
 import { AdminRoute } from "./components/auth/AdminRoute";
 import ProjetoDetalhe from "./pages/ProjetoDetalhe";
+import Projetos from "./pages/Projetos";
 import { ScrollToTop } from "./components/utils/ScrollToTop";
 import { ProtectedSuccessRoute } from "./components/auth/ProtectedSuccessRoute";
 
@@ -37,6 +38,7 @@ function App() {
             }
           />
 
+          <Route path="/projetos" element={<Projetos />} />
           <Route path="/projetos/:slug" element={<ProjetoDetalhe />} />
 
           <Route path="/admin/login" element={<AdminLogin />} />

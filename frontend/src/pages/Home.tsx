@@ -62,6 +62,13 @@ export function Home() {
             title={portfolioData.section.title}
             description={portfolioData.section.description}
             items={portfolioData.items}
+            limit={5}
+            viewAllCard={{
+              title: "Explore todos os projetos",
+              description: "Acesse a página completa e filtre por categoria.",
+              to: "/projetos",
+              buttonLabel: "Ver todos",
+            }}
           />
         </Reveal>
 

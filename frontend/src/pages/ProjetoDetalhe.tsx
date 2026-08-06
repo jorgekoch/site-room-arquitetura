@@ -493,7 +493,7 @@ export default function ProjetoDetalhe() {
   return (
     <Section>
       <Container>
-        <BackLink to="/#portfolio">← Voltar para projetos</BackLink>
+        <BackLink to="/projetos">← Voltar para projetos</BackLink>
 
         <Hero>
           <HeroContent>
@@ -646,7 +646,7 @@ export default function ProjetoDetalhe() {
 
                 <ProjectCardContent>
                   <ProjectCardTitle>{item.title}</ProjectCardTitle>
-                  <ProjectCardLocation>{item.location}</ProjectCardLocation>
+                  <ProjectCardLocation>{item.local}</ProjectCardLocation>
                   <ProjectCardDescription>{item.description}</ProjectCardDescription>
                   <ExploreText>Ver projeto →</ExploreText>
                 </ProjectCardContent>

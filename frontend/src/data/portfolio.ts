@@ -3,7 +3,7 @@ import { images } from "../assets/images";
 export type PortfolioItem = {
   slug: string;
   title: string;
-  location: string;
+  category: string;
   areaConstruida: string;
   terreno: string;
   local: string;
@@ -36,7 +36,7 @@ export const portfolioData: PortfolioData = {
     {
       slug: "casa-b-612",
       title: "Casa B-612",
-      location: "Adicionar cidade",
+      category: "Projetos Arquitetônicos Residenciais",
       areaConstruida: "160 m²",
       terreno: "8,5m x 24m",
       local: "Rio do Janeiro – RJ",
@@ -50,7 +50,7 @@ export const portfolioData: PortfolioData = {
     {
       slug: "casa-bia-leo",
       title: "Casa Bia e Leo",
-      location: "Adicionar localidade",
+      category: "Projetos Arquitetônicos Residenciais",
       areaConstruida: "Adicionar informação",
       terreno: "Adicionar informação",
       local: "Adicionar localidade",
@@ -63,7 +63,7 @@ export const portfolioData: PortfolioData = {
     {
       slug: "casa-carol-renner",
       title: "Casa Carol e Renner",
-      location: "Adicionar localidade",
+      category: "Projetos Arquitetônicos Residenciais",
       areaConstruida: "Adicionar informação",
       terreno: "Adicionar informação",
       local: "Adicionar localidade",
@@ -76,7 +76,7 @@ export const portfolioData: PortfolioData = {
     {
       slug: "casa-da-jabuticabeira",
       title: "Casa da Jabuticabeira",
-      location: "Adicionar localidade",
+      category: "Projetos Arquitetônicos Residenciais",
       areaConstruida: "Adicionar informação",
       terreno: "Adicionar informação",
       local: "Adicionar localidade",
@@ -89,7 +89,7 @@ export const portfolioData: PortfolioData = {
     {
       slug: "casa-sara-bernardo",
       title: "Casa Sara e Bernardo",
-      location: "Adicionar localidade",
+      category: "Projetos Arquitetônicos Residenciais",
       areaConstruida: "Adicionar informação",
       terreno: "Adicionar informação",
       local: "Adicionar localidade",
