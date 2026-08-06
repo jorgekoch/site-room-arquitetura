@@ -65,7 +65,7 @@ const FilterButton = styled.button<{ isActive: boolean }>`
   border: 1px solid ${({ theme, isActive }) => isActive ? theme.colors.secondary : theme.colors.border};
   background: ${({ theme, isActive }) => isActive ? theme.colors.secondary : theme.colors.surface};
   color: ${({ theme, isActive }) => isActive ? theme.colors.secondaryContrast : theme.colors.text};
-  border-radius: ${({ theme }) => theme.radius.full};
+  border-radius: ${({ theme }) => theme.radius.pill};
   padding: 0.65rem 1rem;
   font-size: ${({ theme }) => theme.fontSizes.xs};
   font-weight: 700;
