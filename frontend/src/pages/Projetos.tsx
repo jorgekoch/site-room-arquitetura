@@ -33,12 +33,29 @@ const Page = styled.div`
   }
 `;
 
+const NoticeBanner = styled.div`
+  margin: 0 0 1.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid ${({ theme }) => theme.colors.primaryBorder};
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: ${({ theme }) => theme.colors.primarySoft};
+  color: ${({ theme }) => theme.colors.text};
+  font-weight: 600;
+  text-align: center;
+
+  @media ${media.tablet} {
+    margin-bottom: 2rem;
+    padding: 1.125rem 1.5rem;
+  }
+`;
+
 export default function Projetos() {
   return (
     <Page>
       <Reveal>
         <Container>
           <BackLink to="/">← Voltar ao Início</BackLink>
+          <NoticeBanner>Em obras — estamos carregando os projetos restantes.</NoticeBanner>
           <PortfolioSection
             eyebrow={portfolioData.section.eyebrow}
             title={portfolioData.section.title}
