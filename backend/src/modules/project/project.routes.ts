@@ -45,15 +45,6 @@ projectRoutes.use(ensureAuthenticated);
 |--------------------------------------------------------------------------
 */
 
-projectRoutes.get(
-  "/dashboard",
-  (request, response) =>
-    controller.dashboard(
-      request,
-      response
-    )
-);
-
 /*
 |--------------------------------------------------------------------------
 | Uploads
