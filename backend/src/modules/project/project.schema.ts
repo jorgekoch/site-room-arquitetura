@@ -43,7 +43,6 @@ export const createProjectSchema = z.object({
   featuredImage: z
   .string()
   .url()
-  .or(z.literal(""))
   .optional()
   .nullable(),
 
