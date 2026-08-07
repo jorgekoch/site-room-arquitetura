@@ -55,38 +55,29 @@ function ensureStoredFilesBelongToR2(
 }
 
 export class ProposalController {
-  async getUploadUrl(request: Request, response: Response) {
-    const { fileName, fileType, kind } = uploadUrlSchema.parse(request.body);
+  async getUploadUrl(
+    request: Request,
+    response: Response
+  ) {
+    const {
+      fileName,
+      fileType,
+      kind,
+    } = uploadUrlSchema.parse(request.body);
 
-    const safeFileName = String(fileName)
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/[^a-zA-Z0-9._-]/g, "");
+    const folder =
+      kind === "payment-proof"
+        ? "payment-proofs"
+        : "references";
 
-    if (!safeFileName) {
-      throw new AppError("Nome de arquivo inválido.", 400);
-    }
+    const upload =
+      await proposalService.generateUploadUrl(
+        fileName,
+        fileType,
+        folder
+      );
 
-    const folder = kind === "payment-proof" ? "payment-proofs" : "references";
-    const timestamp = Date.now();
-
-    const storageKey = `proposals/${folder}/${timestamp}-${safeFileName}`;
-
-    const command = new PutObjectCommand({
-      Bucket: env.r2Bucket,
-      Key: storageKey,
-      ContentType: fileType,
-    });
-
-    const uploadUrl = await getSignedUrl(r2, command, { expiresIn: 60 });
-
-    return response.json({
-      uploadUrl,
-      storageKey,
-      fileName: `${timestamp}-${safeFileName}`,
-      fileUrl: `${env.r2PublicUrl}/${storageKey}`,
-    });
+    return response.json(upload);
   }
 
   async create(request: Request, response: Response) {

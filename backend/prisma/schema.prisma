@@ -83,3 +83,64 @@ model AdminUser {
 
   @@map("admin_users")
 }
+
+enum ProjectCategory {
+  RESIDENTIAL
+  INTERIORS
+  COMMERCIAL
+  LANDSCAPE
+  CONSULTING
+  OTHER
+}
+
+model Project {
+  id            String   @id @default(cuid())
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  title         String
+  slug          String   @unique
+
+  category      ProjectCategory
+
+  city          String?
+  state         String?
+
+  year          Int?
+  area          String?
+
+  description   String
+  content       String?
+
+  featuredImage String?
+
+  published     Boolean @default(true)
+  featured      Boolean @default(false)
+
+  images        ProjectImage[]
+
+  @@map("projects")
+}
+
+model ProjectImage {
+  id          String   @id @default(cuid())
+
+  createdAt   DateTime @default(now())
+
+  projectId   String
+
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  imageUrl    String
+
+  storageKey  String
+
+  alt         String?
+
+  sortOrder   Int @default(0)
+
+  @@index([projectId])
+
+  @@map("project_images")
+}

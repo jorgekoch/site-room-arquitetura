@@ -14,6 +14,9 @@ import {
   sendProposalStatusChangedEmail,
 } from "./proposal.mail";
 
+import { storage } from "../../services/storage";
+import { AppError } from "../../utils/AppError";
+
 export class ProposalService {
   async create(data: CreateProposalInput) {
     const projectDetails =
@@ -22,16 +25,16 @@ export class ProposalService {
             newConstruction: data.newConstruction ?? null,
           }
         : data.projectType === "interiors"
-        ? {
-            interiors: data.interiors ?? null,
-          }
-        : data.projectType === "renovation"
-        ? {
-            renovation: data.renovation ?? null,
-          }
-        : {
-            consulting: data.consulting ?? null,
-          };
+          ? {
+              interiors: data.interiors ?? null,
+            }
+          : data.projectType === "renovation"
+            ? {
+                renovation: data.renovation ?? null,
+              }
+            : {
+                consulting: data.consulting ?? null,
+              };
 
     const proposal = await prisma.proposalRequest.create({
       data: {
@@ -43,24 +46,33 @@ export class ProposalService {
         phone: data.phone,
         socialProfile: data.socialProfile || null,
 
-        preferredContactMethod: data.preferredContactMethod,
+        preferredContactMethod:
+          data.preferredContactMethod,
         preferredContactMethodOther:
           data.preferredContactMethodOther || null,
 
         referralSource: data.referralSource,
-        referralSourceOther: data.referralSourceOther || null,
+        referralSourceOther:
+          data.referralSourceOther || null,
 
-        desiredWorkStart: data.desiredWorkStart,
+        desiredWorkStart:
+          data.desiredWorkStart,
 
         projectType: data.projectType,
-        projectTypeOther: data.projectTypeOther || null,
+        projectTypeOther:
+          data.projectTypeOther || null,
 
-        taxAgreement: data.taxAgreement,
+        taxAgreement:
+          data.taxAgreement,
 
-        paymentMethod: data.paymentMethod,
-        paymentMethodOther: data.paymentMethodOther || null,
+        paymentMethod:
+          data.paymentMethod,
 
-        projectDetailsJson: projectDetails,
+        paymentMethodOther:
+          data.paymentMethodOther || null,
+
+        projectDetailsJson:
+          projectDetails,
 
         referenceFilesJson:
           data.referenceFilesJson?.length
@@ -85,14 +97,18 @@ export class ProposalService {
       },
     });
 
-    void sendProposalNotificationEmail(proposal).catch((error) => {
+    void sendProposalNotificationEmail(
+      proposal
+    ).catch((error) => {
       console.error(
         "Erro ao enviar e-mail interno da ROOM:",
         error
       );
     });
 
-    void sendProposalConfirmationEmail(proposal).catch((error) => {
+    void sendProposalConfirmationEmail(
+      proposal
+    ).catch((error) => {
       console.error(
         "Erro ao enviar confirmação ao cliente:",
         error
@@ -116,7 +132,8 @@ export class ProposalService {
 
       ...(filters?.projectType
         ? {
-            projectType: filters.projectType,
+            projectType:
+              filters.projectType,
           }
         : {}),
 
@@ -125,20 +142,26 @@ export class ProposalService {
             OR: [
               {
                 fullName: {
-                  contains: filters.search,
-                  mode: "insensitive" as const,
+                  contains:
+                    filters.search,
+                  mode:
+                    "insensitive" as const,
                 },
               },
               {
                 email: {
-                  contains: filters.search,
-                  mode: "insensitive" as const,
+                  contains:
+                    filters.search,
+                  mode:
+                    "insensitive" as const,
                 },
               },
               {
                 phone: {
-                  contains: filters.search,
-                  mode: "insensitive" as const,
+                  contains:
+                    filters.search,
+                  mode:
+                    "insensitive" as const,
                 },
               },
             ],
@@ -166,17 +189,20 @@ export class ProposalService {
     id: string,
     data: UpdateProposalStatusInput
   ) {
-    const proposal = await prisma.proposalRequest.update({
-      where: {
-        id,
-      },
-      data: {
-        status: data.status,
-      },
-    });
+    const proposal =
+      await prisma.proposalRequest.update({
+        where: {
+          id,
+        },
+        data: {
+          status: data.status,
+        },
+      });
 
     try {
-      await sendProposalStatusChangedEmail(proposal);
+      await sendProposalStatusChangedEmail(
+        proposal
+      );
     } catch (error) {
       console.error(
         "Erro ao enviar e-mail de mudança de status:",
@@ -196,14 +222,67 @@ export class ProposalService {
         id,
       },
       data: {
-        internalNotes: data.internalNotes || "",
+        internalNotes:
+          data.internalNotes || "",
       },
     });
   }
 
   /**
-   * Atualiza o comprovante enviado pelo cliente
-   * (cliente ou administrador).
+   * Gera uma Signed URL para upload
+   * direto do frontend para o R2.
    */
-  
+  async generateUploadUrl(
+    fileName: string,
+    fileType: string,
+    folder:
+      | "payment-proofs"
+      | "references"
+  ) {
+    return storage.generateSignedUrl({
+      folder: `proposals/${folder}`,
+      fileName,
+      fileType,
+    });
+  }
+
+  /**
+   * Atualiza o comprovante de pagamento.
+   */
+  async updatePaymentProof(
+    id: string,
+    storageKey: string
+  ) {
+    const proposal =
+      await prisma.proposalRequest.findUnique({
+        where: {
+          id,
+        },
+      });
+
+    if (!proposal) {
+      throw new AppError(
+        "Solicitação não encontrada.",
+        404
+      );
+    }
+
+    return prisma.proposalRequest.update({
+      where: {
+        id,
+      },
+      data: {
+        paymentProofStorageKey:
+          storageKey,
+
+        paymentProofUrl:
+          storage.getPublicUrl(
+            storageKey
+          ),
+
+        paymentProofUploadedAt:
+          new Date(),
+      },
+    });
+  }
 }
