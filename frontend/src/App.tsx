@@ -1,68 +1,112 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+
 import { PageShell } from "./components/layout/PageShell";
-import { Home } from "./pages/Home";
-import Contato from "./pages/Contato";
-import PropostaEnviada from "./pages/PropostaEnviada";
-import AdminLogin from "./pages/AdminLogin";
-import AdminRequestAccess from "./pages/AdminRequestAccess";
-import AdminPropostas from "./pages/AdminPropostas";
-import AdminUsuarios from "./pages/AdminUsuarios";
-import { AdminRoute } from "./components/auth/AdminRoute";
-import ProjetoDetalhe from "./pages/ProjetoDetalhe";
-import Projetos from "./pages/Projetos";
+
 import { ScrollToTop } from "./components/utils/ScrollToTop";
+
+import { AdminRoute } from "./components/auth/AdminRoute";
 import { ProtectedSuccessRoute } from "./components/auth/ProtectedSuccessRoute";
+
+// Páginas públicas
+import Home from "./pages/public/Home";
+import Contato from "./pages/public/Contato";
+import Projetos from "./pages/public/Projetos";
+import ProjetoDetalhe from "./pages/public/ProjetoDetalhe";
+import PropostaEnviada from "./pages/public/PropostaEnviada";
+
+// Administração
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminPropostas from "./pages/admin/AdminPropostas";
+import AdminRequestAccess from "./pages/admin/AdminRequestAccess";
+import AdminUsuarios from "./pages/admin/AdminUsuarios";
 
 function App() {
   return (
     <>
-      <ScrollToTop/>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <PageShell>
-                <Home />
-              </PageShell>
-            }
-          />
+      <ScrollToTop />
 
-          <Route path="/orcamento" element={<Contato />} />
-          <Route path="/contato" element={<Navigate to="/orcamento" replace />} />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <PageShell>
+              <Home />
+            </PageShell>
+          }
+        />
 
-          <Route
-            path="/proposta-enviada"
-            element={
-              <ProtectedSuccessRoute>
-                <PropostaEnviada />
-              </ProtectedSuccessRoute>
-            }
-          />
+        <Route
+          path="/orcamento"
+          element={<Contato />}
+        />
 
-          <Route path="/projetos" element={<Projetos />} />
-          <Route path="/projetos/:slug" element={<ProjetoDetalhe />} />
+        <Route
+          path="/contato"
+          element={
+            <Navigate
+              to="/orcamento"
+              replace
+            />
+          }
+        />
 
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/solicitar-acesso" element={<AdminRequestAccess />} />
+        <Route
+          path="/proposta-enviada"
+          element={
+            <ProtectedSuccessRoute>
+              <PropostaEnviada />
+            </ProtectedSuccessRoute>
+          }
+        />
 
-          <Route
-            path="/admin/propostas"
-            element={
-              <AdminRoute>
-                <AdminPropostas />
-              </AdminRoute>
-            }
-          />
+        <Route
+          path="/projetos"
+          element={<Projetos />}
+        />
 
-          <Route
-            path="/admin/usuarios"
-            element={
-              <AdminRoute>
-                <AdminUsuarios />
-              </AdminRoute>
-            }
-          />
-        </Routes>
+        <Route
+          path="/projetos/:slug"
+          element={<ProjetoDetalhe />}
+        />
+
+        <Route
+          path="/admin/login"
+          element={<AdminLogin />}
+        />
+
+        <Route
+          path="/admin/solicitar-acesso"
+          element={<AdminRequestAccess />}
+        />
+
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/propostas"
+          element={
+            <AdminRoute>
+              <AdminPropostas />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/usuarios"
+          element={
+            <AdminRoute>
+              <AdminUsuarios />
+            </AdminRoute>
+          }
+        />
+      </Routes>
     </>
   );
 }

@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { PortfolioSection } from "../components/sections/PortfolioSection";
-import { portfolioData } from "../data/portfolio";
-import { Reveal } from "../components/motion/Reveal";
-import { Container } from "../components/ui/Container";
-import { media } from "../styles/breakpoints";
+import { PortfolioSection } from "../../components/sections/PortfolioSection";
+import { portfolioData } from "../../data/portfolio";
+import { Reveal } from "../../components/motion/Reveal";
+import { Container } from "../../components/ui/Container";
+import { media } from "../../styles/breakpoints";
 
 const BackLink = styled(Link)`
   display: inline-flex;

@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import { Container } from "../components/ui/Container";
-import type { ProposalRequestAdmin, ProposalStatus } from "../types/admin";
-import { proposalStatusOptions } from "../data/admin";
-import { media } from "../styles/breakpoints";
-import { apiFetch } from "../lib/api";
-import { removeAdminToken } from "../lib/auth";
+import { Container } from "../../components/ui/Container";
+import type { ProposalRequestAdmin, ProposalStatus } from "../../types/admin";
+import { proposalStatusOptions } from "../../data/admin";
+import { media } from "../../styles/breakpoints";
+import { apiFetch } from "../../lib/api";
+import { removeAdminToken } from "../../lib/auth";
 import { useNavigate } from "react-router-dom";
-import { ProposalDetails } from "../components/admin/ProposalDetails";
-import { ProposalNotes } from "../components/admin/ProposalNotes";
-import { ProposalPaymentProof } from "../components/admin/ProposalPaymentProof";
-import { Button } from "../components/ui/Button";
+import { ProposalDetails } from "../../components/admin/ProposalDetails";
+import { ProposalNotes } from "../../components/admin/ProposalNotes";
+import { ProposalPaymentProof } from "../../components/admin/ProposalPaymentProof";
+import { Button } from "../../components/ui/Button";
 
 const Section = styled.section`
   padding: 2rem 0 5rem;

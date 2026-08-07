@@ -1,9 +1,9 @@
-import { ServiceSectionBase } from "../components/sections/ServiceSectionBase";
-import { FaqSectionBase } from "../components/sections/FaqSectionBase";
-import { ContactCtaBase } from "../components/sections/ContactCtaBase";
-import { siteConfig } from "../config/site";
-import { servicesData } from "../data/services";
-import { faqData } from "../data/faq";
+import { ServiceSectionBase } from "../../components/sections/ServiceSectionBase";
+import { FaqSectionBase } from "../../components/sections/FaqSectionBase";
+import { ContactCtaBase } from "../../components/sections/ContactCtaBase";
+import { siteConfig } from "../../config/site";
+import { servicesData } from "../../data/services";
+import { faqData } from "../../data/faq";
 
 export function Servicos() {
   return (

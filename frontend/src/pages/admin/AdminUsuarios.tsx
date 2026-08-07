@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Container } from "../components/ui/Container";
-import { apiFetch } from "../lib/api";
-import { removeAdminToken } from "../lib/auth";
+import { Container } from "../../components/ui/Container";
+import { apiFetch } from "../../lib/api";
+import { removeAdminToken } from "../../lib/auth";
 import { useNavigate } from "react-router-dom";
-import type { AdminRole, AdminUserItem } from "../types/admin-users";
-import { media } from "../styles/breakpoints";
+import type { AdminRole, AdminUserItem } from "../../types/admin-users";
+import { media } from "../../styles/breakpoints";
 
 const Section = styled.section`
   padding: 2rem 0 5rem;

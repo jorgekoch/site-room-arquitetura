@@ -1,9 +1,9 @@
 import { useState } from "react";
 import styled from "styled-components";
 import { Link, Navigate, useParams } from "react-router-dom";
-import { Container } from "../components/ui/Container";
-import { portfolioData } from "../data/portfolio";
-import { media } from "../styles/breakpoints";
+import { Container } from "../../components/ui/Container";
+import { portfolioData } from "../../data/portfolio";
+import { media } from "../../styles/breakpoints";
 
 const Section = styled.section`
   padding: 2rem 0 5rem;

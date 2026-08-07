@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import { Container } from "../components/ui/Container";
-import { ProposalForm } from "../components/proposal/ProposalForm";
+import { Container } from "../../components/ui/Container";
+import { ProposalForm } from "../../components/proposal/ProposalForm";
 
 const Section = styled.section`
   padding: 2rem 0 5rem;

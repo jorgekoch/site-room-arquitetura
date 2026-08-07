@@ -1,7 +1,7 @@
-import { GallerySectionBase } from "../components/sections/GallerySectionBase";
-import { galleryData } from "../data/gallery";
-import { ContactCtaBase } from "../components/sections/ContactCtaBase";
-import { siteConfig } from "../config/site";
+import { GallerySectionBase } from "../../components/sections/GallerySectionBase";
+import { galleryData } from "../../data/gallery";
+import { ContactCtaBase } from "../../components/sections/ContactCtaBase";
+import { siteConfig } from "../../config/site";
 
 export function Galeria() {
   return (

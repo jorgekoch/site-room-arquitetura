@@ -112,3 +112,23 @@ export type ProposalFormValues = {
   paymentMethod: PaymentMethod;
   paymentMethodOther: string;
 };
+
+export interface Proposal {
+  id: string;
+
+  createdAt: string;
+
+  updatedAt: string;
+
+  status: string;
+
+  fullName: string;
+
+  email: string;
+
+  phone: string;
+
+  projectType: string;
+
+  paymentMethod: string;
+}

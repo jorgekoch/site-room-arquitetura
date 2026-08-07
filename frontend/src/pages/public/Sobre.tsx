@@ -1,7 +1,7 @@
-import { AboutPageSection } from "../components/sections/AboutPageSection";
-import { ContactCtaBase } from "../components/sections/ContactCtaBase";
-import { siteConfig } from "../config/site";
-import { aboutData } from "../data/about";
+import { AboutPageSection } from "../../components/sections/AboutPageSection";
+import { ContactCtaBase } from "../../components/sections/ContactCtaBase";
+import { siteConfig } from "../../config/site";
+import { aboutData } from "../../data/about";
 
 export function Sobre() {
   return (

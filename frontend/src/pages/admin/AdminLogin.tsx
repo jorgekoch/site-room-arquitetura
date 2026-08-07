@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { Container } from "../components/ui/Container";
-import { Button } from "../components/ui/Button";
-import { setAdminToken } from "../lib/auth";
-import { publicApiFetch } from "../lib/publicApi";
+import { Container } from "../../components/ui/Container";
+import { Button } from "../../components/ui/Button";
+import { setAdminToken } from "../../lib/auth";
+import { publicApiFetch } from "../../lib/publicApi";
 
 const Section = styled.section`
   padding: 3rem 0 5rem;

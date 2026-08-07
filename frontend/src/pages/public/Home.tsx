@@ -1,22 +1,22 @@
-import { HeroBase } from "../components/sections/HeroBase";
-import { AudienceSection } from "../components/sections/AudienceSection";
-import { ServiceSectionBase } from "../components/sections/ServiceSectionBase";
-import { PortfolioSection } from "../components/sections/PortfolioSection";
-import { ProcessSection } from "../components/sections/ProcessSection";
-import { OfferingsSection } from "../components/sections/OfferingsSection";
-import { AboutPageSection } from "../components/sections/AboutPageSection";
-import { ContactCtaBase } from "../components/sections/ContactCtaBase";
-import { siteConfig } from "../config/site";
-import { homeData } from "../data/home";
-import { audienceData } from "../data/audience";
-import { servicesData } from "../data/services";
-import { portfolioData } from "../data/portfolio";
-import { processData } from "../data/process";
-import { offeringsData } from "../data/offerings";
-import { aboutPageData } from "../data/about";
-import { Reveal } from "../components/motion/Reveal";
+import { HeroBase } from "../../components/sections/HeroBase";
+import { AudienceSection } from "../../components/sections/AudienceSection";
+import { ServiceSectionBase } from "../../components/sections/ServiceSectionBase";
+import { PortfolioSection } from "../../components/sections/PortfolioSection";
+import { ProcessSection } from "../../components/sections/ProcessSection";
+import { OfferingsSection } from "../../components/sections/OfferingsSection";
+import { AboutPageSection } from "../../components/sections/AboutPageSection";
+import { ContactCtaBase } from "../../components/sections/ContactCtaBase";
+import { siteConfig } from "../../config/site";
+import { homeData } from "../../data/home";
+import { audienceData } from "../../data/audience";
+import { servicesData } from "../../data/services";
+import { portfolioData } from "../../data/portfolio";
+import { processData } from "../../data/process";
+import { offeringsData } from "../../data/offerings";
+import { aboutPageData } from "../../data/about";
+import { Reveal } from "../../components/motion/Reveal";
 
-export function Home() {
+export default function Home() {
   return (
     <>
       <div id="topo">

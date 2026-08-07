@@ -1,7 +1,7 @@
 import styled from "styled-components";
-import { Container } from "../components/ui/Container";
-import { Button } from "../components/ui/Button";
-import { media } from "../styles/breakpoints";
+import { Container } from "../../components/ui/Container";
+import { Button } from "../../components/ui/Button";
+import { media } from "../../styles/breakpoints";
 import { useEffect } from "react";
 
 const VIDEO_URL = "https://www.youtube.com/embed/ENAsjnF1_qk";
