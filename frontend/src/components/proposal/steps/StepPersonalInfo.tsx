@@ -1,10 +1,7 @@
 import styled from "styled-components";
 import { useFormContext } from "react-hook-form";
 import type { ProposalSchemaValues } from "../../../schemas/proposalSchema";
-import {
-  contactMethodOptions,
-  referralSourceOptions,
-} from "../../../data/proposalOptions";
+import { contactMethodOptions } from "../../../data/proposalOptions";
 import {
   StepWrapper,
   StepHeader,
@@ -23,6 +20,23 @@ const Column = styled.div`
   display: grid;
   gap: 1rem;
 `;
+
+const referralSourceOptions = [
+  { value: "instagram-room", label: "Instagram ROOM" },
+  {
+    value: "instagram-amanda-e-fernando",
+    label: "Instagram Amanda e Fernando",
+  },
+  { value: "youtube-room", label: "Youtube ROOM" },
+  {
+    value: "youtube-amanda-e-fernando",
+    label: "Youtube Amanda e Fernando",
+  },
+  { value: "google", label: "Google" },
+  { value: "indicacao", label: "Indicação" },
+  { value: "lista-green", label: "Lista Green" },
+  { value: "acbcs", label: "ACBCS" },
+];
 
 export function StepPersonalInfo() {
   const {
