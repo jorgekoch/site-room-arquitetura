@@ -7,12 +7,36 @@ import { errorHandler } from "./middlewares/errorHandler";
 
 const app = express();
 
+const allowedOrigins = [
+  env.frontendUrl,
+  "https://roomarquiteturasustentavel.com.br",
+  "https://www.roomarquiteturasustentavel.com.br",
+  "https://site-room-arquitetura.vercel.app",
+  "https://site-room-arquitetura.onrender.com",
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: env.frontendUrl,
+    origin: (origin, callback) => {
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(null, false);
+    },
     credentials: true,
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+app.options("*", cors());
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
