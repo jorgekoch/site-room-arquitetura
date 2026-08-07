@@ -7,17 +7,14 @@ export const contactMethodOptions = [
 ] as const;
 
 export const referralSourceOptions = [
-  { value: "instagram", label: "Instagram" },
-  { value: "youtube", label: "YouTube" },
+  { value: "instagram-room", label: "Instagram ROOM" },
+  { value: "instagram-amanda-e-fernando", label: "Instagram Amanda e Fernando" },
+  { value: "youtube-room", label: "Youtube ROOM" },
+  { value: "youtube-amanda-e-fernando", label: "Youtube Amanda e Fernando" },
   { value: "google", label: "Google" },
   { value: "indicacao", label: "Indicação" },
-  {
-    value: "grupo-construtores-inteligentes",
-    label: "Grupo Construtores Inteligentes",
-  },
   { value: "lista-green", label: "Lista Green" },
-  { value: "amanda-e-fernando-cbcs", label: "Amanda e Fernando - CBCS" },
-  { value: "outro", label: "Outro" },
+  { value: "acbcs", label: "ACBCS" },
 ] as const;
 
 export const projectTypeOptions = [

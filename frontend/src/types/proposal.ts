@@ -6,14 +6,14 @@ export type ContactMethod =
   | "outro";
 
 export type ReferralSource =
-  | "instagram"
-  | "youtube"
+  | "instagram-room"
+  | "instagram-amanda-e-fernando"
+  | "youtube-room"
+  | "youtube-amanda-e-fernando"
   | "google"
   | "indicacao"
-  | "grupo-construtores-inteligentes"
   | "lista-green"
-  | "amanda-e-fernando-cbcs"
-  | "outro";
+  | "acbcs";
 
 export type ProjectType =
   | "new-construction"
