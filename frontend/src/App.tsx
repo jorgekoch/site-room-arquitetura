@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { PageShell } from "./components/layout/PageShell";
 import { Home } from "./pages/Home";
 import Contato from "./pages/Contato";
@@ -27,7 +27,8 @@ function App() {
             }
           />
 
-          <Route path="/contato" element={<Contato />} />
+          <Route path="/orcamento" element={<Contato />} />
+          <Route path="/contato" element={<Navigate to="/orcamento" replace />} />
 
           <Route
             path="/proposta-enviada"
