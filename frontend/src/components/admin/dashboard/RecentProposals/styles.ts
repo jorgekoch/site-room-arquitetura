@@ -3,15 +3,11 @@ import styled from "styled-components";
 export const Container = styled.section`
   background: ${({ theme }) => theme.colors.surface};
 
-  border: 1px solid
-    ${({ theme }) => theme.colors.border};
+  border: 1px solid ${({ theme }) => theme.colors.border};
 
-  border-radius: ${({ theme }) =>
-    theme.radius.md};
+  border-radius: 18px;
 
   padding: 24px;
-
-  min-height: 420px;
 `;
 
 export const Header = styled.div`
@@ -27,24 +23,14 @@ export const Header = styled.div`
     margin: 0;
 
     font-size: 1.1rem;
-
-    font-weight: 600;
   }
 
   a {
-    color: ${({ theme }) =>
-      theme.colors.primary};
+    color: ${({ theme }) => theme.colors.primary};
 
     text-decoration: none;
 
     font-weight: 600;
-
-    transition: ${({ theme }) =>
-      theme.transitions.default};
-
-    &:hover {
-      opacity: .8;
-    }
   }
 `;
 
@@ -81,38 +67,33 @@ export const Item = styled.div`
   }
 
   span {
-    font-size: .85rem;
-
     color: ${({ theme }) => theme.colors.textSoft};
+
+    font-size: .85rem;
   }
 `;
 
-export const Status = styled.span<{
-  $published: boolean;
-}>`
+export const Status = styled.span`
   padding: 6px 12px;
 
   border-radius: 999px;
 
+  background: ${({ theme }) =>
+    theme.colors.primarySoft};
+
+  color: ${({ theme }) =>
+    theme.colors.primary};
+
   font-size: .75rem;
 
   font-weight: 600;
-
-  background: ${({ $published }) =>
-    $published
-      ? "#DCFCE7"
-      : "#FEF3C7"};
-
-  color: ${({ $published }) =>
-    $published
-      ? "#166534"
-      : "#92400E"};
 `;
 
 export const Empty = styled.div`
-  color: ${({ theme }) => theme.colors.textSoft};
-
   text-align: center;
 
   padding: 32px 0;
+
+  color: ${({ theme }) =>
+    theme.colors.textSoft};
 `;

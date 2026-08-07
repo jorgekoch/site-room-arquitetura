@@ -21,12 +21,22 @@ import AdminPropostas from "./pages/admin/AdminPropostas";
 import AdminRequestAccess from "./pages/admin/AdminRequestAccess";
 import AdminUsuarios from "./pages/admin/AdminUsuarios";
 
+import AdminProjetos from "./pages/admin/AdminProjetos";
+
 function App() {
   return (
     <>
       <ScrollToTop />
 
       <Routes>
+        <Route
+  path="/admin/projetos"
+  element={
+    <AdminRoute>
+      <AdminProjetos />
+    </AdminRoute>
+  }
+/>
         <Route
           path="/"
           element={

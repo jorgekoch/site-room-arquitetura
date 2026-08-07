@@ -1,15 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 
 import {
+  createProject,
   deleteProject,
   featureProject,
   getProjects,
   publishProject,
   unfeatureProject,
   unpublishProject,
+  updateProject,
 } from "../lib/projects";
 
 import { Project } from "../types/project";
+import { ProjectFormData } from "../types/project-form";
 
 export function useProjects() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -42,6 +45,23 @@ export function useProjects() {
     loadProjects();
   }, [loadProjects]);
 
+  async function create(
+    data: ProjectFormData
+  ) {
+    await createProject(data);
+
+    await loadProjects();
+  }
+
+  async function update(
+    id: string,
+    data: ProjectFormData
+  ) {
+    await updateProject(id, data);
+
+    await loadProjects();
+  }
+
   async function remove(id: string) {
     await deleteProject(id);
 
@@ -73,22 +93,24 @@ export function useProjects() {
   }
 
   return {
-    projects,
+  projects,
 
-    loading,
+  loading,
 
-    error,
+  error,
 
-    reload: loadProjects,
+  create,
 
-    remove,
+  update,
 
-    publish,
+  remove,
 
-    unpublish,
+  publish,
 
-    feature,
+  unpublish,
 
-    unfeature,
-  };
+  feature,
+
+  unfeature,
+};
 }

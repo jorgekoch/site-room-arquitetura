@@ -5,6 +5,12 @@ import {
   FolderOpen,
 } from "lucide-react";
 
+import { ContentGrid } from "../../components/admin/dashboard/ContentGrid";
+
+import { RecentProjects } from "../../components/admin/dashboard/RecentProjects";
+
+import { RecentProposals } from "../../components/admin/dashboard/RecentProposals";
+
 import { PageHeader } from "../../components/admin/PageHeader";
 import { Loading } from "../../components/admin/common/Loading";
 import { EmptyState } from "../../components/admin/common/EmptyState";
@@ -13,8 +19,6 @@ import { StatsGrid } from "../../components/admin/dashboard/StatsGrid";
 import { StatsCard } from "../../components/admin/dashboard/StatsCard";
 
 import { useDashboard } from "../../hooks/useDashboard";
-
-import { RecentProjects } from "../../components/admin/dashboard/RecentProjects";
 
 export default function AdminDashboard() {
   const {
@@ -80,11 +84,22 @@ export default function AdminDashboard() {
           icon={FileText}
         />
       </StatsGrid>
-      <RecentProjects
-  projects={
-    dashboard?.latestProjects ?? []
-  }
-/>
+      
+      <ContentGrid>
+
+  <RecentProjects
+    projects={
+      dashboard?.latestProjects ?? []
+    }
+  />
+
+  <RecentProposals
+    proposals={
+      dashboard?.latestProposals ?? []
+    }
+  />
+
+</ContentGrid>
     </>
   );
 }

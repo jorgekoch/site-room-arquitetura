@@ -11,43 +11,28 @@ import {
   ProjectImage,
 } from "../types/project";
 
-export interface CreateProjectDTO {
-  title: string;
+import {
+  ProjectFormData,
+  UpdateProjectFormData,
+} from "../types/project-form";
 
-  slug: string;
-
-  category: string;
-
-  city?: string | null;
-
-  state?: string | null;
-
-  year?: number | null;
-
-  area?: string | null;
-
-  description: string;
-
-  content?: string | null;
-
-  featuredImage?: string | null;
-
-  published: boolean;
-
-  featured: boolean;
-
-  images: ProjectImage[];
+export interface UploadProjectImageResponse {
+  uploadUrl: string;
+  storageKey: string;
+  fileUrl: string;
+  fileName: string;
 }
 
-export type UpdateProjectDTO =
-  Partial<CreateProjectDTO>;
-
+/**
+ * Lista todos os projetos
+ */
 export function getProjects() {
-  return apiGet<Project[]>(
-    "/projects"
-  );
+  return apiGet<Project[]>("/projects");
 }
 
+/**
+ * Busca um projeto
+ */
 export function getProject(
   id: string
 ) {
@@ -56,8 +41,11 @@ export function getProject(
   );
 }
 
+/**
+ * Cria um projeto
+ */
 export function createProject(
-  data: CreateProjectDTO
+  data: ProjectFormData
 ) {
   return apiPost<Project>(
     "/projects",
@@ -65,9 +53,12 @@ export function createProject(
   );
 }
 
+/**
+ * Atualiza um projeto
+ */
 export function updateProject(
   id: string,
-  data: UpdateProjectDTO
+  data: UpdateProjectFormData
 ) {
   return apiPut<Project>(
     `/projects/${id}`,
@@ -75,6 +66,9 @@ export function updateProject(
   );
 }
 
+/**
+ * Substitui toda a galeria
+ */
 export function replaceProjectImages(
   id: string,
   images: ProjectImage[]
@@ -87,6 +81,9 @@ export function replaceProjectImages(
   );
 }
 
+/**
+ * Publica um projeto
+ */
 export function publishProject(
   id: string
 ) {
@@ -95,6 +92,9 @@ export function publishProject(
   );
 }
 
+/**
+ * Remove publicação
+ */
 export function unpublishProject(
   id: string
 ) {
@@ -103,6 +103,9 @@ export function unpublishProject(
   );
 }
 
+/**
+ * Destaca projeto
+ */
 export function featureProject(
   id: string
 ) {
@@ -111,6 +114,9 @@ export function featureProject(
   );
 }
 
+/**
+ * Remove destaque
+ */
 export function unfeatureProject(
   id: string
 ) {
@@ -119,10 +125,30 @@ export function unfeatureProject(
   );
 }
 
+/**
+ * Exclui projeto
+ */
 export function deleteProject(
   id: string
 ) {
   return apiDelete(
     `/projects/${id}`
+  );
+}
+
+/**
+ * Gera uma Signed URL para upload
+ * direto ao Cloudflare R2.
+ */
+export function getProjectUploadUrl(
+  fileName: string,
+  fileType: string
+) {
+  return apiPost<UploadProjectImageResponse>(
+    "/projects/upload-url",
+    {
+      fileName,
+      fileType,
+    }
   );
 }

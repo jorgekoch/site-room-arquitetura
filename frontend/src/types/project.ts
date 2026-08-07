@@ -1,5 +1,13 @@
+export type ProjectCategory =
+  | "RESIDENTIAL"
+  | "INTERIORS"
+  | "COMMERCIAL"
+  | "LANDSCAPE"
+  | "CONSULTING"
+  | "OTHER";
+
 export interface ProjectImage {
-  id: string;
+  id?: string;
 
   imageUrl: string;
 
@@ -17,7 +25,7 @@ export interface Project {
 
   slug: string;
 
-  category: string;
+  category: ProjectCategory;
 
   city?: string | null;
 
@@ -42,4 +50,16 @@ export interface Project {
   updatedAt: string;
 
   images: ProjectImage[];
+}
+
+export interface ProjectDashboard {
+  total: number;
+
+  published: number;
+
+  drafts: number;
+
+  featured: number;
+
+  latestProjects: Project[];
 }
