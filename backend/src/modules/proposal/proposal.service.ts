@@ -1,12 +1,10 @@
 import { Prisma } from "@prisma/client";
-import { prisma } from "../../database/prisma";
+
 import { env } from "../../config/env";
 
-import type {
-  CreateProposalInput,
-  UpdateProposalNotesInput,
-  UpdateProposalStatusInput,
-} from "./proposal.schema";
+import { storage } from "../../services/storage";
+
+import { AppError } from "../../utils/AppError";
 
 import {
   sendProposalConfirmationEmail,
@@ -14,51 +12,75 @@ import {
   sendProposalStatusChangedEmail,
 } from "./proposal.mail";
 
-import { storage } from "../../services/storage";
-import { AppError } from "../../utils/AppError";
+import {
+  CreateProposalInput,
+  UpdateProposalNotesInput,
+  UpdateProposalStatusInput,
+} from "./proposal.schema";
+
+import { ProposalRepository } from "./proposal.repository";
 
 export class ProposalService {
+  private repository = new ProposalRepository();
+
   async create(data: CreateProposalInput) {
     const projectDetails =
       data.projectType === "new-construction"
         ? {
-            newConstruction: data.newConstruction ?? null,
+            newConstruction:
+              data.newConstruction ?? null,
           }
         : data.projectType === "interiors"
-          ? {
-              interiors: data.interiors ?? null,
-            }
-          : data.projectType === "renovation"
-            ? {
-                renovation: data.renovation ?? null,
-              }
-            : {
-                consulting: data.consulting ?? null,
-              };
+        ? {
+            interiors:
+              data.interiors ?? null,
+          }
+        : data.projectType === "renovation"
+        ? {
+            renovation:
+              data.renovation ?? null,
+          }
+        : {
+            consulting:
+              data.consulting ?? null,
+          };
 
-    const proposal = await prisma.proposalRequest.create({
-      data: {
+    const proposal =
+      await this.repository.create({
         email: data.email,
+
         fullName: data.fullName,
+
         cpf: data.cpf,
+
         address: data.address,
+
         birthDate: data.birthDate,
+
         phone: data.phone,
-        socialProfile: data.socialProfile || null,
+
+        socialProfile:
+          data.socialProfile || null,
 
         preferredContactMethod:
           data.preferredContactMethod,
-        preferredContactMethodOther:
-          data.preferredContactMethodOther || null,
 
-        referralSource: data.referralSource,
+        preferredContactMethodOther:
+          data.preferredContactMethodOther ||
+          null,
+
+        referralSource:
+          data.referralSource,
+
         referralSourceOther:
           data.referralSourceOther || null,
 
         desiredWorkStart:
           data.desiredWorkStart,
 
-        projectType: data.projectType,
+        projectType:
+          data.projectType,
+
         projectTypeOther:
           data.projectTypeOther || null,
 
@@ -88,101 +110,78 @@ export class ProposalService {
           data.paymentProofUrl || null,
 
         paymentProofStorageKey:
-          data.paymentProofStorageKey || null,
+          data.paymentProofStorageKey ||
+          null,
 
         paymentProofUploadedAt:
           data.paymentProofUrl
             ? new Date()
             : null,
-      },
-    });
+      });
 
     void sendProposalNotificationEmail(
       proposal
-    ).catch((error) => {
-      console.error(
-        "Erro ao enviar e-mail interno da ROOM:",
-        error
-      );
-    });
+    ).catch(console.error);
 
     void sendProposalConfirmationEmail(
       proposal
-    ).catch((error) => {
-      console.error(
-        "Erro ao enviar confirmação ao cliente:",
-        error
-      );
-    });
+    ).catch(console.error);
 
     return proposal;
   }
 
   async list(filters?: {
     status?: string;
+
     projectType?: string;
+
     search?: string;
   }) {
     const where = {
-      ...(filters?.status
-        ? {
-            status: filters.status as any,
-          }
-        : {}),
+      ...(filters?.status && {
+        status: filters.status as any,
+      }),
 
-      ...(filters?.projectType
-        ? {
-            projectType:
-              filters.projectType,
-          }
-        : {}),
+      ...(filters?.projectType && {
+        projectType:
+          filters.projectType,
+      }),
 
-      ...(filters?.search
-        ? {
-            OR: [
-              {
-                fullName: {
-                  contains:
-                    filters.search,
-                  mode:
-                    "insensitive" as const,
-                },
-              },
-              {
-                email: {
-                  contains:
-                    filters.search,
-                  mode:
-                    "insensitive" as const,
-                },
-              },
-              {
-                phone: {
-                  contains:
-                    filters.search,
-                  mode:
-                    "insensitive" as const,
-                },
-              },
-            ],
-          }
-        : {}),
+      ...(filters?.search && {
+        OR: [
+          {
+            fullName: {
+              contains:
+                filters.search,
+              mode:
+                "insensitive" as const,
+            },
+          },
+          {
+            email: {
+              contains:
+                filters.search,
+              mode:
+                "insensitive" as const,
+            },
+          },
+          {
+            phone: {
+              contains:
+                filters.search,
+              mode:
+                "insensitive" as const,
+            },
+          },
+        ],
+      }),
     };
 
-    return prisma.proposalRequest.findMany({
-      where,
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    return this.repository.findAll(where);
   }
 
   async findById(id: string) {
-    return prisma.proposalRequest.findUnique({
-      where: {
-        id,
-      },
-    });
+    return this.repository.findById(id);
   }
 
   async updateStatus(
@@ -190,13 +189,8 @@ export class ProposalService {
     data: UpdateProposalStatusInput
   ) {
     const proposal =
-      await prisma.proposalRequest.update({
-        where: {
-          id,
-        },
-        data: {
-          status: data.status,
-        },
+      await this.repository.update(id, {
+        status: data.status,
       });
 
     try {
@@ -204,10 +198,7 @@ export class ProposalService {
         proposal
       );
     } catch (error) {
-      console.error(
-        "Erro ao enviar e-mail de mudança de status:",
-        error
-      );
+      console.error(error);
     }
 
     return proposal;
@@ -217,21 +208,12 @@ export class ProposalService {
     id: string,
     data: UpdateProposalNotesInput
   ) {
-    return prisma.proposalRequest.update({
-      where: {
-        id,
-      },
-      data: {
-        internalNotes:
-          data.internalNotes || "",
-      },
+    return this.repository.update(id, {
+      internalNotes:
+        data.internalNotes || "",
     });
   }
 
-  /**
-   * Gera uma Signed URL para upload
-   * direto do frontend para o R2.
-   */
   async generateUploadUrl(
     fileName: string,
     fileType: string,
@@ -241,24 +223,19 @@ export class ProposalService {
   ) {
     return storage.generateSignedUrl({
       folder: `proposals/${folder}`,
+
       fileName,
+
       fileType,
     });
   }
 
-  /**
-   * Atualiza o comprovante de pagamento.
-   */
   async updatePaymentProof(
     id: string,
     storageKey: string
   ) {
     const proposal =
-      await prisma.proposalRequest.findUnique({
-        where: {
-          id,
-        },
-      });
+      await this.repository.findById(id);
 
     if (!proposal) {
       throw new AppError(
@@ -267,22 +244,39 @@ export class ProposalService {
       );
     }
 
-    return prisma.proposalRequest.update({
-      where: {
-        id,
-      },
-      data: {
-        paymentProofStorageKey:
-          storageKey,
+    return this.repository.update(id, {
+      paymentProofStorageKey:
+        storageKey,
 
-        paymentProofUrl:
-          storage.getPublicUrl(
-            storageKey
-          ),
+      paymentProofUrl:
+        storage.getPublicUrl(
+          storageKey
+        ),
 
-        paymentProofUploadedAt:
-          new Date(),
-      },
+      paymentProofUploadedAt:
+        new Date(),
     });
+  }
+
+  /*
+   |--------------------------------------------------------------------------
+   | Dashboard
+   |--------------------------------------------------------------------------
+   */
+
+  async count() {
+    return this.repository.count();
+  }
+
+  async countNew() {
+    return this.repository.countByStatus(
+      "NEW"
+    );
+  }
+
+  async latest(limit = 5) {
+    return this.repository.findLatest(
+      limit
+    );
   }
 }

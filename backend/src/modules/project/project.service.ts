@@ -25,24 +25,6 @@ export class ProjectService {
     return this.repository.create(data);
   }
 
-  async dashboard() {
-    const [
-      total,
-      published,
-      drafts,
-    ] = await Promise.all([
-      this.repository.count(),
-      this.repository.countPublished(),
-      this.repository.countDrafts(),
-    ]);
-
-    return {
-      total,
-      published,
-      drafts,
-    };
-  }
-
   async list() {
     return this.repository.findAll();
   }

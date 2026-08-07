@@ -355,4 +355,29 @@ export class ProjectRepository {
       },
     });
   }
+  async findLatestProjects(limit = 5) {
+  return prisma.project.findMany({
+    take: limit,
+
+    orderBy: {
+      createdAt: "desc",
+    },
+
+    include: {
+      images: {
+        orderBy: {
+          sortOrder: "asc",
+        },
+      },
+    },
+  });
+}
+
+async countFeatured() {
+  return prisma.project.count({
+    where: {
+      featured: true,
+    },
+  });
+}
 }

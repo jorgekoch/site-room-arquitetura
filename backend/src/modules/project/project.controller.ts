@@ -181,16 +181,6 @@ export class ProjectController {
     });
   }
 
-  async dashboard(
-    _request: Request,
-    response: Response
-  ) {
-    const dashboard =
-      await service.dashboard();
-
-    return response.json(dashboard);
-  }
-
   async remove(
     request: Request,
     response: Response

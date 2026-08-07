@@ -4,6 +4,7 @@ import path from "path";
 import { env } from "./config/env";
 import { router } from "./routes";
 import { errorHandler } from "./middlewares/errorHandler";
+import { dashboardRoutes } from "./modules/dashboard/dashboard.routes";
 
 const app = express();
 
@@ -44,6 +45,10 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(
   `/${env.uploadDir}`,
   express.static(path.resolve(process.cwd(), env.uploadDir))
+);
+app.use(
+  "/api/dashboard",
+  dashboardRoutes
 );
 
 app.use("/api", router);
