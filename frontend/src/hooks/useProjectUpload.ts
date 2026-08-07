@@ -7,34 +7,37 @@ export function useProjectUpload() {
     useState(false);
 
   async function upload(file: File) {
-    setUploading(true);
+  setUploading(true);
 
-    try {
-      const signed =
-        await getProjectUploadUrl(
-          file.name,
-          file.type
-        );
+  try {
+    const signed =
+      await getProjectUploadUrl(
+        file.name,
+        file.type
+      );
 
-      await fetch(signed.uploadUrl, {
+    const uploadResponse = await fetch(
+      signed.uploadUrl,
+      {
         method: "PUT",
-
         headers: {
           "Content-Type": file.type,
         },
-
         body: file,
-      });
+      }
+    );
 
-      return {
-        imageUrl: signed.fileUrl,
-
-        storageKey: signed.storageKey,
-      };
-    } finally {
-      setUploading(false);
+    if (!uploadResponse.ok) {
+      throw new Error(
+        "Erro ao enviar imagem."
+      );
     }
+
+    return signed;
+  } finally {
+    setUploading(false);
   }
+}
 
   return {
     upload,

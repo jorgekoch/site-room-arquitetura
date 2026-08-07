@@ -3,7 +3,6 @@ import {
   apiGet,
   apiPatch,
   apiPost,
-  apiPut,
 } from "./api";
 
 import {
@@ -60,10 +59,10 @@ export function updateProject(
   id: string,
   data: UpdateProjectFormData
 ) {
-  return apiPut<Project>(
-    `/projects/${id}`,
-    data
-  );
+  return apiPatch(
+  `/projects/${id}`,
+  data
+);
 }
 
 /**
@@ -73,12 +72,12 @@ export function replaceProjectImages(
   id: string,
   images: ProjectImage[]
 ) {
-  return apiPut<Project>(
-    `/projects/${id}/images`,
-    {
-      images,
-    }
-  );
+  return apiPatch(
+  `/projects/${id}/images`,
+  {
+    images,
+  }
+);
 }
 
 /**

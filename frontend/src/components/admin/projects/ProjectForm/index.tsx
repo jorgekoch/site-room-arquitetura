@@ -124,7 +124,7 @@ export function ProjectForm({
 
       setValue(
         "featuredImage",
-        result.imageUrl
+        result.fileUrl
       );
     } catch (error) {
       console.error(error);
@@ -151,7 +151,7 @@ export function ProjectForm({
 
         uploaded.push({
           imageUrl:
-            result.imageUrl,
+            result.fileUrl,
 
           storageKey:
             result.storageKey,

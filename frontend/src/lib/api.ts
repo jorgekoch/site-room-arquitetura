@@ -117,16 +117,12 @@ export async function apiPatch<T>(
   return parseResponse<T>(response);
 }
 
-export async function apiDelete(
+export async function apiDelete<T = void>(
   path: string
-): Promise<void> {
+): Promise<T> {
   const response = await request(path, {
     method: "DELETE",
   });
 
-  if (!response.ok) {
-    throw new Error(
-      "Erro ao excluir registro."
-    );
-  }
+  return parseResponse<T>(response);
 }
