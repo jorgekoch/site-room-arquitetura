@@ -131,47 +131,53 @@ export function ProjectForm({
     }
   }
 
-  async function handleGalleryUpload(
-    event: ChangeEvent<HTMLInputElement>
-  ) {
-    const files =
-      event.target.files;
+async function handleGalleryUpload(
+  event: ChangeEvent<HTMLInputElement>
+) {
+  const files = event.target.files;
 
-    if (!files?.length) return;
+  if (!files?.length) {
+    return;
+  }
 
-    const uploaded: ProjectImage[] =
-      [];
+  const uploaded: ProjectImage[] = [];
 
-    for (const file of Array.from(
-      files
-    )) {
+  try {
+    for (const file of Array.from(files)) {
       try {
-        const result =
-          await upload(file);
+        const result = await upload(file);
 
         uploaded.push({
-          imageUrl:
-            result.fileUrl,
-
-          storageKey:
-            result.storageKey,
-
+          imageUrl: result.imageUrl,
+          storageKey: result.storageKey,
           alt: file.name,
-
           sortOrder:
-            images.length +
-            uploaded.length,
+            images.length + uploaded.length,
         });
       } catch (error) {
-        console.error(error);
+        console.error(
+          `Erro ao enviar ${file.name}:`,
+          error
+        );
+
+        alert(
+          `Não foi possível enviar a imagem "${file.name}".`
+        );
       }
     }
 
-    setValue("images", [
-      ...images,
-      ...uploaded,
-    ]);
+    if (uploaded.length > 0) {
+      setValue("images", [
+        ...images,
+        ...uploaded,
+      ]);
+    }
+  } finally {
+    // Permite selecionar novamente
+    // os mesmos arquivos.
+    event.target.value = "";
   }
+}
 
   function removeImage(
     index: number

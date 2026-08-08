@@ -13,9 +13,7 @@ interface Props {
     event: ChangeEvent<HTMLInputElement>
   ): void;
 
-  onRemove(
-    index: number
-  ): void;
+  onRemove(index: number): void;
 }
 
 export function ProjectGallery({
@@ -32,44 +30,43 @@ export function ProjectGallery({
         <input
           multiple
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/webp,image/avif"
           onChange={onUpload}
+          disabled={uploading}
         />
 
         {uploading && (
           <small>
-            Enviando imagens...
+            Enviando imagens, aguarde...
           </small>
         )}
       </S.Group>
 
       {images.length > 0 && (
         <S.Gallery>
-          {images.map(
-            (image, index) => (
-              <S.ImageCard
-                key={
-                  image.storageKey
-                }
-              >
-                <img
-                  src={image.imageUrl}
-                  alt={
-                    image.alt ?? ""
-                  }
-                />
+          {images.map((image, index) => (
+            <S.ImageCard
+              key={
+                image.storageKey ||
+                `${image.imageUrl}-${index}`
+              }
+            >
+              <img
+                src={image.imageUrl}
+                alt={image.alt ?? ""}
+              />
 
-                <button
-                  type="button"
-                  onClick={() =>
-                    onRemove(index)
-                  }
-                >
-                  Remover
-                </button>
-              </S.ImageCard>
-            )
-          )}
+              <button
+                type="button"
+                onClick={() =>
+                  onRemove(index)
+                }
+                disabled={uploading}
+              >
+                Remover
+              </button>
+            </S.ImageCard>
+          ))}
         </S.Gallery>
       )}
     </>
