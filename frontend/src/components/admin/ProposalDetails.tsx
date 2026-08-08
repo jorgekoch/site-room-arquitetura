@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import type { ProposalRequestAdmin } from "../../types/admin";
+import type { ProposalRequestAdmin } from "../../types/proposal";
 import { CopyButton } from "./CopyButton";
 
 const Wrapper = styled.div`

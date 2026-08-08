@@ -132,3 +132,101 @@ export interface Proposal {
 
   paymentMethod: string;
 }
+
+export type ProposalStatus =
+  | "NEW"
+  | "REVIEWING"
+  | "AWAITING_PAYMENT"
+  | "PAID"
+  | "SCHEDULED"
+  | "CLOSED"
+  | "CANCELED";
+
+export interface ProposalRequestAdmin {
+  id: string;
+
+  createdAt: string;
+  updatedAt: string;
+
+  status: ProposalStatus;
+
+  email: string;
+  fullName: string;
+  cpf: string;
+  address: string;
+  birthDate: string;
+  phone: string;
+  socialProfile?: string | null;
+
+  preferredContactMethod: string;
+  preferredContactMethodOther?: string | null;
+
+  referralSource: string;
+  referralSourceOther?: string | null;
+
+  desiredWorkStart: string;
+
+  projectType: string;
+  projectTypeOther?: string | null;
+
+  taxAgreement: boolean;
+
+  paymentMethod: string;
+  paymentMethodOther?: string | null;
+
+  projectDetailsJson: unknown;
+
+  internalNotes?: string | null;
+
+  paymentProofUrl?: string | null;
+  paymentProofStorageKey?: string | null;
+  paymentProofUploadedAt?: string | null;
+
+  referenceFilesJson?: unknown;
+  pixKeySnapshot?: string | null;
+}
+
+export interface ProposalRequestAdmin {
+  id: string;
+
+  createdAt: string;
+  updatedAt: string;
+
+  status: ProposalStatus;
+
+  email: string;
+  fullName: string;
+  cpf: string;
+  address: string;
+  birthDate: string;
+  phone: string;
+  socialProfile?: string | null;
+
+  preferredContactMethod: string;
+  preferredContactMethodOther?: string | null;
+
+  referralSource: string;
+  referralSourceOther?: string | null;
+
+  desiredWorkStart: string;
+
+  projectType: string;
+  projectTypeOther?: string | null;
+
+  taxAgreement: boolean;
+
+  paymentMethod: string;
+  paymentMethodOther?: string | null;
+
+  projectDetailsJson: unknown;
+
+  internalNotes?: string | null;
+
+  paymentProofUrl?: string | null;
+  paymentProofStorageKey?: string | null;
+  paymentProofUploadedAt?: string | null;
+
+  referenceFilesJson?: unknown;
+
+  pixKeySnapshot?: string | null;
+}
