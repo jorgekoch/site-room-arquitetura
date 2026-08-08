@@ -14,14 +14,22 @@ export const projectImageSchema = z.object({
 export const createProjectSchema = z.object({
   title: z
     .string()
-    .min(3, "Informe o título do projeto."),
+    .trim()
+    .min(
+      3,
+      "O título deve ter pelo menos 3 caracteres."
+    ),
 
   slug: z
     .string()
-    .min(3)
+    .trim()
+    .min(
+      3,
+      "O slug deve ter pelo menos 3 caracteres."
+    )
     .regex(
       /^[a-z0-9-]+$/,
-      "Slug inválido."
+      "O slug pode conter apenas letras minúsculas, números e hífens."
     ),
 
   category: z.nativeEnum(ProjectCategory),
@@ -36,7 +44,11 @@ export const createProjectSchema = z.object({
 
   description: z
     .string()
-    .min(10),
+    .trim()
+    .min(
+      10,
+      "A descrição deve ter pelo menos 10 caracteres."
+    ),
 
   content: z.string().optional().nullable(),
 
