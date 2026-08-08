@@ -269,7 +269,7 @@ export class ProjectRepository {
     });
   }
 
-  async findFeatured() {
+  async findFeatured(limit = 5) {
     return prisma.project.findMany({
       where: {
         featured: true,
@@ -287,6 +287,8 @@ export class ProjectRepository {
       orderBy: {
         updatedAt: "desc",
       },
+
+      take: limit,
     });
   }
 
@@ -355,7 +357,7 @@ export class ProjectRepository {
       },
     });
   }
-  
+
   async findLatestProjects(limit: number) {
   return prisma.project.findMany({
     include: {
@@ -380,6 +382,7 @@ async countFeatured() {
   return prisma.project.count({
     where: {
       featured: true,
+      published: true,
     },
   });
 }

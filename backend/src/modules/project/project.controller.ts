@@ -84,6 +84,16 @@ export class ProjectController {
     return response.json(projects);
   }
 
+  async listFeatured(
+    _request: Request,
+    response: Response
+  ) {
+    const projects =
+      await service.findFeatured();
+
+    return response.json(projects);
+  }
+
   async show(
     request: Request,
     response: Response

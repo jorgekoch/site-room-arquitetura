@@ -23,6 +23,15 @@ projectRoutes.get(
 );
 
 projectRoutes.get(
+  "/featured",
+  (request, response) =>
+    controller.listFeatured(
+      request,
+      response
+    )
+);
+
+projectRoutes.get(
   "/slug/:slug",
   (request, response) =>
     controller.showBySlug(

@@ -34,7 +34,7 @@ export class ProjectService {
   }
 
   async findFeatured() {
-    return this.repository.findFeatured();
+    return this.repository.findFeatured(5);
   }
 
   async findById(id: string) {
@@ -150,6 +150,20 @@ export class ProjectService {
     if (!project.published) {
       throw new AppError(
         "Somente projetos publicados podem ser destacados.",
+        400
+      );
+    }
+
+    if (project.featured) {
+      return project;
+    }
+
+    const featuredCount =
+      await this.repository.countFeatured();
+
+    if (featuredCount >= 5) {
+      throw new AppError(
+        "Já existem 5 projetos em destaque. Remova um destaque antes de adicionar outro.",
         400
       );
     }
