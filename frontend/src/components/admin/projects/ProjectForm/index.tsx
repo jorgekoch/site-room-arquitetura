@@ -124,7 +124,7 @@ export function ProjectForm({
 
       setValue(
         "featuredImage",
-        result.fileUrl
+        result.imageUrl
       );
     } catch (error) {
       console.error(error);
