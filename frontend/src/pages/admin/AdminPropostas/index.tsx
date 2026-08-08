@@ -189,6 +189,10 @@ export default function AdminPropostas() {
       setMessage(
         "Status atualizado com sucesso."
       );
+      
+      window.dispatchEvent(
+        new Event("admin-notifications-updated")
+      );
 
       await loadProposals({
         status:

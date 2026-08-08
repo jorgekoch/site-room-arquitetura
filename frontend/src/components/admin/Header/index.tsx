@@ -215,14 +215,28 @@ export function Header() {
   }, []);
 
   useEffect(() => {
-  const interval = window.setInterval(() => {
-    reloadNotifications();
-  }, 30000);
+    const interval = window.setInterval(() => {
+      reloadNotifications();
+    }, 30000);
 
-  return () => {
-    window.clearInterval(interval);
-  };
-}, [reloadNotifications]);
+    function handleNotificationsUpdated() {
+      reloadNotifications();
+    }
+
+    window.addEventListener(
+      "admin-notifications-updated",
+      handleNotificationsUpdated
+    );
+
+    return () => {
+      window.clearInterval(interval);
+
+      window.removeEventListener(
+        "admin-notifications-updated",
+        handleNotificationsUpdated
+      );
+    };
+  }, [reloadNotifications]);
 
   useEffect(() => {
     function handleNotificationClickOutside(

@@ -6,13 +6,16 @@ import { Analytics } from "@vercel/analytics/react";
 import App from "./App";
 import { GlobalStyle } from "./styles/GlobalStyle";
 import { ThemeModeProvider } from "./contexts/ThemeModeContext";
+import { AdminProvider } from "./contexts/AdminContext";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
       <ThemeModeProvider>
-        <GlobalStyle />
-        <App />
+        <AdminProvider>
+          <GlobalStyle />
+          <App />
+        </AdminProvider>
       </ThemeModeProvider>
 
       <Analytics />

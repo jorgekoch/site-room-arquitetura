@@ -26,6 +26,7 @@ import AdminPropostas from "./pages/admin/AdminPropostas/index";
 import AdminRequestAccess from "./pages/admin/AdminRequestAccess";
 import AdminUsuarios from "./pages/admin/AdminUsuarios";
 import AdminProjetos from "./pages/admin/AdminProjetos";
+import AdminConfiguracoes from "./pages/admin/AdminConfiguracoes";
 
 function App() {
   return (
@@ -143,6 +144,12 @@ function App() {
             path="usuarios"
             element={<AdminUsuarios />}
           />
+
+          <Route
+            path="configuracoes"
+            element={<AdminConfiguracoes />}
+          />
+          
         </Route>
 
         {/* ========================= */}
