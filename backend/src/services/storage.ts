@@ -17,16 +17,33 @@ export interface SignedUploadOptions {
   fileType: string;
 }
 
+export interface SignedUploadResult {
+  uploadUrl: string;
+  storageKey: string;
+  fileUrl: string;
+}
+
+export interface UploadedFileResult {
+  key: string;
+  fileName: string;
+  originalName: string;
+  url: string;
+}
+
 export class StorageService {
   /**
    * Upload tradicional.
-   * Utilizado quando o backend recebe o arquivo via Multer.
+   *
+   * Utilizado quando o backend
+   * recebe o arquivo via Multer.
    */
   async upload(
     file: Express.Multer.File,
     folder: string
-  ) {
-    const extension = path.extname(file.originalname);
+  ): Promise<UploadedFileResult> {
+    const extension = path.extname(
+      file.originalname
+    );
 
     const fileName = `${randomUUID()}${extension}`;
 
@@ -35,6 +52,7 @@ export class StorageService {
     await r2.send(
       new PutObjectCommand({
         Bucket: env.r2Bucket,
+
         Key: key,
 
         Body: file.buffer,
@@ -48,61 +66,85 @@ export class StorageService {
 
       fileName,
 
-      originalName: file.originalname,
+      originalName:
+        file.originalname,
 
-      url: `${env.r2PublicUrl}/${key}`,
+      url: this.getPublicUrl(key),
     };
   }
 
   /**
-   * Gera uma Signed URL.
-   * Utilizado quando o frontend envia
-   * o arquivo diretamente para o Cloudflare R2.
+   * Gera uma URL assinada para upload direto.
+   *
+   * O frontend utiliza a URL retornada
+   * para enviar o arquivo diretamente
+   * para o Cloudflare R2.
    */
   async generateSignedUrl({
     folder,
     fileName,
     fileType,
-  }: SignedUploadOptions) {
-    const safeFileName = fileName
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/[^a-zA-Z0-9._-]/g, "");
+  }: SignedUploadOptions): Promise<SignedUploadResult> {
+    const safeFileName =
+      fileName
+        .normalize("NFD")
+        .replace(
+          /[\u0300-\u036f]/g,
+          ""
+        )
+        .replace(/\s+/g, "-")
+        .replace(
+          /[^a-zA-Z0-9._-]/g,
+          ""
+        );
 
-    const storageKey = `${folder}/${Date.now()}-${safeFileName}`;
+    const finalFileName =
+      safeFileName ||
+      `${randomUUID()}`;
 
-    const command = new PutObjectCommand({
-      Bucket: env.r2Bucket,
-      Key: storageKey,
+    const storageKey =
+      `${folder}/${Date.now()}-${finalFileName}`;
 
-      ContentType: fileType,
-    });
+    const command =
+      new PutObjectCommand({
+        Bucket: env.r2Bucket,
 
-    const uploadUrl = await getSignedUrl(
-      r2,
-      command,
-      {
-        expiresIn: 600,
-      }
-    );
+        Key: storageKey,
+
+        ContentType: fileType,
+      });
+
+    const uploadUrl =
+      await getSignedUrl(
+        r2,
+        command,
+        {
+          expiresIn: 600,
+        }
+      );
 
     return {
       uploadUrl,
 
       storageKey,
 
-      fileUrl: `${env.r2PublicUrl}/${storageKey}`,
+      fileUrl:
+        this.getPublicUrl(
+          storageKey
+        ),
     };
   }
 
   /**
-   * Remove um único arquivo do bucket.
+   * Remove um arquivo do bucket.
    */
-  async delete(storageKey: string) {
+  async delete(
+    storageKey: string
+  ): Promise<void> {
     await r2.send(
       new DeleteObjectCommand({
         Bucket: env.r2Bucket,
+
         Key: storageKey,
       })
     );
@@ -113,7 +155,7 @@ export class StorageService {
    */
   async deleteMany(
     storageKeys: string[]
-  ) {
+  ): Promise<void> {
     await Promise.all(
       storageKeys.map((key) =>
         this.delete(key)
@@ -122,11 +164,18 @@ export class StorageService {
   }
 
   /**
-   * Retorna a URL pública de um arquivo.
+   * Retorna a URL pública
+   * de um arquivo armazenado.
    */
-  getPublicUrl(storageKey: string) {
-    return `${env.r2PublicUrl}/${storageKey}`;
+  getPublicUrl(
+    storageKey: string
+  ): string {
+    return `${env.r2PublicUrl.replace(
+      /\/$/,
+      ""
+    )}/${storageKey}`;
   }
 }
 
-export const storage = new StorageService();
+export const storage =
+  new StorageService();

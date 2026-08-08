@@ -83,3 +83,18 @@ export const updateProposalNotesSchema = z.object({
 export type CreateProposalInput = z.infer<typeof createProposalSchema>;
 export type UpdateProposalStatusInput = z.infer<typeof updateProposalStatusSchema>;
 export type UpdateProposalNotesInput = z.infer<typeof updateProposalNotesSchema>;
+export const updatePaymentProofSchema = z.object({
+  storageKey: storageKeySchema.refine(
+    (value) =>
+      value.startsWith(
+        "proposals/payment-proofs/"
+      ),
+    {
+      message:
+        "A chave deve pertencer à pasta de comprovantes.",
+    }
+  ),
+});
+
+export type UpdatePaymentProofInput =
+  z.infer<typeof updatePaymentProofSchema>;

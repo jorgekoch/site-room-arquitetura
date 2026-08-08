@@ -6,6 +6,7 @@ import {
   uploadUrlSchema,
   updateProposalNotesSchema,
   updateProposalStatusSchema,
+  updatePaymentProofSchema,
 } from "./proposal.schema";
 import { ProposalService } from "./proposal.service";
 import { AppError } from "../../utils/AppError";
@@ -181,5 +182,38 @@ export class ProposalController {
       proposal,
     });
   }
+
+async updatePaymentProof(
+  request: Request,
+  response: Response
+) {
+  const { id } = request.params;
+
+  if (!id || Array.isArray(id)) {
+    throw new AppError(
+      "ID de solicitação inválido",
+      400
+    );
+  }
+
+  const data =
+    updatePaymentProofSchema.parse(
+      request.body
+    );
+
+  const proposal =
+    await proposalService.updatePaymentProof(
+      id,
+      data.storageKey
+    );
+
+  return response.json({
+    message:
+      "Comprovante atualizado com sucesso",
+    proposal,
+  });
+}
+
+
 
 }

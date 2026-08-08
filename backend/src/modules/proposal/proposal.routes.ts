@@ -45,4 +45,14 @@ proposalRoutes.patch(
     proposalController.updateNotes(request, response)
 );
 
+proposalRoutes.patch(
+  "/:id/payment-proof",
+  ensureAuthenticated,
+  (request, response) =>
+    proposalController.updatePaymentProof(
+      request,
+      response
+    )
+);
+
 export { proposalRoutes };
