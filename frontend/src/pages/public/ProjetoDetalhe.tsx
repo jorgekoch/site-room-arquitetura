@@ -1,9 +1,9 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Container } from "../../components/ui/Container";
-import { portfolioData } from "../../data/portfolio";
 import { media } from "../../styles/breakpoints";
+import { usePublicProject } from "../../hooks/usePublicProjects";
 
 const Section = styled.section`
   padding: 2rem 0 5rem;
@@ -154,18 +154,6 @@ const VideoCard = styled.div`
   box-shadow: ${({ theme }) => theme.shadow.sm};
   display: grid;
   gap: 0.8rem;
-`;
-
-const VideoPlaceholder = styled.div`
-  min-height: 220px;
-  border-radius: ${({ theme }) => theme.radius.md};
-  border: 1px dashed ${({ theme }) => theme.colors.border};
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-  color: ${({ theme }) => theme.colors.textMuted};
-  text-align: center;
-  line-height: 1.7;
 `;
 
 const VideoFrame = styled.iframe`
@@ -360,19 +348,6 @@ const MoreProjectsText = styled.p`
   line-height: 1.75;
 `;
 
-const MoreProjectsGrid = styled.div`
-  display: grid;
-  gap: 1rem;
-
-  @media ${media.tablet} {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media ${media.laptop} {
-    grid-template-columns: repeat(3, 1fr);
-  }
-`;
-
 const ProjectCard = styled(Link)`
   display: grid;
   grid-template-rows: auto 1fr;
@@ -400,19 +375,6 @@ const ProjectCard = styled(Link)`
   }
 `;
 
-const ProjectCardImageWrap = styled.div`
-  overflow: hidden;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
-const ProjectCardImage = styled.img`
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-  display: block;
-  transition: transform ${({ theme }) => theme.transitions.default};
-`;
-
 const ProjectCardContent = styled.div`
   padding: 1rem;
   display: grid;
@@ -422,11 +384,6 @@ const ProjectCardContent = styled.div`
 const ProjectCardTitle = styled.h3`
   color: ${({ theme }) => theme.colors.text};
   line-height: 1.2;
-`;
-
-const ProjectCardLocation = styled.span`
-  color: ${({ theme }) => theme.colors.textMuted};
-  font-size: ${({ theme }) => theme.fontSizes.xs};
 `;
 
 const ProjectCardDescription = styled.p`
@@ -442,34 +399,80 @@ const ExploreText = styled.span`
   color: ${({ theme }) => theme.colors.secondary};
 `;
 
-export default function ProjetoDetalhe() {
-  const { slug } = useParams<{ slug: string }>();
-
-  const project = portfolioData.items.find((item) => item.slug === slug);
-
-  if (!project) {
-    return <Navigate to="/" replace />;
+function getYouTubeEmbedUrl(url?: string | null) {
+  if (!url) {
+    return null;
   }
 
-  const otherProjects = portfolioData.items.filter((item) => item.slug !== slug);
+  try {
+    const parsedUrl = new URL(url);
 
-  const getYouTubeEmbedUrl = (url?: string) => {
-    if (!url) return "";
+    if (parsedUrl.hostname === "youtu.be") {
+      const videoId = parsedUrl.pathname.replace("/", "");
 
-    const match = url.match(/(?:youtube\.com\/watch\?v=|youtube\.com\/embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-
-    if (match?.[1]) {
-      return `https://www.youtube.com/embed/${match[1]}`;
+      return videoId
+        ? `https://www.youtube.com/embed/${videoId}`
+        : null;
     }
 
-    return url;
-  };
+    if (
+      parsedUrl.hostname === "www.youtube.com" ||
+      parsedUrl.hostname === "youtube.com" ||
+      parsedUrl.hostname === "m.youtube.com"
+    ) {
+      const videoId = parsedUrl.searchParams.get("v");
 
-  const videoEmbedUrl = getYouTubeEmbedUrl(project.videoUrl);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+      if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}`;
+      }
 
-  const openImage = (image: string, index: number) => {
+      const pathParts = parsedUrl.pathname.split("/").filter(Boolean);
+
+      if (
+        pathParts[0] === "shorts" &&
+        pathParts[1]
+      ) {
+        return `https://www.youtube.com/embed/${pathParts[1]}`;
+      }
+
+      if (
+        pathParts[0] === "embed" &&
+        pathParts[1]
+      ) {
+        return `https://www.youtube.com/embed/${pathParts[1]}`;
+      }
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export default function ProjetoDetalhe() {
+  const { slug } =
+    useParams<{ slug: string }>();
+
+  const {
+    project,
+    loading,
+    error,
+  } = usePublicProject(slug);
+
+  const [
+    selectedImage,
+    setSelectedImage,
+  ] = useState<string | null>(null);
+
+  const [
+    selectedIndex,
+    setSelectedIndex,
+  ] = useState(0);
+
+  const openImage = (
+    image: string,
+    index: number
+  ) => {
     setSelectedImage(image);
     setSelectedIndex(index);
   };
@@ -479,180 +482,339 @@ export default function ProjetoDetalhe() {
   };
 
   const goToPrevious = () => {
-    const nextIndex = selectedIndex > 0 ? selectedIndex - 1 : project.images.length - 1;
-    setSelectedImage(project.images[nextIndex]);
+    if (!project) return;
+
+    const nextIndex =
+      selectedIndex > 0
+        ? selectedIndex - 1
+        : project.images.length - 1;
+
+    setSelectedImage(
+      project.images[nextIndex].imageUrl
+    );
+
     setSelectedIndex(nextIndex);
   };
 
   const goToNext = () => {
-    const nextIndex = selectedIndex < project.images.length - 1 ? selectedIndex + 1 : 0;
-    setSelectedImage(project.images[nextIndex]);
+    if (!project) return;
+
+    const nextIndex =
+      selectedIndex <
+      project.images.length - 1
+        ? selectedIndex + 1
+        : 0;
+
+    setSelectedImage(
+      project.images[nextIndex].imageUrl
+    );
+
     setSelectedIndex(nextIndex);
   };
+
+  if (loading) {
+    return (
+      <Section>
+        <Container>
+          <BackLink to="/projetos">
+            ← Voltar para projetos
+          </BackLink>
+
+          <DescriptionCard>
+            <DescriptionText>
+              Carregando projeto...
+            </DescriptionText>
+          </DescriptionCard>
+        </Container>
+      </Section>
+    );
+  }
+
+  if (error || !project) {
+    return (
+      <Section>
+        <Container>
+          <BackLink to="/projetos">
+            ← Voltar para projetos
+          </BackLink>
+
+          <DescriptionCard>
+            <InfoLabel>
+              Projeto
+            </InfoLabel>
+
+            <DescriptionText>
+              {error ||
+                "Projeto não encontrado."}
+            </DescriptionText>
+          </DescriptionCard>
+        </Container>
+      </Section>
+    );
+  }
+
+  const galleryImages =
+    project.images ?? [];
+
+  const cover =
+    project.featuredImage ||
+    galleryImages[0]?.imageUrl;
+
+  const videoEmbedUrl =
+    getYouTubeEmbedUrl(project.videoUrl);
 
   return (
     <Section>
       <Container>
-        <BackLink to="/projetos">← Voltar para projetos</BackLink>
+        <BackLink to="/projetos">
+          ← Voltar para projetos
+        </BackLink>
 
         <Hero>
           <HeroContent>
-            <Eyebrow>Projeto</Eyebrow>
+            <Eyebrow>
+              {project.category}
+            </Eyebrow>
 
-            <Title>{project.title}</Title>
+            <Title>
+              {project.title}
+            </Title>
 
             <Meta>
               <DetailsSection>
                 <InfoCard>
-                  <CardTitle>Informações do projeto</CardTitle>
-                  <InfoList>
-                    <InfoItem>
-                      <InfoLabel>Áreaconstruída</InfoLabel>
-                      <InfoValue>{project.areaConstruida}</InfoValue>
-                    </InfoItem>
-                    <InfoItem>
-                      <InfoLabel>Terreno</InfoLabel>
-                      <InfoValue>{project.terreno}</InfoValue>
-                    </InfoItem>
-                    <InfoItem>
-                      <InfoLabel>Local</InfoLabel>
-                      <InfoValue>{project.local}</InfoValue>
-                    </InfoItem>
-                    <InfoItem>
-                      <InfoLabel>Projeto</InfoLabel>
-                      <InfoValue>{project.projeto}</InfoValue>
-                    </InfoItem>
-                    <InfoItem>
-                      <InfoLabel>Ano</InfoLabel>
-                      <InfoValue>{project.year}</InfoValue>
-                    </InfoItem>
-                  </InfoList>
+                  <CardTitle>
+                    Informações do projeto
+                  </CardTitle>
 
+                  <InfoList>
+                    {project.area && (
+                      <InfoItem>
+                        <InfoLabel>
+                          Área
+                        </InfoLabel>
+
+                        <InfoValue>
+                          {project.area}
+                        </InfoValue>
+                      </InfoItem>
+                    )}
+
+                    {(project.city ||
+                      project.state) && (
+                      <InfoItem>
+                        <InfoLabel>
+                          Local
+                        </InfoLabel>
+
+                        <InfoValue>
+                          {project.city}
+                          {project.city &&
+                          project.state
+                            ? " / "
+                            : ""}
+                          {project.state}
+                        </InfoValue>
+                      </InfoItem>
+                    )}
+
+                    {project.year && (
+                      <InfoItem>
+                        <InfoLabel>
+                          Ano
+                        </InfoLabel>
+
+                        <InfoValue>
+                          {project.year}
+                        </InfoValue>
+                      </InfoItem>
+                    )}
+                  </InfoList>
                 </InfoCard>
               </DetailsSection>
             </Meta>
           </HeroContent>
 
           <HeroImageCard>
-            <HeroImage
-              src={project.cover || project.images[0]}
-              alt={project.title}
-            />
+            {cover ? (
+              <HeroImage
+                src={cover}
+                alt={project.title}
+              />
+            ) : (
+              <HeroImage
+                src=""
+                alt=""
+              />
+            )}
           </HeroImageCard>
         </Hero>
 
         <DescriptionSection>
           <DescriptionCard>
-            <InfoLabel>Descrição</InfoLabel>
-            <DescriptionText>{project.description}</DescriptionText>
+            <InfoLabel>
+              Descrição
+            </InfoLabel>
+
+            <DescriptionText>
+              {project.description}
+            </DescriptionText>
           </DescriptionCard>
         </DescriptionSection>
 
-        <GallerySection>
-          <GalleryHeader>
-            <GalleryTitle>Galeria do projeto</GalleryTitle>
-            <GalleryText>
-              Um recorte visual do projeto, com imagens que ajudam a perceber
-              atmosfera, materialidade e identidade do espaço.
-            </GalleryText>
-          </GalleryHeader>
+                {galleryImages.length > 0 && (
+          <GallerySection>
+            <GalleryHeader>
+              <GalleryTitle>
+                Galeria do projeto
+              </GalleryTitle>
 
-          <Gallery>
-            {project.images.map((image, index) => (
-              <GalleryImageCard
-                key={`${project.slug}-${index}`}
-                type="button"
-                onClick={() => openImage(image, index)}
-                aria-label={`Abrir imagem ${index + 1} de ${project.title}`}
-              >
-                <GalleryImage
-                  src={image}
-                  alt={`${project.title} ${index + 1}`}
-                  loading="lazy"
-                />
-              </GalleryImageCard>
-            ))}
-          </Gallery>
+              <GalleryText>
+                Um recorte visual do projeto,
+                com imagens que ajudam a
+                perceber a atmosfera,
+                materialidade e identidade
+                do espaço.
+              </GalleryText>
+            </GalleryHeader>
 
-          {videoEmbedUrl ? (
-            <VideoCard>
-              <CardTitle>Vídeo do projeto</CardTitle>
-              <VideoFrame
-                src={videoEmbedUrl}
-                title={`Vídeo do projeto ${project.title}`}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </VideoCard>
-          ) : (
-            <VideoCard>
-              <CardTitle>Vídeo do projeto</CardTitle>
-              <VideoPlaceholder>
-                Ainda não há vídeo para este projeto.
-              </VideoPlaceholder>
-            </VideoCard>
-          )}
-        </GallerySection>
+            <Gallery>
+              {galleryImages.map(
+                (image, index) => (
+                  <GalleryImageCard
+                    key={image.id}
+                    type="button"
+                    onClick={() =>
+                      openImage(
+                        image.imageUrl,
+                        index
+                      )
+                    }
+                    aria-label={`Abrir imagem ${
+                      index + 1
+                    } de ${
+                      project.title
+                    }`}
+                  >
+                    <GalleryImage
+                      src={
+                        image.imageUrl
+                      }
+                      alt={
+                        image.alt ||
+                        `${project.title} ${
+                          index + 1
+                        }`
+                      }
+                      loading="lazy"
+                    />
+                  </GalleryImageCard>
+                )
+              )}
+            </Gallery>
+          </GallerySection>
+        )}
 
-        {selectedImage ? (
-          <ModalOverlay onClick={closeImage}>
-            <ModalContent onClick={(event) => event.stopPropagation()}>
+                {selectedImage && (
+          <ModalOverlay
+            onClick={closeImage}
+          >
+            <ModalContent
+              onClick={(event) =>
+                event.stopPropagation()
+              }
+            >
               <ModalImageFrame>
-                <ModalImage src={selectedImage} alt={project.title} />
+                <ModalImage
+                  src={selectedImage}
+                  alt={project.title}
+                />
               </ModalImageFrame>
+
               <ModalControls>
                 <ModalButton
                   type="button"
                   onClick={goToPrevious}
-                  disabled={project.images.length <= 1}
+                  disabled={
+                    galleryImages.length <= 1
+                  }
                 >
                   ← Anterior
                 </ModalButton>
-                <span style={{ color: "#fff" }}>
-                  {selectedIndex + 1} / {project.images.length}
+
+                <span
+                  style={{
+                    color: "#fff",
+                  }}
+                >
+                  {selectedIndex + 1} /{" "}
+                  {galleryImages.length}
                 </span>
+
                 <ModalButton
                   type="button"
                   onClick={goToNext}
-                  disabled={project.images.length <= 1}
+                  disabled={
+                    galleryImages.length <= 1
+                  }
                 >
                   Próxima →
                 </ModalButton>
               </ModalControls>
             </ModalContent>
           </ModalOverlay>
-        ) : null}
+        )}
+
+        {videoEmbedUrl && (
+          <VideoCard>
+            <CardTitle>
+              Vídeo do projeto
+            </CardTitle>
+
+            <VideoFrame
+              src={videoEmbedUrl}
+              title={`Vídeo do projeto ${project.title}`}
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </VideoCard>
+        )}
 
         <Divider />
 
         <MoreProjectsSection>
           <MoreProjectsHeader>
-            <MoreProjectsTitle>Mais projetos</MoreProjectsTitle>
+            <MoreProjectsTitle>
+              Mais projetos
+            </MoreProjectsTitle>
+
             <MoreProjectsText>
-              Continue explorando outros projetos desenvolvidos pela ROOM.
+              Continue explorando outros
+              projetos desenvolvidos pela
+              ROOM.
             </MoreProjectsText>
           </MoreProjectsHeader>
 
-          <MoreProjectsGrid>
-            {otherProjects.map((item) => (
-              <ProjectCard key={item.slug} to={`/projetos/${item.slug}`}>
-                <ProjectCardImageWrap>
-                  <ProjectCardImage
-                    src={item.cover || item.images[0]}
-                    alt={item.title}
-                    loading="lazy"
-                  />
-                </ProjectCardImageWrap>
+          <ProjectCard
+            to="/projetos"
+          >
+            <ProjectCardContent>
+              <ProjectCardTitle>
+                Ver todos os projetos
+              </ProjectCardTitle>
 
-                <ProjectCardContent>
-                  <ProjectCardTitle>{item.title}</ProjectCardTitle>
-                  <ProjectCardLocation>{item.local}</ProjectCardLocation>
-                  <ProjectCardDescription>{item.description}</ProjectCardDescription>
-                  <ExploreText>Ver projeto →</ExploreText>
-                </ProjectCardContent>
-              </ProjectCard>
-            ))}
-          </MoreProjectsGrid>
+              <ProjectCardDescription>
+                Conheça todos os projetos
+                publicados pela ROOM
+                Arquitetura Sustentável.
+              </ProjectCardDescription>
+
+              <ExploreText>
+                Explorar projetos →
+              </ExploreText>
+            </ProjectCardContent>
+          </ProjectCard>
         </MoreProjectsSection>
       </Container>
     </Section>

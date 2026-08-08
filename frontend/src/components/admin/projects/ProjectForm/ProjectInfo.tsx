@@ -172,6 +172,21 @@ export function ProjectInfo({
       </S.Group>
 
       <S.Group>
+        <label>Vídeo do projeto — YouTube</label>
+
+        <input
+          type="url"
+          placeholder="https://www.youtube.com/watch?v=..."
+          {...register("videoUrl")}
+        />
+
+        <small>
+          Opcional. Cole aqui o link do vídeo
+          publicado no YouTube.
+        </small>
+      </S.Group>
+
+      <S.Group>
         <label>Conteúdo</label>
 
         <textarea

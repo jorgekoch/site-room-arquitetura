@@ -59,6 +59,7 @@ export function ProjectForm({
       description: "",
       content: "",
       featuredImage: null,
+      videoUrl: null,
       published: true,
       featured: false,
       images: [],
@@ -116,6 +117,7 @@ export function ProjectForm({
       content: project.content ?? "",
       featuredImage:
         project.featuredImage ?? null,
+      videoUrl: project.videoUrl ?? null,
       published: project.published,
       featured: project.featured,
       images: normalizeProjectImages(project.images),

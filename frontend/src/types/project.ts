@@ -93,6 +93,8 @@ export interface Project {
 
   featuredImage?: string | null;
 
+  videoUrl?: string | null;
+
   published: boolean;
 
   featured: boolean;

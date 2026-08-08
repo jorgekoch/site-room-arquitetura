@@ -21,6 +21,8 @@ export interface ProjectFormData {
 
   featuredImage?: string | null;
 
+  videoUrl?: string | null;
+
   published: boolean;
 
   featured: boolean;

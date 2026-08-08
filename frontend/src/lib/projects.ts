@@ -196,3 +196,12 @@ export function getFeaturedProjects() {
     "/projects/featured"
   );
 }
+
+/**
+ * Busca um projeto publicado pelo slug.
+ */
+export function getPublishedProjectBySlug(slug: string) {
+  return apiGet<Project>(
+    `/projects/slug/${slug}`
+  );
+}
