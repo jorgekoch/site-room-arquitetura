@@ -24,6 +24,8 @@ export class ProjectRepository {
 
         featuredImage: data.featuredImage,
 
+        videoUrl: data.videoUrl,
+
         published: data.published,
 
         featured: data.featured,
@@ -178,6 +180,10 @@ export class ProjectRepository {
 
         ...(data.featuredImage !== undefined && {
           featuredImage: data.featuredImage,
+        }),
+
+        ...(data.videoUrl !== undefined && {
+          videoUrl: data.videoUrl,
         }),
 
         ...(data.published !== undefined && {
