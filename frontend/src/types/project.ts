@@ -8,13 +8,9 @@ export type ProjectCategory =
 
 export interface ProjectImage {
   id?: string;
-
   imageUrl: string;
-
   storageKey: string;
-
   alt?: string | null;
-
   sortOrder: number;
 }
 
@@ -24,13 +20,15 @@ export type ProjectImageInput =
   | {
       id?: string;
       imageUrl?: string | null;
-      url?: string | null;
-      src?: string | null;
       storageKey?: string | null;
       alt?: string | null;
       sortOrder?: number | null;
     };
 
+/**
+ * Normaliza as imagens recebidas pela API
+ * para o formato utilizado pelo frontend.
+ */
 export function normalizeProjectImages(
   images?: ProjectImageInput[] | null
 ): ProjectImage[] {
@@ -38,42 +36,38 @@ export function normalizeProjectImages(
     return [];
   }
 
-  return images.flatMap((image, index) => {
+  const normalized: ProjectImage[] = [];
+
+  images.forEach((image, index) => {
     if (!image) {
-      return [];
+      return;
     }
 
     if (typeof image === "string") {
-      return [
-        {
-          imageUrl: image,
-          storageKey: "",
-          alt: null,
-          sortOrder: index,
-        },
-      ];
+      normalized.push({
+        imageUrl: image,
+        storageKey: "",
+        alt: null,
+        sortOrder: index,
+      });
+
+      return;
     }
 
-    const imageUrl =
-      image.imageUrl ??
-      image.url ??
-      image.src ??
-      "";
-
-    if (!imageUrl) {
-      return [];
+    if (!image.imageUrl) {
+      return;
     }
 
-    return [
-      {
-        id: image.id,
-        imageUrl,
-        storageKey: image.storageKey ?? "",
-        alt: image.alt ?? null,
-        sortOrder: image.sortOrder ?? index,
-      },
-    ];
+    normalized.push({
+      id: image.id,
+      imageUrl: image.imageUrl,
+      storageKey: image.storageKey ?? "",
+      alt: image.alt ?? null,
+      sortOrder: image.sortOrder ?? index,
+    });
   });
+
+  return normalized;
 }
 
 export interface Project {
