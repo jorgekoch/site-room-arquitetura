@@ -5,6 +5,8 @@ import {
   Search,
 } from "lucide-react";
 
+import { useDashboardNotifications } from "../../../hooks/useDashboardNotifications";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -34,7 +36,17 @@ export function Header() {
     toggleTheme,
   } = useThemeMode();
 
+  const {
+    notifications,
+    reload: reloadNotifications,
+  } = useDashboardNotifications();
+
   const navigate = useNavigate();
+
+  const [
+    notificationsOpen,
+    setNotificationsOpen,
+  ] = useState<boolean>(false);
 
   const [search, setSearch] =
     useState("");
@@ -50,6 +62,9 @@ export function Header() {
 
   const searchRef =
     useRef<HTMLDivElement>(null);
+
+  const notificationRef =
+    useRef<HTMLDivElement | null>(null);
 
   const initials =
     user?.name
@@ -199,6 +214,43 @@ export function Header() {
     };
   }, []);
 
+  useEffect(() => {
+  const interval = window.setInterval(() => {
+    reloadNotifications();
+  }, 30000);
+
+  return () => {
+    window.clearInterval(interval);
+  };
+}, [reloadNotifications]);
+
+  useEffect(() => {
+    function handleNotificationClickOutside(
+      event: MouseEvent
+    ) {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(
+          event.target as Node
+        )
+      ) {
+        setNotificationsOpen(false);
+      }
+    }
+
+    document.addEventListener(
+      "mousedown",
+      handleNotificationClickOutside
+    );
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleNotificationClickOutside
+      );
+    };
+  }, []);
+
   const hasSearch =
     search.trim().length > 0;
 
@@ -229,11 +281,37 @@ export function Header() {
     );
   }
 
-  function openProposal() {
-  setSearch("");
+  function openProposal(id: string) {
+    setSearch("");
 
-  navigate("/admin/propostas");
+    navigate(
+      `/admin/propostas?proposal=${id}`
+    );
+  }
+
+  function openNotifications() {
+  setNotificationsOpen(
+    (current) => !current
+  );
 }
+  function openNotification(
+    type: "PROPOSAL" | "ADMIN_REQUEST",
+    referenceId: string
+  ) {
+    setNotificationsOpen(false);
+
+    if (type === "PROPOSAL") {
+      navigate(
+        `/admin/propostas?proposal=${referenceId}`
+      );
+
+      return;
+    }
+
+    if (type === "ADMIN_REQUEST") {
+      navigate("/admin/usuarios");
+    }
+  }
 
   return (
     <S.Container>
@@ -325,7 +403,9 @@ export function Header() {
                         <S.SearchResult
                           key={proposal.id}
                           type="button"
-                          onClick={openProposal}
+                          onClick={() =>
+                            openProposal(proposal.id)
+                          }
                         >
                           <S.SearchResultContent>
                             <strong>
@@ -345,12 +425,92 @@ export function Header() {
           )}
         </S.SearchWrapper>
 
-        <S.IconButton
-          type="button"
-          aria-label="Notificações"
-        >
-          <Bell size={18} />
-        </S.IconButton>
+        <S.NotificationWrapper
+  ref={notificationRef}
+>
+  <S.IconButton
+    type="button"
+    aria-label="Notificações"
+    aria-expanded={notificationsOpen}
+    onClick={openNotifications}
+  >
+    <Bell size={18} />
+
+    {notifications.total > 0 && (
+      <S.NotificationBadge>
+        {notifications.total > 99
+          ? "99+"
+          : notifications.total}
+      </S.NotificationBadge>
+    )}
+  </S.IconButton>
+
+    {notificationsOpen && (
+  <S.NotificationDropdown>
+    <S.NotificationHeader>
+      <strong>
+        Notificações
+      </strong>
+
+      {notifications.total > 0 && (
+        <span>
+          {notifications.total}
+        </span>
+      )}
+    </S.NotificationHeader>
+
+    {notifications.total === 0 ? (
+      <S.EmptyNotification>
+        <Bell size={20} />
+
+        <span>
+          Nenhuma nova notificação.
+        </span>
+      </S.EmptyNotification>
+    ) : (
+      <>
+        {notifications.notifications.map(
+          (notification) => (
+            <S.NotificationItem
+              key={`${notification.type}-${notification.id}`}
+              type="button"
+              onClick={() =>
+                openNotification(
+                  notification.type,
+                  notification.referenceId
+                )
+              }
+            >
+              <S.NotificationIcon>
+                <Bell size={17} />
+              </S.NotificationIcon>
+
+              <S.NotificationContent>
+                <strong>
+                  {notification.title}
+                </strong>
+
+                <span>
+                  {notification.description}
+                </span>
+
+                <small>
+                  {new Date(
+                    notification.createdAt
+                  ).toLocaleString("pt-BR", {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                  })}
+                </small>
+              </S.NotificationContent>
+            </S.NotificationItem>
+          )
+        )}
+      </>
+    )}
+  </S.NotificationDropdown>
+)}
+  </S.NotificationWrapper>
 
         <S.IconButton
           type="button"

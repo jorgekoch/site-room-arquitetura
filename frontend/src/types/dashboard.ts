@@ -8,6 +8,8 @@ export interface DashboardStats {
 
   totalProposals: number;
   newProposals: number;
+
+  pendingAdminRequests: number;
 }
 
 export interface DashboardResponse {

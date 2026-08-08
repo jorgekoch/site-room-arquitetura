@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import { PageHeader } from "../../../components/admin/PageHeader";
 import { Loading } from "../../../components/admin/common/Loading";
@@ -17,6 +18,11 @@ import { proposalStatusOptions } from "../../../data/admin";
 import * as S from "./styles";
 
 export default function AdminPropostas() {
+  const [searchParams] = useSearchParams();
+
+  const proposalIdFromUrl =
+      searchParams.get("proposal");
+      
   const {
     proposals,
     selectedProposal,
@@ -96,6 +102,26 @@ export default function AdminPropostas() {
       return;
     }
 
+    // Se a página foi aberta através
+    // da busca do Header, prioriza
+    // exatamente a proposta solicitada.
+    if (proposalIdFromUrl) {
+      const proposalFromUrl =
+        proposals.find(
+          (proposal) =>
+            proposal.id ===
+            proposalIdFromUrl
+        );
+
+      if (proposalFromUrl) {
+        setSelectedId(
+          proposalFromUrl.id
+        );
+
+        return;
+      }
+    }
+
     const stillExists = proposals.some(
       (proposal) =>
         proposal.id === selectedId
@@ -106,7 +132,11 @@ export default function AdminPropostas() {
         proposals[0].id
       );
     }
-  }, [proposals, selectedId]);
+  }, [
+    proposals,
+    selectedId,
+    proposalIdFromUrl,
+  ]);
 
   /**
    * Carrega detalhes da proposta

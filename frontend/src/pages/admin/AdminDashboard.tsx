@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { UserPlus } from "lucide-react";
 
 import {
   Clock3,
@@ -99,6 +100,18 @@ export default function AdminDashboard() {
           description="Gerenciar propostas"
           onClick={() =>
             navigate("/admin/propostas")
+          }
+        />
+        <StatsCard
+          title="Acessos pendentes"
+          value={
+            dashboard?.stats
+              .pendingAdminRequests ?? 0
+          }
+          icon={UserPlus}
+          description="Solicitações de acesso"
+          onClick={() =>
+            navigate("/admin/usuarios")
           }
         />
       </StatsGrid>

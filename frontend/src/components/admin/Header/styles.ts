@@ -307,3 +307,197 @@ export const UserInfo = styled.div`
     color: ${({ theme }) => theme.colors.textSoft};
   }
 `;
+
+export const NotificationWrapper =
+  styled.div`
+    position: relative;
+  `;
+
+export const NotificationBadge =
+  styled.span`
+    position: absolute;
+
+    top: -5px;
+    right: -5px;
+
+    min-width: 18px;
+    height: 18px;
+
+    padding: 0 4px;
+
+    border-radius: ${({ theme }) =>
+      theme.radius.pill};
+
+    background: ${({ theme }) =>
+      theme.colors.secondary};
+
+    color: ${({ theme }) =>
+      theme.colors.secondaryContrast};
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 0.65rem;
+    font-weight: 700;
+
+    border: 2px solid
+      ${({ theme }) =>
+        theme.colors.surface};
+  `;
+
+export const NotificationDropdown =
+  styled.div`
+    position: absolute;
+
+    top: calc(100% + 12px);
+    right: 0;
+
+    width: 340px;
+
+    background: ${({ theme }) =>
+      theme.colors.surface};
+
+    border: 1px solid
+      ${({ theme }) =>
+        theme.colors.border};
+
+    border-radius: ${({ theme }) =>
+      theme.radius.md};
+
+    box-shadow: ${({ theme }) =>
+      theme.shadow.md};
+
+    overflow: hidden;
+
+    z-index: 1000;
+  `;
+
+export const NotificationHeader =
+  styled.div`
+    padding: 16px 18px;
+
+    border-bottom: 1px solid
+      ${({ theme }) =>
+        theme.colors.border};
+
+    color: ${({ theme }) =>
+      theme.colors.text};
+
+    font-size: 0.95rem;
+  `;
+
+export const NotificationItem =
+  styled.button`
+    width: 100%;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    padding: 15px 18px;
+
+    border: none;
+
+    border-bottom: 1px solid
+      ${({ theme }) =>
+        theme.colors.border};
+
+    background: transparent;
+
+    color: ${({ theme }) =>
+      theme.colors.text};
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+      background
+      ${({ theme }) =>
+        theme.transitions.default};
+
+    &:hover {
+      background: ${({ theme }) =>
+        theme.colors.surfaceHover};
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  `;
+
+export const NotificationIcon =
+  styled.div`
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+
+    border-radius: ${({ theme }) =>
+      theme.radius.sm};
+
+    background: ${({ theme }) =>
+      theme.colors.primarySoft};
+
+    color: ${({ theme }) =>
+      theme.colors.primary};
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+  `;
+
+export const NotificationContent =
+  styled.div`
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+
+    min-width: 0;
+
+    strong {
+      color: ${({ theme }) =>
+        theme.colors.text};
+
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    span {
+      color: ${({ theme }) =>
+        theme.colors.textSoft};
+
+      font-size: 0.78rem;
+    }
+  `;
+
+export const EmptyNotification =
+  styled.div`
+    min-height: 120px;
+
+    padding: 20px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    color: ${({ theme }) =>
+      theme.colors.textMuted};
+
+    font-size: 0.82rem;
+
+    svg {
+      opacity: 0.7;
+    }
+  `;
