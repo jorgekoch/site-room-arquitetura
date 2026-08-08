@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import type { AdminRole, AdminUserItem } from "../../types/admin-users";
 import { media } from "../../styles/breakpoints";
 import { useCurrentAdmin } from "../../hooks/useCurrentAdmin";
+import { ConfirmModal } from "../../components/admin/common/ConfirmModal";
 
 const Section = styled.section`
   padding: 2rem 0 5rem;
@@ -373,6 +374,11 @@ export default function AdminUsuarios() {
     useState<
       "ALL" | "PENDING" | "ACTIVE" | "INACTIVE"
     >("ALL");
+  const [adminToRemove, setAdminToRemove] =
+    useState<AdminUserItem | null>(null);
+
+  const [removingAdmin, setRemovingAdmin] =
+    useState(false);
 
   async function loadAdmins() {
     try {
@@ -473,6 +479,41 @@ export default function AdminUsuarios() {
   const isOwner = (admin: AdminUserItem) =>
   admin.email.toLowerCase() ===
   "manulopes.arq@gmail.com";
+
+  async function handleRemoveAdmin() {
+    if (!adminToRemove) {
+      return;
+    }
+
+    try {
+      setRemovingAdmin(true);
+
+      setMessage("");
+      setErrorMessage("");
+
+      await removeAdmin(
+        adminToRemove.id
+      );
+
+      setAdminToRemove(null);
+
+      setMessage(
+        "Admin removido com sucesso."
+      );
+
+      await loadAdmins();
+    } catch (error) {
+      console.error(error);
+
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Erro ao remover admin."
+      );
+    } finally {
+      setRemovingAdmin(false);
+    }
+  }
 
   return (
     <Section>
@@ -708,24 +749,9 @@ export default function AdminUsuarios() {
 
                             <SmallButton
                               type="button"
-                              onClick={() => {
-                                const confirmed =
-                                  window.confirm(
-                                    `Tem certeza que deseja remover o admin ${admin.name}?`
-                                  );
-
-                                if (!confirmed) {
-                                  return;
-                                }
-
-                                executeAction(
-                                  () =>
-                                    removeAdmin(
-                                      admin.id
-                                    ),
-                                  "Admin removido com sucesso."
-                                );
-                              }}
+                              onClick={() =>
+                                setAdminToRemove(admin)
+                              }
                             >
                               Remover
                             </SmallButton>
@@ -756,6 +782,30 @@ export default function AdminUsuarios() {
             </tbody>
           </Table>
         </TableWrap>
+        <ConfirmModal
+          open={Boolean(adminToRemove)}
+          title="Remover administrador?"
+          message={
+            <>
+              Você está prestes a remover
+              o acesso administrativo de{" "}
+              <strong>
+                {adminToRemove?.name}
+              </strong>
+              . Essa ação não pode ser
+              desfeita.
+            </>
+          }
+          confirmLabel="Remover"
+          cancelLabel="Cancelar"
+          loading={removingAdmin}
+          onCancel={() => {
+            if (!removingAdmin) {
+              setAdminToRemove(null);
+            }
+          }}
+          onConfirm={handleRemoveAdmin}
+        />
       </Container>
     </Section>
   );
