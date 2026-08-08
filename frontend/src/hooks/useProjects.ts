@@ -8,32 +8,35 @@ import {
   createProject,
   deleteProject,
   featureProject,
-  getProject,
   getProjects,
   publishProject,
+  replaceProjectImages,
   unfeatureProject,
   unpublishProject,
   updateProject,
 } from "../lib/projects";
 
 import { Project } from "../types/project";
-import {
-  ProjectFormData,
-  UpdateProjectFormData,
-} from "../types/project-form";
+import { ProjectFormData } from "../types/project-form";
 
 export function useProjects() {
-  const [projects, setProjects] =
-    useState<Project[]>([]);
+  const [
+    projects,
+    setProjects,
+  ] = useState<Project[]>([]);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [
+    loading,
+    setLoading,
+  ] = useState(true);
 
-  const [error, setError] =
-    useState("");
+  const [
+    error,
+    setError,
+  ] = useState("");
 
-  const loadProjects = useCallback(
-    async () => {
+  const loadProjects =
+    useCallback(async () => {
       try {
         setLoading(true);
 
@@ -52,17 +55,11 @@ export function useProjects() {
       } finally {
         setLoading(false);
       }
-    },
-    []
-  );
+    }, []);
 
   useEffect(() => {
     loadProjects();
   }, [loadProjects]);
-
-  async function getById(id: string) {
-    return getProject(id);
-  }
 
   async function create(
     data: ProjectFormData
@@ -74,41 +71,71 @@ export function useProjects() {
 
   async function update(
     id: string,
-    data: UpdateProjectFormData
+    data: ProjectFormData
   ) {
+    /**
+     * Atualiza os dados principais
+     * do projeto.
+     *
+     * A API de update não recebe
+     * a galeria.
+     */
+    const {
+      images,
+      ...projectData
+    } = data;
+
     await updateProject(
       id,
-      data
+      projectData
+    );
+
+    /**
+     * Atualiza a galeria separadamente.
+     */
+    await replaceProjectImages(
+      id,
+      images
     );
 
     await loadProjects();
   }
 
-  async function remove(id: string) {
+  async function remove(
+    id: string
+  ) {
     await deleteProject(id);
 
     await loadProjects();
   }
 
-  async function publish(id: string) {
+  async function publish(
+    id: string
+  ) {
     await publishProject(id);
 
     await loadProjects();
   }
 
-  async function unpublish(id: string) {
+  async function unpublish(
+    id: string
+  ) {
     await unpublishProject(id);
 
     await loadProjects();
   }
 
-  async function feature(id: string) {
+  async function feature(
+    id: string
+  ) {
     await featureProject(id);
 
     await loadProjects();
   }
 
-  async function unfeature(id: string) {
+  async function unfeature(
+    id: string
+  ) {
     await unfeatureProject(id);
 
     await loadProjects();
@@ -116,20 +143,24 @@ export function useProjects() {
 
   return {
     projects,
+
     loading,
+
     error,
 
     create,
+
     update,
+
     remove,
 
     publish,
+
     unpublish,
 
     feature,
-    unfeature,
 
-    getById,
+    unfeature,
 
     reload: loadProjects,
   };

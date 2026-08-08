@@ -4,10 +4,16 @@ interface IconProps {
   $color?: string;
 }
 
-export const Container = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
+interface ContainerProps {
+  $clickable?: boolean;
+}
 
-  border: 1px solid ${({ theme }) => theme.colors.border};
+export const Container = styled.div<ContainerProps>`
+  background: ${({ theme }) =>
+    theme.colors.surface};
+
+  border: 1px solid
+    ${({ theme }) => theme.colors.border};
 
   border-radius: 18px;
 
@@ -19,70 +25,95 @@ export const Container = styled.div`
 
   gap: 24px;
 
-  transition: .25s;
+  transition: 0.25s;
 
-  &:hover{
-    transform: translateY(-3px);
+  cursor: ${({ $clickable }) =>
+    $clickable ? "pointer" : "default"};
 
-    box-shadow: 0 12px 30px rgba(0,0,0,.08);
+  &:hover {
+    transform: ${({ $clickable }) =>
+      $clickable
+        ? "translateY(-3px)"
+        : "none"};
+
+    box-shadow: ${({ $clickable }) =>
+      $clickable
+        ? "0 12px 30px rgba(0, 0, 0, 0.08)"
+        : "none"};
+
+    border-color: ${({ $clickable, theme }) =>
+      $clickable
+        ? theme.colors.primary
+        : theme.colors.border};
+  }
+
+  &:focus-visible {
+    outline: 3px solid
+      ${({ theme }) =>
+        theme.colors.primaryRing};
+
+    outline-offset: 2px;
   }
 `;
 
 export const Top = styled.div`
-  display:flex;
+  display: flex;
 
-  justify-content:space-between;
+  justify-content: space-between;
 
-  align-items:center;
+  align-items: center;
 `;
 
 export const Bottom = styled.div`
-  display:flex;
+  display: flex;
 
-  flex-direction:column;
+  flex-direction: column;
 
-  gap:6px;
+  gap: 6px;
 `;
 
 export const IconContainer = styled.div<IconProps>`
-  width:52px;
+  width: 52px;
 
-  height:52px;
+  height: 52px;
 
-  border-radius:14px;
+  border-radius: 14px;
 
-  display:flex;
+  display: flex;
 
-  align-items:center;
+  align-items: center;
 
-  justify-content:center;
+  justify-content: center;
 
-  color:white;
+  color: white;
 
-  background:${({ theme, $color }) =>
+  background: ${({ theme, $color }) =>
     $color ?? theme.colors.primary};
 `;
 
 export const Value = styled.h2`
-  font-size:2rem;
+  font-size: 2rem;
 
-  font-weight:700;
+  font-weight: 700;
 
-  color:${({ theme }) => theme.colors.text};
+  color: ${({ theme }) =>
+    theme.colors.text};
 
-  margin:0;
+  margin: 0;
 `;
 
 export const Title = styled.span`
-  font-size:.95rem;
+  font-size: 0.95rem;
 
-  font-weight:600;
+  font-weight: 600;
 
-  color:${({ theme }) => theme.colors.text};
+  color: ${({ theme }) =>
+    theme.colors.text};
 `;
 
 export const Description = styled.span`
-  font-size:.82rem;
+  font-size: 0.82rem;
 
-  color:${({ theme }) => theme.colors.textSoft};
+  color: ${({ theme }) =>
+    theme.colors.textSoft};
 `;

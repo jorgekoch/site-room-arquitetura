@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 import {
   Clock3,
   Eye,
@@ -40,6 +42,8 @@ export default function AdminDashboard() {
     );
   }
 
+  const navigate = useNavigate();
+
   return (
     <>
       <PageHeader
@@ -55,6 +59,10 @@ export default function AdminDashboard() {
               .totalProjects ?? 0
           }
           icon={FolderOpen}
+          description="Gerenciar projetos"
+          onClick={() =>
+            navigate("/admin/projetos")
+          }
         />
 
         <StatsCard
@@ -64,6 +72,7 @@ export default function AdminDashboard() {
               .publishedProjects ?? 0
           }
           icon={Eye}
+          description="Projetos publicados"
         />
 
         <StatsCard
@@ -73,6 +82,10 @@ export default function AdminDashboard() {
               .draftProjects ?? 0
           }
           icon={Clock3}
+          description="Projetos não publicados"
+          onClick={() =>
+            navigate("/admin/projetos")
+          }
         />
 
         <StatsCard
@@ -82,6 +95,10 @@ export default function AdminDashboard() {
               .totalProposals ?? 0
           }
           icon={FileText}
+          description="Gerenciar propostas"
+          onClick={() =>
+            navigate("/admin/propostas")
+          }
         />
       </StatsGrid>
       

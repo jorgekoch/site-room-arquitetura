@@ -13,15 +13,18 @@ export function RecentProjects({
 }: RecentProjectsProps) {
   return (
     <S.Container>
-
       <S.Header>
+        <div>
+          <h2>Últimos Projetos</h2>
 
-        <h2>Últimos Projetos</h2>
+          <span>
+            Projetos adicionados recentemente
+          </span>
+        </div>
 
         <Link to="/admin/projetos">
           Ver todos
         </Link>
-
       </S.Header>
 
       {projects.length === 0 ? (
@@ -30,21 +33,36 @@ export function RecentProjects({
         </S.Empty>
       ) : (
         <S.List>
-
           {projects.map((project) => (
-            <S.Item key={project.id}>
+            <S.Item
+              key={project.id}
+              to="/admin/projetos"
+            >
+              <S.ProjectInfo>
+                {project.featuredImage ? (
+                  <S.Thumbnail
+                    src={project.featuredImage}
+                    alt={project.title}
+                  />
+                ) : (
+                  <S.Placeholder>
+                    <span>ROOM</span>
+                  </S.Placeholder>
+                )}
 
-              <div>
+                <div>
+                  <strong>
+                    {project.title}
+                  </strong>
 
-                <strong>
-                  {project.title}
-                </strong>
-
-                <span>
-                  {project.category}
-                </span>
-
-              </div>
+                  <span>
+                    {project.category}
+                    {project.city
+                      ? ` · ${project.city}`
+                      : ""}
+                  </span>
+                </div>
+              </S.ProjectInfo>
 
               <S.Status
                 $published={
@@ -55,13 +73,10 @@ export function RecentProjects({
                   ? "Publicado"
                   : "Rascunho"}
               </S.Status>
-
             </S.Item>
           ))}
-
         </S.List>
       )}
-
     </S.Container>
   );
 }

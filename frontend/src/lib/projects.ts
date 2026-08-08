@@ -19,113 +19,132 @@ export interface UploadProjectImageResponse {
   uploadUrl: string;
   storageKey: string;
   fileUrl: string;
-  fileName: string;
 }
 
 /**
- * Lista todos os projetos
+ * Lista todos os projetos administrativos.
  */
 export function getProjects() {
-  return apiGet<Project[]>("/projects");
+  return apiGet<Project[]>(
+    "/projects"
+  );
 }
 
 /**
- * Busca um projeto
+ * Busca um projeto pelo ID.
  */
-export function getProject(
-  id: string
-) {
+export function getProject(id: string) {
   return apiGet<Project>(
     `/projects/${id}`
   );
 }
 
 /**
- * Cria um projeto
+ * Cria um projeto.
  */
 export function createProject(
   data: ProjectFormData
 ) {
-  return apiPost<Project>(
+  return apiPost(
     "/projects",
     data
   );
 }
 
 /**
- * Atualiza um projeto
+ * Atualiza os dados principais
+ * do projeto.
+ *
+ * A galeria é atualizada
+ * separadamente.
  */
 export function updateProject(
   id: string,
   data: UpdateProjectFormData
 ) {
   return apiPatch(
-  `/projects/${id}`,
-  data
-);
+    `/projects/${id}`,
+    data
+  );
 }
 
 /**
  * Substitui toda a galeria
+ * do projeto.
  */
 export function replaceProjectImages(
   id: string,
   images: ProjectImage[]
 ) {
   return apiPatch(
-  `/projects/${id}/images`,
-  {
-    images,
-  }
-);
+    `/projects/${id}/images`,
+    {
+      images,
+    }
+  );
 }
 
 /**
- * Publica um projeto
+ * Publica um projeto.
  */
 export function publishProject(
   id: string
 ) {
-  return apiPatch<Project>(
+  return apiPatch(
     `/projects/${id}/publish`
   );
 }
 
 /**
- * Remove publicação
+ * Remove a publicação.
  */
 export function unpublishProject(
   id: string
 ) {
-  return apiPatch<Project>(
+  return apiPatch(
     `/projects/${id}/unpublish`
   );
 }
 
 /**
- * Destaca projeto
+ * Destaca um projeto.
  */
 export function featureProject(
   id: string
 ) {
-  return apiPatch<Project>(
+  return apiPatch(
     `/projects/${id}/feature`
   );
 }
 
 /**
- * Remove destaque
+ * Remove o destaque.
  */
 export function unfeatureProject(
   id: string
 ) {
-  return apiPatch<Project>(
+  return apiPatch(
     `/projects/${id}/unfeature`
   );
 }
 
 /**
- * Exclui projeto
+ * Atualiza a imagem de capa.
+ */
+export function updateFeaturedImage(
+  id: string,
+  featuredImage: string
+) {
+  return apiPatch(
+    `/projects/${id}/featured-image`,
+    {
+      featuredImage,
+    }
+  );
+}
+
+/**
+ * Exclui um projeto.
  */
 export function deleteProject(
   id: string
@@ -143,11 +162,11 @@ export function getProjectUploadUrl(
   fileName: string,
   fileType: string
 ) {
-  return apiPost<UploadProjectImageResponse>(
+  return apiPost(
     "/projects/upload-url",
     {
       fileName,
       fileType,
     }
-  );
+  ) as Promise<UploadProjectImageResponse>;
 }

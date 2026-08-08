@@ -14,7 +14,13 @@ export function RecentProposals({
   return (
     <S.Container>
       <S.Header>
-        <h2>Últimas Propostas</h2>
+        <div>
+          <h2>Últimas Propostas</h2>
+
+          <span>
+            Solicitações recebidas recentemente
+          </span>
+        </div>
 
         <Link to="/admin/propostas">
           Ver todas
@@ -28,16 +34,28 @@ export function RecentProposals({
       ) : (
         <S.List>
           {proposals.map((proposal) => (
-            <S.Item key={proposal.id}>
-              <div>
-                <strong>
-                  {proposal.fullName}
-                </strong>
+            <S.Item
+              key={proposal.id}
+              to="/admin/propostas"
+            >
+              <S.ProposalInfo>
+                <S.Avatar>
+                  {proposal.fullName
+                    .trim()
+                    .charAt(0)
+                    .toUpperCase()}
+                </S.Avatar>
 
-                <span>
-                  {proposal.projectType}
-                </span>
-              </div>
+                <div>
+                  <strong>
+                    {proposal.fullName}
+                  </strong>
+
+                  <span>
+                    {proposal.projectType}
+                  </span>
+                </div>
+              </S.ProposalInfo>
 
               <S.Status>
                 {proposal.status}
