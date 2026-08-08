@@ -1,4 +1,4 @@
-import { apiGet, apiPatch } from "./api";
+import { apiGet, apiPatch, apiPost } from "./api";
 
 import type {
   ProposalRequestAdmin,
@@ -56,5 +56,39 @@ export function updateProposalNotes(
   return apiPatch<ProposalRequestAdmin>(
     `/proposal-requests/${id}/notes`,
     { internalNotes }
+  );
+}
+
+export function getProposalUploadUrl(data: {
+  fileName: string;
+  fileType:
+    | "application/pdf"
+    | "image/jpeg"
+    | "image/png"
+    | "image/webp";
+  kind: "payment-proof" | "reference";
+}) {
+  return apiPost<{
+    uploadUrl: string;
+    storageKey: string;
+    imageUrl?: string;
+  }>(
+    "/proposal-requests/upload-url",
+    data
+  );
+}
+
+export function saveProposalPaymentProof(
+  id: string,
+  storageKey: string
+) {
+  return apiPatch<{
+    message: string;
+    proposal: unknown;
+  }>(
+    `/proposal-requests/${id}/payment-proof`,
+    {
+      storageKey,
+    }
   );
 }
