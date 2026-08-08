@@ -75,6 +75,141 @@ export const Search = styled.div`
   }
 `;
 
+export const SearchWrapper = styled.div`
+  position: relative;
+  width: 280px;
+`;
+
+export const SearchDropdown = styled.div`
+  position: absolute;
+
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+
+  z-index: 1000;
+
+  background: ${({ theme }) =>
+    theme.colors.surface};
+
+  border: 1px solid
+    ${({ theme }) =>
+      theme.colors.border};
+
+  border-radius: ${({ theme }) =>
+    theme.radius.md};
+
+  box-shadow: ${({ theme }) =>
+    theme.shadow.md};
+
+  overflow: hidden;
+
+  min-width: 320px;
+`;
+
+export const SearchSection = styled.div`
+  padding: 0.5rem 0;
+
+  & + & {
+    border-top: 1px solid
+      ${({ theme }) =>
+        theme.colors.border};
+  }
+`;
+
+export const SearchSectionTitle = styled.div`
+  padding: 0.6rem 1rem;
+
+  font-size: 0.72rem;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.08em;
+
+  color: ${({ theme }) =>
+    theme.colors.textMuted};
+`;
+
+export const SearchResult = styled.button`
+  width: 100%;
+
+  border: none;
+
+  background: transparent;
+
+  padding: 0.75rem 1rem;
+
+  display: flex;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  color: ${({ theme }) =>
+    theme.colors.text};
+
+  transition:
+    background
+      ${({ theme }) =>
+        theme.transitions.default};
+
+  &:hover {
+    background: ${({ theme }) =>
+      theme.colors.surfaceHover};
+  }
+`;
+
+export const SearchResultContent = styled.div`
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.2rem;
+
+  min-width: 0;
+
+  strong {
+    color: ${({ theme }) =>
+      theme.colors.text};
+
+    font-size: 0.9rem;
+
+    font-weight: 600;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+  }
+
+  span {
+    color: ${({ theme }) =>
+      theme.colors.textSoft};
+
+    font-size: 0.76rem;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+  }
+`;
+
+export const SearchMessage = styled.div`
+  padding: 1rem;
+
+  text-align: center;
+
+  color: ${({ theme }) =>
+    theme.colors.textSoft};
+
+  font-size: 0.85rem;
+`;
+
 export const IconButton = styled.button`
   width: 42px;
   height: 42px;
