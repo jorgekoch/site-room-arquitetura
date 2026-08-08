@@ -170,3 +170,29 @@ export function getProjectUploadUrl(
     }
   ) as Promise<UploadProjectImageResponse>;
 }
+
+/**
+ * Lista os projetos publicados para o site público.
+ */
+export function getPublishedProjects() {
+  return apiGet<Project[]>(
+    "/projects/published"
+  );
+}
+
+/**
+ * Busca um projeto publicado pelo slug.
+ */
+export function getPublicProjectBySlug(
+  slug: string
+) {
+  return apiGet<Project>(
+    `/projects/slug/${slug}`
+  );
+}
+
+export function getFeaturedProjects() {
+  return apiGet<Project[]>(
+    "/projects/featured"
+  );
+}

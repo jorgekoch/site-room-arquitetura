@@ -1,7 +1,6 @@
 import { HeroBase } from "../../components/sections/HeroBase";
 import { AudienceSection } from "../../components/sections/AudienceSection";
 import { ServiceSectionBase } from "../../components/sections/ServiceSectionBase";
-import { PortfolioSection } from "../../components/sections/PortfolioSection";
 import { ProcessSection } from "../../components/sections/ProcessSection";
 import { OfferingsSection } from "../../components/sections/OfferingsSection";
 import { AboutPageSection } from "../../components/sections/AboutPageSection";
@@ -10,11 +9,11 @@ import { siteConfig } from "../../config/site";
 import { homeData } from "../../data/home";
 import { audienceData } from "../../data/audience";
 import { servicesData } from "../../data/services";
-import { portfolioData } from "../../data/portfolio";
 import { processData } from "../../data/process";
 import { offeringsData } from "../../data/offerings";
 import { aboutPageData } from "../../data/about";
 import { Reveal } from "../../components/motion/Reveal";
+import { HomeProjects } from "../../components/sections/HomeProjects/HomeProjects";
 
 export default function Home() {
   return (
@@ -57,19 +56,7 @@ export default function Home() {
         </Reveal>
 
         <Reveal>
-          <PortfolioSection
-            eyebrow={portfolioData.section.eyebrow}
-            title={portfolioData.section.title}
-            description={portfolioData.section.description}
-            items={portfolioData.items}
-            limit={5}
-            viewAllCard={{
-              title: "Explore todos os projetos",
-              description: "Acesse a página completa e filtre por categoria.",
-              to: "/projetos",
-              buttonLabel: "Ver todos",
-            }}
-          />
+          <HomeProjects />
         </Reveal>
 
         <Reveal>
