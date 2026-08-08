@@ -5,11 +5,12 @@ import {
 } from "react-router-dom";
 
 import { PageShell } from "./components/layout/PageShell";
-
 import { ScrollToTop } from "./components/utils/ScrollToTop";
 
 import { AdminRoute } from "./components/auth/AdminRoute";
 import { ProtectedSuccessRoute } from "./components/auth/ProtectedSuccessRoute";
+
+import { AdminLayout } from "./components/admin/AdminLayout";
 
 // Páginas públicas
 import Home from "./pages/public/Home";
@@ -108,44 +109,41 @@ function App() {
         />
 
         {/* ========================= */}
-        {/* ADMIN */}
+        {/* PAINEL ADMINISTRATIVO */}
         {/* ========================= */}
 
         <Route
           path="/admin"
           element={
             <AdminRoute>
-              <AdminDashboard />
+              <AdminLayout />
             </AdminRoute>
           }
-        />
+        >
+          {/* Dashboard */}
+          <Route
+            index
+            element={<AdminDashboard />}
+          />
 
-        <Route
-          path="/admin/projetos"
-          element={
-            <AdminRoute>
-              <AdminProjetos />
-            </AdminRoute>
-          }
-        />
+          {/* Projetos */}
+          <Route
+            path="projetos"
+            element={<AdminProjetos />}
+          />
 
-        <Route
-          path="/admin/propostas"
-          element={
-            <AdminRoute>
-              <AdminPropostas />
-            </AdminRoute>
-          }
-        />
+          {/* Propostas */}
+          <Route
+            path="propostas"
+            element={<AdminPropostas />}
+          />
 
-        <Route
-          path="/admin/usuarios"
-          element={
-            <AdminRoute>
-              <AdminUsuarios />
-            </AdminRoute>
-          }
-        />
+          {/* Usuários */}
+          <Route
+            path="usuarios"
+            element={<AdminUsuarios />}
+          />
+        </Route>
 
         {/* ========================= */}
         {/* FALLBACK */}
