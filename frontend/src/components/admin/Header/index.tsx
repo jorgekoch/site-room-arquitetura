@@ -327,6 +327,19 @@ export function Header() {
     }
   }
 
+  function roleLabel(role?: string) {
+    switch (role) {
+      case "OWNER":
+        return "Owner";
+
+      case "ADMIN":
+        return "Admin";
+
+      default:
+        return role ?? "Usuário";
+    }
+  }
+
   return (
     <S.Container>
       <S.Left>
@@ -560,9 +573,7 @@ export function Header() {
             </strong>
 
             <span>
-              {user?.role === "SUPER_ADMIN"
-                ? "Administrador"
-                : "Equipe"}
+              {roleLabel(user?.role)}
             </span>
           </S.UserInfo>
         </S.User>

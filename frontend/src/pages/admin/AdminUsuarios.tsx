@@ -1,11 +1,19 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Container } from "../../components/ui/Container";
-import { apiFetch } from "../../lib/api";
+import {
+  getAdminUsers,
+  approveAdmin,
+  activateAdmin,
+  deactivateAdmin,
+  updateAdminRole,
+  removeAdmin,
+} from "../../lib/users";
 import { removeAdminToken } from "../../lib/auth";
 import { useNavigate } from "react-router-dom";
 import type { AdminRole, AdminUserItem } from "../../types/admin-users";
 import { media } from "../../styles/breakpoints";
+import { useCurrentAdmin } from "../../hooks/useCurrentAdmin";
 
 const Section = styled.section`
   padding: 2rem 0 5rem;
@@ -58,6 +66,126 @@ const Actions = styled.div`
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
+`;
+
+const Filters = styled.div`
+  display: grid;
+
+  grid-template-columns:
+    minmax(240px, 1fr)
+    auto;
+
+  gap: 1rem;
+
+  margin-bottom: 1.5rem;
+
+  @media ${media.tablet} {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const SearchInput = styled.input`
+  width: 100%;
+
+  min-height: 46px;
+
+  padding: 0 1rem;
+
+  border-radius:
+    ${({ theme }) =>
+      theme.radius.md};
+
+  border: 1px solid
+    ${({ theme }) =>
+      theme.colors.border};
+
+  background:
+    ${({ theme }) =>
+      theme.colors.backgroundSoft};
+
+  color:
+    ${({ theme }) =>
+      theme.colors.text};
+
+  font-family: inherit;
+
+  outline: none;
+
+  &:focus {
+    border-color:
+      ${({ theme }) =>
+        theme.colors.primary};
+
+    box-shadow:
+      0 0 0 3px
+      ${({ theme }) =>
+        theme.colors.primaryRing};
+  }
+
+  &::placeholder {
+    color:
+      ${({ theme }) =>
+        theme.colors.textMuted};
+  }
+`;
+
+const FilterGroup = styled.div`
+  display: flex;
+
+  gap: 0.5rem;
+
+  flex-wrap: wrap;
+`;
+
+const FilterButton = styled.button<{
+  $active: boolean;
+}>`
+  min-height: 42px;
+
+  padding: 0.65rem 0.9rem;
+
+  border-radius:
+    ${({ theme }) =>
+      theme.radius.pill};
+
+  border: 1px solid
+    ${({ theme, $active }) =>
+      $active
+        ? theme.colors.primary
+        : theme.colors.border};
+
+  background:
+    ${({ theme, $active }) =>
+      $active
+        ? theme.colors.primary
+        : "transparent"};
+
+  color:
+    ${({ theme, $active }) =>
+      $active
+        ? theme.colors.primaryContrast
+        : theme.colors.text};
+
+  cursor: pointer;
+
+  font-family: inherit;
+
+  font-size:
+    ${({ theme }) =>
+      theme.fontSizes.xs};
+
+  font-weight: 600;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    border-color:
+      ${({ theme }) =>
+        theme.colors.primary};
+  }
 `;
 
 const GhostButton = styled.button`
@@ -127,6 +255,83 @@ const SmallButton = styled.button`
   font-size: ${({ theme }) => theme.fontSizes.xs};
 `;
 
+const Badge = styled.span<{
+  $variant:
+    | "success"
+    | "warning"
+    | "neutral"
+    | "primary";
+}>`
+  display: inline-flex;
+
+  align-items: center;
+
+  width: fit-content;
+
+  padding: 0.4rem 0.7rem;
+
+  border-radius:
+    ${({ theme }) =>
+      theme.radius.pill};
+
+  font-size:
+    ${({ theme }) =>
+      theme.fontSizes.xs};
+
+  font-weight: 600;
+
+  background:
+    ${({ theme, $variant }) => {
+      if ($variant === "success") {
+        return theme.colors.successSoft;
+      }
+
+      if ($variant === "warning") {
+        return theme.colors.secondarySoft;
+      }
+
+      if ($variant === "primary") {
+        return theme.colors.primarySoft;
+      }
+
+      return theme.colors.backgroundSoft;
+    }};
+
+  color:
+    ${({ theme, $variant }) => {
+      if ($variant === "success") {
+        return theme.colors.success;
+      }
+
+      if ($variant === "warning") {
+        return theme.colors.secondary;
+      }
+
+      if ($variant === "primary") {
+        return theme.colors.primary;
+      }
+
+      return theme.colors.textSoft;
+    }};
+
+  border: 1px solid
+    ${({ theme, $variant }) => {
+      if ($variant === "success") {
+        return theme.colors.successBorder;
+      }
+
+      if ($variant === "warning") {
+        return theme.colors.secondaryBorder;
+      }
+
+      if ($variant === "primary") {
+        return theme.colors.primaryBorder;
+      }
+
+      return theme.colors.border;
+    }};
+`;
+
 const Message = styled.p<{ $error?: boolean }>`
   color: ${({ theme, $error }) =>
     $error ? theme.colors.danger : theme.colors.success};
@@ -144,18 +349,41 @@ function statusLabel(admin: AdminUserItem) {
   return "Ativo";
 }
 
+function statusVariant(
+  admin: AdminUserItem
+) {
+  if (!admin.approved) {
+    return "warning" as const;
+  }
+
+  if (!admin.isActive) {
+    return "neutral" as const;
+  }
+
+  return "success" as const;
+}
+
+function roleVariant(
+  role: AdminRole
+) {
+  return role === "OWNER"
+    ? "primary"
+    : "neutral";
+}
+
 export default function AdminUsuarios() {
   const navigate = useNavigate();
+  const { user: currentAdmin } = useCurrentAdmin();
   const [items, setItems] = useState<AdminUserItem[]>([]);
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [roleDrafts, setRoleDrafts] = useState<Record<string, AdminRole>>({});
-
-  function handleUnauthorized() {
-    removeAdminToken();
-    navigate("/admin/login");
-  }
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] =
+    useState<
+      "ALL" | "PENDING" | "ACTIVE" | "INACTIVE"
+    >("ALL");
 
   async function loadAdmins() {
     try {
@@ -163,69 +391,56 @@ export default function AdminUsuarios() {
       setMessage("");
       setErrorMessage("");
 
-      const response = await apiFetch("/admin-users");
+      const data =
+        await getAdminUsers();
 
-      if (response.status === 401) {
-        handleUnauthorized();
-        return;
-      }
-
-      if (response.status === 403) {
-        throw new Error("Apenas o owner pode acessar esta página.");
-      }
-
-      if (!response.ok) {
-        throw new Error("Não foi possível carregar os admins.");
-      }
-
-      const data: AdminUserItem[] = await response.json();
       setItems(data);
 
-      const drafts: Record<string, AdminRole> = {};
+      const drafts: Record<
+        string,
+        AdminRole
+      > = {};
+
       data.forEach((item) => {
         drafts[item.id] = item.role;
       });
+
       setRoleDrafts(drafts);
     } catch (error) {
+      console.error(error);
+
       setErrorMessage(
-        error instanceof Error ? error.message : "Erro ao carregar admins."
+        error instanceof Error
+          ? error.message
+          : "Erro ao carregar admins."
       );
     } finally {
       setLoading(false);
     }
   }
 
-  async function callAction(
-    path: string,
-    init?: RequestInit,
-    successMessage?: string
+  async function executeAction(
+    action: () => Promise<unknown>,
+    successMessage: string
   ) {
     try {
       setMessage("");
       setErrorMessage("");
 
-      const response = await apiFetch(path, init);
+      await action();
 
-      if (response.status === 401) {
-        handleUnauthorized();
-        return;
-      }
+      setMessage(
+        successMessage
+      );
 
-      if (response.status === 403) {
-        throw new Error("Apenas o owner pode executar esta ação.");
-      }
-
-      const data = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        throw new Error(data?.message || "Não foi possível executar a ação.");
-      }
-
-      setMessage(successMessage || data?.message || "Ação concluída.");
       await loadAdmins();
     } catch (error) {
+      console.error(error);
+
       setErrorMessage(
-        error instanceof Error ? error.message : "Erro ao executar ação."
+        error instanceof Error
+          ? error.message
+          : "Erro ao executar ação."
       );
     }
   }
@@ -234,6 +449,41 @@ export default function AdminUsuarios() {
     loadAdmins();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const filteredItems =
+    items.filter((admin) => {
+      const query =
+        search.trim().toLowerCase();
+
+      const matchesSearch =
+        !query ||
+        admin.name
+          .toLowerCase()
+          .includes(query) ||
+        admin.email
+          .toLowerCase()
+          .includes(query);
+
+      const matchesStatus =
+        statusFilter === "ALL" ||
+        (statusFilter === "PENDING" &&
+          !admin.approved) ||
+        (statusFilter === "ACTIVE" &&
+          admin.approved &&
+          admin.isActive) ||
+        (statusFilter === "INACTIVE" &&
+          admin.approved &&
+          !admin.isActive);
+
+      return (
+        matchesSearch &&
+        matchesStatus
+      );
+    });
+
+  const isOwner = (admin: AdminUserItem) =>
+  admin.email.toLowerCase() ===
+  "manulopes.arq@gmail.com";
 
   return (
     <Section>
@@ -263,6 +513,67 @@ export default function AdminUsuarios() {
           <Description>
             Aprove, desative, reative, altere função e remova acessos administrativos do sistema.
           </Description>
+          <Filters>
+            <SearchInput
+              type="search"
+              placeholder="Pesquisar por nome ou e-mail..."
+              value={search}
+              onChange={(event) =>
+                setSearch(event.target.value)
+              }
+              aria-label="Pesquisar administradores"
+            />
+
+            <FilterGroup>
+              <FilterButton
+                type="button"
+                $active={
+                  statusFilter === "ALL"
+                }
+                onClick={() =>
+                  setStatusFilter("ALL")
+                }
+              >
+                Todos
+              </FilterButton>
+
+              <FilterButton
+                type="button"
+                $active={
+                  statusFilter === "PENDING"
+                }
+                onClick={() =>
+                  setStatusFilter("PENDING")
+                }
+              >
+                Pendentes
+              </FilterButton>
+
+              <FilterButton
+                type="button"
+                $active={
+                  statusFilter === "ACTIVE"
+                }
+                onClick={() =>
+                  setStatusFilter("ACTIVE")
+                }
+              >
+                Ativos
+              </FilterButton>
+
+              <FilterButton
+                type="button"
+                $active={
+                  statusFilter === "INACTIVE"
+                }
+                onClick={() =>
+                  setStatusFilter("INACTIVE")
+                }
+              >
+                Inativos
+              </FilterButton>
+            </FilterGroup>
+          </Filters>
         </Header>
 
         {message && <Message>{message}</Message>}
@@ -286,114 +597,164 @@ export default function AdminUsuarios() {
                 <tr>
                   <Td colSpan={6}>Carregando admins...</Td>
                 </tr>
-              ) : items.length ? (
-                items.map((admin) => (
+              ) : filteredItems.length ? (
+                filteredItems.map((admin) => (
                   <tr key={admin.id}>
                     <Td>{admin.name}</Td>
                     <Td>{admin.email}</Td>
                     <Td>
-                      <Select
-                        value={roleDrafts[admin.id] || admin.role}
-                        onChange={(event) =>
-                          setRoleDrafts((prev) => ({
-                            ...prev,
-                            [admin.id]: event.target.value as AdminRole,
-                          }))
-                        }
-                      >
-                        <option value="OWNER">Owner</option>
-                        <option value="ADMIN">Admin</option>
-                      </Select>
+                      {isOwner(admin) ? (
+                        <Badge $variant="primary">
+                          Owner
+                        </Badge>
+                      ) : (
+                        <Select
+                          value={
+                            roleDrafts[admin.id] ||
+                            admin.role
+                          }
+                          onChange={(event) =>
+                            setRoleDrafts((prev) => ({
+                              ...prev,
+                              [admin.id]:
+                                event.target
+                                  .value as AdminRole,
+                            }))
+                          }
+                        >
+                          <option value="OWNER">
+                            Owner
+                          </option>
 
-                      <div style={{ marginTop: 8, fontSize: 12 }}>
-                        Atual: {roleLabel(admin.role)}
-                      </div>
+                          <option value="ADMIN">
+                            Admin
+                          </option>
+                        </Select>
+                      )}
                     </Td>
-                    <Td>{statusLabel(admin)}</Td>
+                    <Td>
+                      <Badge
+                        $variant={statusVariant(
+                          admin
+                        )}
+                      >
+                        {statusLabel(admin)}
+                      </Badge>
+                    </Td>
                     <Td>{new Date(admin.createdAt).toLocaleString("pt-BR")}</Td>
                     <Td>
                       <RowActions>
-                        {!admin.approved && (
-                          <SmallButton
-                            type="button"
-                            onClick={() =>
-                              callAction(
-                                `/admin-users/${admin.id}/approve`,
-                                { method: "PATCH" },
-                                "Admin aprovado com sucesso."
-                              )
-                            }
-                          >
-                            Aprovar
-                          </SmallButton>
+                        {currentAdmin?.id !== admin.id && (
+                          <>
+                            {!admin.approved && (
+                              <SmallButton
+                                type="button"
+                                onClick={() =>
+                                  executeAction(
+                                    () =>
+                                      approveAdmin(
+                                        admin.id
+                                      ),
+                                    "Admin aprovado com sucesso."
+                                  )
+                                }
+                              >
+                                Aprovar
+                              </SmallButton>
+                            )}
+
+                            {admin.approved &&
+                              !admin.isActive && (
+                                <SmallButton
+                                  type="button"
+                                  onClick={() =>
+                                    executeAction(
+                                      () =>
+                                        activateAdmin(
+                                          admin.id
+                                        ),
+                                      "Admin ativado com sucesso."
+                                    )
+                                  }
+                                >
+                                  Ativar
+                                </SmallButton>
+                              )}
+
+                            {admin.approved &&
+                              admin.isActive && (
+                                <SmallButton
+                                  type="button"
+                                  onClick={() =>
+                                    executeAction(
+                                      () =>
+                                        deactivateAdmin(
+                                          admin.id
+                                        ),
+                                      "Admin desativado com sucesso."
+                                    )
+                                  }
+                                >
+                                  Desativar
+                                </SmallButton>
+                              )}
+
+                            <SmallButton
+                              type="button"
+                              onClick={() =>
+                                executeAction(
+                                  () =>
+                                    updateAdminRole(
+                                      admin.id,
+                                      roleDrafts[
+                                        admin.id
+                                      ] || admin.role
+                                    ),
+                                  "Papel atualizado com sucesso."
+                                )
+                              }
+                            >
+                              Salvar papel
+                            </SmallButton>
+
+                            <SmallButton
+                              type="button"
+                              onClick={() => {
+                                const confirmed =
+                                  window.confirm(
+                                    `Tem certeza que deseja remover o admin ${admin.name}?`
+                                  );
+
+                                if (!confirmed) {
+                                  return;
+                                }
+
+                                executeAction(
+                                  () =>
+                                    removeAdmin(
+                                      admin.id
+                                    ),
+                                  "Admin removido com sucesso."
+                                );
+                              }}
+                            >
+                              Remover
+                            </SmallButton>
+                          </>
                         )}
 
-                        {admin.approved && !admin.isActive && (
-                          <SmallButton
-                            type="button"
-                            onClick={() =>
-                              callAction(
-                                `/admin-users/${admin.id}/activate`,
-                                { method: "PATCH" },
-                                "Admin ativado com sucesso."
-                              )
-                            }
+                        {currentAdmin?.id === admin.id && (
+                          <span
+                            style={{
+                              fontSize: 12,
+                              color:
+                                "inherit",
+                              opacity: 0.65,
+                            }}
                           >
-                            Ativar
-                          </SmallButton>
+                            Usuário atual
+                          </span>
                         )}
-
-                        {admin.approved && admin.isActive && (
-                          <SmallButton
-                            type="button"
-                            onClick={() =>
-                              callAction(
-                                `/admin-users/${admin.id}/deactivate`,
-                                { method: "PATCH" },
-                                "Admin desativado com sucesso."
-                              )
-                            }
-                          >
-                            Desativar
-                          </SmallButton>
-                        )}
-
-                        <SmallButton
-                          type="button"
-                          onClick={() =>
-                            callAction(
-                              `/admin-users/${admin.id}/role`,
-                              {
-                                method: "PATCH",
-                                body: JSON.stringify({
-                                  role: roleDrafts[admin.id] || admin.role,
-                                }),
-                              },
-                              "Papel atualizado com sucesso."
-                            )
-                          }
-                        >
-                          Salvar papel
-                        </SmallButton>
-
-                        <SmallButton
-                          type="button"
-                          onClick={() => {
-                            const confirmed = window.confirm(
-                              `Tem certeza que deseja remover o admin ${admin.name}?`
-                            );
-
-                            if (!confirmed) return;
-
-                            callAction(
-                              `/admin-users/${admin.id}`,
-                              { method: "DELETE" },
-                              "Admin removido com sucesso."
-                            );
-                          }}
-                        >
-                          Remover
-                        </SmallButton>
                       </RowActions>
                     </Td>
                   </tr>
