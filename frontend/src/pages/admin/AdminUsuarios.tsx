@@ -339,10 +339,6 @@ const Message = styled.p<{ $error?: boolean }>`
   margin-bottom: 1rem;
 `;
 
-function roleLabel(role: AdminRole) {
-  return role === "OWNER" ? "Owner" : "Admin";
-}
-
 function statusLabel(admin: AdminUserItem) {
   if (!admin.approved) return "Pendente";
   if (!admin.isActive) return "Desativado";
@@ -363,13 +359,6 @@ function statusVariant(
   return "success" as const;
 }
 
-function roleVariant(
-  role: AdminRole
-) {
-  return role === "OWNER"
-    ? "primary"
-    : "neutral";
-}
 
 export default function AdminUsuarios() {
   const navigate = useNavigate();
