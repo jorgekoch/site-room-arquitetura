@@ -1,8 +1,11 @@
 import { ChangeEvent, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
-import { Project } from "../../../../types/project";
-import { ProjectImage } from "../../../../types/project";
+import {
+  Project,
+  ProjectImage,
+  normalizeProjectImages,
+} from "../../../../types/project";
 import { ProjectFormData } from "../../../../types/project-form";
 
 import { useProjectUpload } from "../../../../hooks/useProjectUpload";
@@ -106,7 +109,7 @@ export function ProjectForm({
         project.featuredImage ?? null,
       published: project.published,
       featured: project.featured,
-      images: project.images,
+      images: normalizeProjectImages(project.images),
     });
   }, [project, reset]);
 

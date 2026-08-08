@@ -1,4 +1,8 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
 import { PageShell } from "./components/layout/PageShell";
 
@@ -20,7 +24,6 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminPropostas from "./pages/admin/AdminPropostas";
 import AdminRequestAccess from "./pages/admin/AdminRequestAccess";
 import AdminUsuarios from "./pages/admin/AdminUsuarios";
-
 import AdminProjetos from "./pages/admin/AdminProjetos";
 
 function App() {
@@ -29,14 +32,10 @@ function App() {
       <ScrollToTop />
 
       <Routes>
-        <Route
-  path="/admin/projetos"
-  element={
-    <AdminRoute>
-      <AdminProjetos />
-    </AdminRoute>
-  }
-/>
+        {/* ========================= */}
+        {/* PÁGINAS PÚBLICAS */}
+        {/* ========================= */}
+
         <Route
           path="/"
           element={
@@ -48,7 +47,11 @@ function App() {
 
         <Route
           path="/orcamento"
-          element={<Contato />}
+          element={
+            <PageShell>
+              <Contato />
+            </PageShell>
+          }
         />
 
         <Route
@@ -72,13 +75,25 @@ function App() {
 
         <Route
           path="/projetos"
-          element={<Projetos />}
+          element={
+            <PageShell>
+              <Projetos />
+            </PageShell>
+          }
         />
 
         <Route
           path="/projetos/:slug"
-          element={<ProjetoDetalhe />}
+          element={
+            <PageShell>
+              <ProjetoDetalhe />
+            </PageShell>
+          }
         />
+
+        {/* ========================= */}
+        {/* AUTENTICAÇÃO ADMIN */}
+        {/* ========================= */}
 
         <Route
           path="/admin/login"
@@ -87,14 +102,29 @@ function App() {
 
         <Route
           path="/admin/solicitar-acesso"
-          element={<AdminRequestAccess />}
+          element={
+            <AdminRequestAccess />
+          }
         />
+
+        {/* ========================= */}
+        {/* ADMIN */}
+        {/* ========================= */}
 
         <Route
           path="/admin"
           element={
             <AdminRoute>
               <AdminDashboard />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/projetos"
+          element={
+            <AdminRoute>
+              <AdminProjetos />
             </AdminRoute>
           }
         />
@@ -114,6 +144,20 @@ function App() {
             <AdminRoute>
               <AdminUsuarios />
             </AdminRoute>
+          }
+        />
+
+        {/* ========================= */}
+        {/* FALLBACK */}
+        {/* ========================= */}
+
+        <Route
+          path="*"
+          element={
+            <Navigate
+              to="/"
+              replace
+            />
           }
         />
       </Routes>
