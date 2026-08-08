@@ -77,27 +77,51 @@ export const Search = styled.div`
 
 export const IconButton = styled.button`
   width: 42px;
-
   height: 42px;
 
-  border: none;
-
+  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 12px;
 
-  background: ${({ theme }) => theme.colors.background};
+  background: ${({ theme }) => theme.colors.surface};
+
+  color: ${({ theme }) => theme.colors.text};
 
   cursor: pointer;
 
   display: flex;
-
   align-items: center;
-
   justify-content: center;
 
-  transition: .2s;
+  transition:
+    background ${({ theme }) => theme.transitions.default},
+    border-color ${({ theme }) => theme.transitions.default},
+    color ${({ theme }) => theme.transitions.default},
+    transform ${({ theme }) => theme.transitions.default};
+
+  svg {
+    color: ${({ theme }) => theme.colors.text};
+  }
 
   &:hover {
+    background: ${({ theme }) => theme.colors.surfaceHover};
+
+    border-color: ${({ theme }) =>
+      theme.colors.primaryBorder};
+
+    color: ${({ theme }) => theme.colors.primary};
+
     transform: translateY(-2px);
+
+    svg {
+      color: ${({ theme }) => theme.colors.primary};
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${({ theme }) =>
+      theme.colors.primary};
+
+    outline-offset: 2px;
   }
 `;
 

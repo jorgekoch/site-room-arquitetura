@@ -1,18 +1,25 @@
 import {
   Bell,
   Moon,
+  Sun,
   Search,
 } from "lucide-react";
 
 import * as S from "./styles";
 
 import { useCurrentAdmin } from "../../../hooks/useCurrentAdmin";
+import { useThemeMode } from "../../../contexts/ThemeModeContext";
 
 export function Header() {
   const {
     user,
     loading,
   } = useCurrentAdmin();
+
+  const {
+    mode,
+    toggleTheme,
+  } = useThemeMode();
 
   const initials =
     user?.name
@@ -42,12 +49,32 @@ export function Header() {
           />
         </S.Search>
 
-        <S.IconButton>
+        <S.IconButton
+          type="button"
+          aria-label="Notificações"
+        >
           <Bell size={18} />
         </S.IconButton>
 
-        <S.IconButton>
-          <Moon size={18} />
+        <S.IconButton
+          type="button"
+          onClick={toggleTheme}
+          aria-label={
+            mode === "dark"
+              ? "Ativar modo claro"
+              : "Ativar modo escuro"
+          }
+          title={
+            mode === "dark"
+              ? "Ativar modo claro"
+              : "Ativar modo escuro"
+          }
+        >
+          {mode === "dark" ? (
+            <Sun size={18} />
+          ) : (
+            <Moon size={18} />
+          )}
         </S.IconButton>
 
         <S.User>
