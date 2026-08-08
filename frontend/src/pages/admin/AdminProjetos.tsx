@@ -35,6 +35,11 @@ export default function AdminProjetos() {
     setEditingProject,
   ] = useState<Project | undefined>();
 
+  const [
+  fieldErrors,
+  setFieldErrors,
+] = useState<Record<string, string>>({});
+
 function handleEdit(project: Project) {
   setEditingProject(project);
 }
@@ -42,20 +47,63 @@ function handleEdit(project: Project) {
   async function handleSubmit(
     data: ProjectFormData
   ) {
-    if (editingProject) {
-      await update(
-        editingProject.id,
-        data
-      );
+    try {
+      setFieldErrors({});
 
-      setEditingProject(
-        undefined
-      );
+      if (editingProject) {
+        await update(
+          editingProject.id,
+          data
+        );
 
-      return;
+        setEditingProject(
+          undefined
+        );
+
+        return;
+      }
+
+      await create(data);
+    } catch (error) {
+      console.error(error);
+
+      const apiError = error as {
+        issues?: {
+          fieldErrors?: Record<
+            string,
+            string[]
+          >;
+        };
+      };
+
+      const errors =
+        apiError.issues?.fieldErrors;
+
+      if (errors) {
+        const normalizedErrors =
+          Object.fromEntries(
+            Object.entries(errors).map(
+              ([field, messages]) => [
+                field,
+                messages?.[0] ||
+                  "Campo inválido.",
+              ]
+            )
+          );
+
+        setFieldErrors(
+          normalizedErrors
+        );
+
+        return;
+      }
+
+      window.alert(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível salvar o projeto."
+      );
     }
-
-    await create(data);
   }
 
   async function handleDelete(
@@ -110,6 +158,7 @@ return (
       project={editingProject}
       onSubmit={handleSubmit}
       loading={loading}
+      fieldErrors={fieldErrors}
     />
 
     <ProjectTable

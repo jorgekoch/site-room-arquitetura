@@ -120,13 +120,13 @@ export default function Projetos() {
 
       cover:
         project.featuredImage ??
-        undefined,
+        project.images?.[0]?.imageUrl,
 
       images:
-        project.images.map(
+        project.images?.map(
           (image) =>
             image.imageUrl
-        ),
+        ) ?? [],
     }));
 
   return (
@@ -159,14 +159,18 @@ export default function Projetos() {
               </NoticeBanner>
             )}
 
-          <PortfolioSection
-            eyebrow="Portfólio"
-            title="Nossos projetos"
-            description="Conheça os projetos desenvolvidos pela ROOM Arquitetura Sustentável."
-            items={portfolioItems}
-            showFilter={true}
-            useSectionContainer={false}
-          />
+          {!loading &&
+            !error &&
+            projects.length > 0 && (
+              <PortfolioSection
+                eyebrow="Portfólio"
+                title="Nossos projetos"
+                description="Conheça os projetos desenvolvidos pela ROOM Arquitetura Sustentável."
+                items={portfolioItems}
+                showFilter={true}
+                useSectionContainer={false}
+              />
+            )}
 
         </Container>
       </Reveal>

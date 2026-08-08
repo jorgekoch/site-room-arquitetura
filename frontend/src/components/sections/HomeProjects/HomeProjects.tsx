@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 
 import {
-  usePublicProjects,
-} from "../../../hooks/usePublicProjects";
+  useFeaturedProjects,
+} from "../../../hooks/useFeaturedProjects";
 
 import * as S from "./styles";
 
@@ -11,7 +11,7 @@ export function HomeProjects() {
     projects,
     loading,
     error,
-  } = usePublicProjects();
+  } = useFeaturedProjects();
 
   if (loading) {
     return (
@@ -120,9 +120,7 @@ export function HomeProjects() {
 
         <S.Grid>
 
-          {projects
-            .slice(0, 3)
-            .map((project) => (
+          {projects.map((project) => (
               <S.Card
                 key={project.id}
                 as={Link}

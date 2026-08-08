@@ -1,4 +1,7 @@
-import { UseFormRegister } from "react-hook-form";
+import {
+  FieldErrors,
+  UseFormRegister,
+} from "react-hook-form";
 
 import { ProjectFormData } from "../../../../types/project-form";
 
@@ -6,10 +9,19 @@ import * as S from "./styles";
 
 interface Props {
   register: UseFormRegister<ProjectFormData>;
+
+  errors: FieldErrors<ProjectFormData>;
+
+  fieldErrors: Record<
+    string,
+    string
+  >;
 }
 
 export function ProjectInfo({
   register,
+  errors,
+  fieldErrors,
 }: Props) {
   return (
     <>
@@ -20,6 +32,18 @@ export function ProjectInfo({
           <input
             {...register("title")}
           />
+
+          {errors.title && (
+            <S.FieldError>
+              {errors.title.message}
+            </S.FieldError>
+          )}
+
+          {fieldErrors.title && (
+            <S.FieldError>
+              {fieldErrors.title}
+            </S.FieldError>
+          )}
         </S.Group>
 
         <S.Group>
@@ -28,6 +52,18 @@ export function ProjectInfo({
           <input
             {...register("slug")}
           />
+
+          {errors.slug && (
+            <S.FieldError>
+              {errors.slug.message}
+            </S.FieldError>
+          )}
+
+          {fieldErrors.slug && (
+            <S.FieldError>
+              {fieldErrors.slug}
+            </S.FieldError>
+          )}
         </S.Group>
       </S.Row>
 
@@ -62,6 +98,12 @@ export function ProjectInfo({
               Outro
             </option>
           </select>
+
+          {errors.category && (
+            <S.FieldError>
+              {errors.category.message}
+            </S.FieldError>
+          )}
         </S.Group>
 
         <S.Group>
@@ -73,6 +115,12 @@ export function ProjectInfo({
               valueAsNumber: true,
             })}
           />
+
+          {errors.year && (
+            <S.FieldError>
+              {errors.year.message}
+            </S.FieldError>
+          )}
         </S.Group>
       </S.Row>
 
@@ -109,6 +157,18 @@ export function ProjectInfo({
           rows={4}
           {...register("description")}
         />
+
+        {errors.description && (
+          <S.FieldError>
+            {errors.description.message}
+          </S.FieldError>
+        )}
+
+        {fieldErrors.description && (
+          <S.FieldError>
+            {fieldErrors.description}
+          </S.FieldError>
+        )}
       </S.Group>
 
       <S.Group>
@@ -118,6 +178,12 @@ export function ProjectInfo({
           rows={8}
           {...register("content")}
         />
+
+        {errors.content && (
+          <S.FieldError>
+            {errors.content.message}
+          </S.FieldError>
+        )}
       </S.Group>
     </>
   );

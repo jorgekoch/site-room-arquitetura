@@ -31,6 +31,7 @@ async function parseResponse<T>(
 ): Promise<T> {
   if (!response.ok) {
     let message = "Erro inesperado.";
+    let issues: unknown;
 
     try {
       const data = await response.json();
@@ -39,6 +40,8 @@ async function parseResponse<T>(
         data?.message ||
         data?.error ||
         message;
+
+      issues = data?.issues;
     } catch {
       try {
         message = await response.text();
@@ -47,7 +50,13 @@ async function parseResponse<T>(
       }
     }
 
-    throw new Error(message);
+    const error = new Error(message) as Error & {
+      issues?: unknown;
+    };
+
+    error.issues = issues;
+
+    throw error;
   }
 
   if (response.status === 204) {

@@ -203,3 +203,13 @@ export const UploadHint = styled.small`
 
   display: block;
 `;
+
+export const FieldError = styled.span`
+  color: ${({ theme }) => theme.colors.danger};
+
+  font-size: 0.82rem;
+
+  line-height: 1.4;
+
+  margin-top: 2px;
+`;

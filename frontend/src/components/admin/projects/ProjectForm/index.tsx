@@ -25,20 +25,29 @@ interface Props {
   ): Promise<void> | void;
 
   loading?: boolean;
+
+  fieldErrors?: Record<
+    string,
+    string
+  >;
 }
 
 export function ProjectForm({
   project,
   onSubmit,
   loading = false,
+  fieldErrors = {},
 }: Props) {
   const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    reset,
-  } = useForm<ProjectFormData>({
+  register,
+  handleSubmit,
+  watch,
+  setValue,
+  reset,
+  formState: {
+    errors,
+  },
+} = useForm<ProjectFormData>({
     defaultValues: {
       title: "",
       slug: "",
@@ -199,6 +208,8 @@ async function handleGalleryUpload(
     >
       <ProjectInfo
         register={register}
+        errors={errors}
+        fieldErrors={fieldErrors}
       />
 
       <ProjectCover
