@@ -17,4 +17,16 @@ export class DashboardController {
 
     return response.json(dashboard);
   }
+
+  async notifications(
+    _request: Request,
+    response: Response
+  ) {
+    const notifications =
+      await service.getNotifications();
+
+    return response.json(
+      notifications
+    );
+  }
 }

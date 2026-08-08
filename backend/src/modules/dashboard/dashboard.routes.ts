@@ -22,6 +22,15 @@ routes.get(
     )
 );
 
+routes.get(
+  "/notifications",
+  (request, response) =>
+    controller.notifications(
+      request,
+      response
+    )
+);
+
 export {
   routes as dashboardRoutes,
 };

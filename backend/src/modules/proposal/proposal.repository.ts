@@ -52,6 +52,18 @@ export class ProposalRepository {
     });
   }
 
+  async findByStatus(status: string) {
+    return prisma.proposalRequest.findMany({
+      where: {
+        status: status as any,
+      },
+
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  }
+
   async findLatest(limit = 5) {
     return prisma.proposalRequest.findMany({
       take: limit,
