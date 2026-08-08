@@ -355,14 +355,9 @@ export class ProjectRepository {
       },
     });
   }
-  async findLatestProjects(limit = 5) {
+  
+  async findLatestProjects(limit: number) {
   return prisma.project.findMany({
-    take: limit,
-
-    orderBy: {
-      createdAt: "desc",
-    },
-
     include: {
       images: {
         orderBy: {
@@ -370,8 +365,16 @@ export class ProjectRepository {
         },
       },
     },
+
+    orderBy: {
+      createdAt: "desc",
+    },
+
+    take: limit,
   });
+
 }
+
 
 async countFeatured() {
   return prisma.project.count({
@@ -380,4 +383,7 @@ async countFeatured() {
     },
   });
 }
+
+
 }
+
