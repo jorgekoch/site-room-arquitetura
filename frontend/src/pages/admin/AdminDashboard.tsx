@@ -8,9 +8,7 @@ import {
 } from "lucide-react";
 
 import { ContentGrid } from "../../components/admin/dashboard/ContentGrid";
-
 import { RecentProjects } from "../../components/admin/dashboard/RecentProjects";
-
 import { RecentProposals } from "../../components/admin/dashboard/RecentProposals";
 
 import { PageHeader } from "../../components/admin/PageHeader";
@@ -23,6 +21,8 @@ import { StatsCard } from "../../components/admin/dashboard/StatsCard";
 import { useDashboard } from "../../hooks/useDashboard";
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
+
   const {
     dashboard,
     loading,
@@ -36,19 +36,17 @@ export default function AdminDashboard() {
   if (error) {
     return (
       <EmptyState
-        title="Erro"
+        title="Não foi possível carregar o dashboard."
         description={error}
       />
     );
   }
 
-  const navigate = useNavigate();
-
   return (
     <>
       <PageHeader
         title="Dashboard"
-        description="Visão geral da plataforma."
+        description="Visão geral do painel administrativo."
       />
 
       <StatsGrid>
@@ -73,6 +71,9 @@ export default function AdminDashboard() {
           }
           icon={Eye}
           description="Projetos publicados"
+          onClick={() =>
+            navigate("/admin/projetos")
+          }
         />
 
         <StatsCard
@@ -101,22 +102,20 @@ export default function AdminDashboard() {
           }
         />
       </StatsGrid>
-      
+
       <ContentGrid>
+        <RecentProjects
+          projects={
+            dashboard?.latestProjects ?? []
+          }
+        />
 
-  <RecentProjects
-    projects={
-      dashboard?.latestProjects ?? []
-    }
-  />
-
-  <RecentProposals
-    proposals={
-      dashboard?.latestProposals ?? []
-    }
-  />
-
-</ContentGrid>
+        <RecentProposals
+          proposals={
+            dashboard?.latestProposals ?? []
+          }
+        />
+      </ContentGrid>
     </>
   );
 }
