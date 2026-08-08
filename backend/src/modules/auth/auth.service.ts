@@ -3,8 +3,12 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { prisma } from "../../database/prisma";
 import { env } from "../../config/env";
-import type { LoginInput, RegisterAdminRequestInput } from "./auth.schema";
-import { AppError } from "../../utils/AppError";
+import type {
+  LoginInput,
+  RegisterAdminRequestInput,
+  UpdateAdminProfileInput,
+  ChangeAdminPasswordInput,
+} from "./auth.schema";import { AppError } from "../../utils/AppError";
 import {
   sendAdminApprovalRequestEmail,
   sendAdminApprovedEmail,
@@ -165,5 +169,127 @@ export class AuthService {
     }
 
     return admin;
+  }
+
+  async updateProfile(
+    adminId: string,
+    data: UpdateAdminProfileInput
+  ) {
+    const admin =
+      await prisma.adminUser.findUnique({
+        where: {
+          id: adminId,
+        },
+      });
+
+    if (!admin) {
+      throw new AppError(
+        "Admin não encontrado.",
+        404
+      );
+    }
+
+    const email =
+      data.email.trim().toLowerCase();
+
+    const existing =
+      await prisma.adminUser.findFirst({
+        where: {
+          email,
+          NOT: {
+            id: adminId,
+          },
+        },
+      });
+
+    if (existing) {
+      throw new AppError(
+        "Já existe um administrador com este e-mail.",
+        409
+      );
+    }
+
+    return prisma.adminUser.update({
+      where: {
+        id: adminId,
+      },
+
+      data: {
+        name: data.name.trim(),
+        email,
+      },
+
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        approved: true,
+        isActive: true,
+      },
+    });
+  }
+
+  async changePassword(
+    adminId: string,
+    data: ChangeAdminPasswordInput
+  ) {
+    const admin =
+      await prisma.adminUser.findUnique({
+        where: {
+          id: adminId,
+        },
+      });
+
+    if (!admin) {
+      throw new AppError(
+        "Admin não encontrado.",
+        404
+      );
+    }
+
+    const passwordMatches =
+      await bcrypt.compare(
+        data.currentPassword,
+        admin.passwordHash
+      );
+
+    if (!passwordMatches) {
+      throw new AppError(
+        "A senha atual está incorreta.",
+        400
+      );
+    }
+    
+    if (
+      data.currentPassword ===
+      data.newPassword
+    ) {
+      throw new AppError(
+        "A nova senha deve ser diferente da senha atual.",
+        400
+      );
+    }
+
+    const newPasswordHash =
+      await bcrypt.hash(
+        data.newPassword,
+        10
+      );
+
+    await prisma.adminUser.update({
+      where: {
+        id: adminId,
+      },
+
+      data: {
+        passwordHash:
+          newPasswordHash,
+      },
+    });
+
+    return {
+      success: true,
+    };
   }
 }

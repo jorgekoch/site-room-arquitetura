@@ -2,6 +2,8 @@ import type { Request, Response } from "express";
 import {
   loginSchema,
   registerAdminRequestSchema,
+  updateAdminProfileSchema,
+  changeAdminPasswordSchema,
 } from "./auth.schema";
 import { AuthService } from "./auth.service";
 import { AppError } from "../../utils/AppError";
@@ -57,6 +59,60 @@ export class AuthController {
 
     return response.json({
       user: admin,
+    });
+  }
+
+  async updateProfile(
+    request: Request,
+    response: Response
+  ) {
+    if (!request.user?.adminId) {
+      throw new AppError(
+        "Usuário não autenticado.",
+        401
+      );
+    }
+
+    const data =
+      updateAdminProfileSchema.parse(
+        request.body
+      );
+
+    const admin =
+      await authService.updateProfile(
+        request.user.adminId,
+        data
+      );
+
+    return response.json({
+      user: admin,
+    });
+  }
+
+  async changePassword(
+    request: Request,
+    response: Response
+  ) {
+    if (!request.user?.adminId) {
+      throw new AppError(
+        "Usuário não autenticado.",
+        401
+      );
+    }
+
+    const data =
+      changeAdminPasswordSchema.parse(
+        request.body
+      );
+
+    await authService.changePassword(
+      request.user.adminId,
+      data
+    );
+
+    return response.json({
+      message:
+        "Senha alterada com sucesso.",
     });
   }
 }
