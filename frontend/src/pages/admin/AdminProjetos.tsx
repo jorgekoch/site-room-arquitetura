@@ -28,10 +28,42 @@ export default function AdminProjetos() {
 
     feature,
     unfeature,
+
+    getById,
   } = useProjects();
 
-  const [editingProject, setEditingProject] =
-    useState<Project>();
+  const [
+    editingProject,
+    setEditingProject,
+  ] = useState<Project | undefined>();
+
+  const [
+    loadingProject,
+    setLoadingProject,
+  ] = useState(false);
+
+  async function handleEdit(
+    project: Project
+  ) {
+    try {
+      setLoadingProject(true);
+
+      const completeProject =
+        await getById(project.id);
+
+      setEditingProject(
+        completeProject
+      );
+    } catch (error) {
+      console.error(error);
+
+      window.alert(
+        "Não foi possível carregar o projeto."
+      );
+    } finally {
+      setLoadingProject(false);
+    }
+  }
 
   async function handleSubmit(
     data: ProjectFormData
@@ -42,7 +74,9 @@ export default function AdminProjetos() {
         data
       );
 
-      setEditingProject(undefined);
+      setEditingProject(
+        undefined
+      );
 
       return;
     }
@@ -53,11 +87,14 @@ export default function AdminProjetos() {
   async function handleDelete(
     id: string
   ) {
-    const confirmed = window.confirm(
-      "Deseja realmente excluir este projeto?"
-    );
+    const confirmed =
+      window.confirm(
+        "Deseja realmente excluir este projeto?"
+      );
 
-    if (!confirmed) return;
+    if (!confirmed) {
+      return;
+    }
 
     await remove(id);
 
@@ -65,7 +102,9 @@ export default function AdminProjetos() {
       editingProject &&
       editingProject.id === id
     ) {
-      setEditingProject(undefined);
+      setEditingProject(
+        undefined
+      );
     }
   }
 
@@ -74,13 +113,13 @@ export default function AdminProjetos() {
   }
 
   if (error) {
-    return (
-      <EmptyState
-        title="Erro"
-        description={error}
-      />
-    );
-  }
+  return (
+    <EmptyState
+      title="Não foi possível carregar os projetos"
+      description={error}
+    />
+  );
+}
 
   return (
     <>
@@ -93,15 +132,23 @@ export default function AdminProjetos() {
         description="Cadastre e gerencie os projetos."
       />
 
-      <ProjectForm
-        project={editingProject}
-        onSubmit={handleSubmit}
-        loading={loading}
-      />
+      {loadingProject ? (
+        <Loading />
+      ) : (
+        <ProjectForm
+          project={
+            editingProject
+          }
+          onSubmit={
+            handleSubmit
+          }
+          loading={loading}
+        />
+      )}
 
       <ProjectTable
         projects={projects}
-        onEdit={setEditingProject}
+        onEdit={handleEdit}
         onDelete={handleDelete}
         onPublish={publish}
         onUnpublish={unpublish}
