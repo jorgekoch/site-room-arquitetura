@@ -83,7 +83,7 @@ export class StorageService {
       r2,
       command,
       {
-        expiresIn: 60,
+        expiresIn: 600,
       }
     );
 
