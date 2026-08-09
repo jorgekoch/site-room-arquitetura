@@ -30,7 +30,7 @@ export function ProjectGallery({
         <input
           multiple
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/avif"
+          accept=".jpg,.jpeg,.png,.webp,.avif"
           onChange={onUpload}
           disabled={uploading}
         />

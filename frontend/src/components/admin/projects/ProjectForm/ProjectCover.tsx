@@ -26,7 +26,7 @@ export function ProjectCover({
 
       <input
         type="file"
-        accept="image/*"
+        accept=".jpg,.jpeg,.png,.webp,.avif"
         onChange={onUpload}
         disabled={uploading}
       />

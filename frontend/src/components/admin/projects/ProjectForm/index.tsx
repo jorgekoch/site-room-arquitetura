@@ -38,6 +38,8 @@ export function ProjectForm({
   loading = false,
   fieldErrors = {},
 }: Props) {
+  const MAX_IMAGE_SIZE =
+    10 * 1024 * 1024;
   const {
     register,
     handleSubmit,
@@ -152,6 +154,26 @@ export function ProjectForm({
       return;
     }
 
+    if (file.size === 0) {
+      alert(
+        "A imagem de capa está vazia e não pode ser enviada."
+      );
+
+      event.target.value = "";
+
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_SIZE) {
+      alert(
+        "A imagem de capa deve ter no máximo 10 MB."
+      );
+
+      event.target.value = "";
+
+      return;
+    }
+
     try {
       const result =
         await upload(file);
@@ -207,6 +229,20 @@ export function ProjectForm({
 
     try {
       for (const file of Array.from(files)) {
+        if (file.size === 0) {
+          alert(
+            `A imagem "${file.name}" está vazia e não pode ser enviada.`
+          );
+
+          continue;
+        }
+        if (file.size > MAX_IMAGE_SIZE) {
+          alert(
+            `A imagem "${file.name}" deve ter no máximo 10 MB.`
+          );
+
+          continue;
+        }
         try {
           const result =
             await upload(file);
