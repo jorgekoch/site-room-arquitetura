@@ -1,5 +1,7 @@
+import { AppError } from "../utils/AppError";
 import {
   DeleteObjectCommand,
+  HeadObjectCommand,
   PutObjectCommand,
 } from "@aws-sdk/client-s3";
 
@@ -133,6 +135,73 @@ export class StorageService {
           storageKey
         ),
     };
+  }
+
+  async validateObject(
+    storageKey: string,
+    options: {
+      maxSize: number;
+      allowedContentTypes: string[];
+    }
+  ) {
+    const metadata =
+      await this.getObjectMetadata(
+        storageKey
+      );
+
+    if (
+      !options.allowedContentTypes.includes(
+        metadata.contentType ?? ""
+      )
+    ) {
+      throw new AppError(
+        "Tipo de arquivo não permitido.",
+        400
+      );
+    }
+
+    if (
+      metadata.contentLength >
+      options.maxSize
+    ) {
+      throw new AppError(
+        "O arquivo excede o tamanho máximo permitido.",
+        400
+      );
+    }
+
+    return metadata;
+  }
+
+  async getObjectMetadata(
+    storageKey: string
+  ) {
+    try {
+      const result =
+        await r2.send(
+          new HeadObjectCommand({
+            Bucket: env.r2Bucket,
+            Key: storageKey,
+          })
+        );
+
+      return {
+        contentLength:
+          result.ContentLength ?? 0,
+
+        contentType:
+          result.ContentType ?? null,
+      };
+    } catch (error) {
+      console.error(
+        "Erro ao consultar objeto no R2:",
+        error
+      );
+
+      throw new Error(
+        "Arquivo não encontrado no armazenamento."
+      );
+    }
   }
 
   /**

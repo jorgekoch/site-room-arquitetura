@@ -7,13 +7,41 @@ import {
 
 import { ProjectRepository } from "./project.repository";
 import { storage } from "../../services/storage";
+import { prisma } from "../../database/prisma";
+
+const PROJECT_ALLOWED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/avif",
+];
+
+const PROJECT_MAX_IMAGE_SIZE =
+  10 * 1024 * 1024;
+
+function normalizeProjectSlug(
+  slug: string
+) {
+  return slug
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
 
 export class ProjectService {
   private readonly repository = new ProjectRepository();
 
   async create(data: CreateProjectInput) {
+    const normalizedSlug =
+      normalizeProjectSlug(data.slug);
+
     const slugAlreadyExists =
-      await this.repository.existsBySlug(data.slug);
+      await this.repository.existsBySlug(
+        normalizedSlug
+      );
 
     if (slugAlreadyExists) {
       throw new AppError(
@@ -22,7 +50,36 @@ export class ProjectService {
       );
     }
 
-    return this.repository.create(data);
+    if (data.featuredImageStorageKey) {
+      await storage.validateObject(
+        data.featuredImageStorageKey,
+        {
+          maxSize: PROJECT_MAX_IMAGE_SIZE,
+          allowedContentTypes:
+            PROJECT_ALLOWED_IMAGE_TYPES,
+        }
+      );
+    }
+
+    for (const image of data.images) {
+      await storage.validateObject(
+        image.storageKey,
+        {
+          maxSize: PROJECT_MAX_IMAGE_SIZE,
+          allowedContentTypes:
+            PROJECT_ALLOWED_IMAGE_TYPES,
+        }
+      );
+    }
+
+    const normalizedData = {
+      ...data,
+      slug: normalizedSlug,
+    };
+
+    return this.repository.create(
+      normalizedData
+    );
   }
 
   async list() {
@@ -69,13 +126,20 @@ export class ProjectService {
     id: string,
     data: UpdateProjectInput
   ) {
-    const project =
-      await this.findById(id);
+    await this.findById(id);
+
+    let normalizedData =
+      data;
 
     if (data.slug) {
+      const normalizedSlug =
+        normalizeProjectSlug(
+          data.slug
+        );
+
       const existing =
         await this.repository.findAnyBySlug(
-          data.slug
+          normalizedSlug
         );
 
       if (
@@ -87,39 +151,31 @@ export class ProjectService {
           409
         );
       }
+
+      normalizedData = {
+        ...data,
+        slug: normalizedSlug,
+      };
     }
-
-    const oldFeaturedImageStorageKey =
-      project.featuredImageStorageKey;
-
-    const featuredImageChanged =
-      data.featuredImageStorageKey !== undefined &&
-      data.featuredImageStorageKey !==
-        oldFeaturedImageStorageKey;
-
-    const updatedProject =
-      await this.repository.update(
-        id,
-        data
-      );
 
     if (
-      featuredImageChanged &&
-      oldFeaturedImageStorageKey
+      data.featuredImageStorageKey
     ) {
-      try {
-        await storage.delete(
-          oldFeaturedImageStorageKey
-        );
-      } catch (error) {
-        console.error(
-          "Erro ao remover a capa antiga do R2:",
-          error
-        );
-      }
+      await storage.validateObject(
+        data.featuredImageStorageKey,
+        {
+          maxSize:
+            PROJECT_MAX_IMAGE_SIZE,
+          allowedContentTypes:
+            PROJECT_ALLOWED_IMAGE_TYPES,
+        }
+      );
     }
 
-    return updatedProject;
+    return this.repository.update(
+      id,
+      normalizedData
+    );
   }
 
   async replaceImages(
@@ -128,6 +184,26 @@ export class ProjectService {
   ) {
     const project =
       await this.findById(id);
+
+    const allowedContentTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/avif",
+    ];
+
+    const maxImageSize =
+      10 * 1024 * 1024;
+
+    for (const image of images) {
+      await storage.validateObject(
+        image.storageKey,
+        {
+          maxSize: maxImageSize,
+          allowedContentTypes,
+        }
+      );
+    }
 
     const oldStorageKeys =
       project.images
@@ -192,9 +268,15 @@ export class ProjectService {
   }
 
   async unpublish(id: string) {
-    await this.findById(id);
-
-    return this.repository.unpublish(id);
+    return prisma.project.update({
+      where: {
+        id,
+      },
+      data: {
+        published: false,
+        featured: false,
+      },
+    });
   }
 
   async feature(id: string) {
@@ -256,13 +338,25 @@ export class ProjectService {
       );
     }
 
-    await storage.delete(image.storageKey);
+    const deletedImage =
+      await this.repository.deleteImage(
+        imageId
+      );
 
-    return this.repository.deleteImage(
-      imageId
-    );
+    try {
+      await storage.delete(
+        image.storageKey
+      );
+    } catch (error) {
+      console.error(
+        "Erro ao remover imagem do R2 após exclusão no banco:",
+        error
+      );
+    }
+
+    return deletedImage;
   }
-  
+
   async generateUploadUrl(
     fileName: string,
     fileType: string
