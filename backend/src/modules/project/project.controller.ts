@@ -7,6 +7,7 @@ import { AppError } from "../../utils/AppError";
 
 import {
   createProjectSchema,
+  projectImageSchema,
   updateFeaturedImageSchema,
   updateProjectSchema,
 } from "./project.schema";
@@ -35,7 +36,7 @@ export class ProjectController {
 
     if (
       typeof fileName !==
-        "string" ||
+      "string" ||
       !fileName.trim()
     ) {
       throw new AppError(
@@ -46,7 +47,7 @@ export class ProjectController {
 
     if (
       typeof fileType !==
-        "string" ||
+      "string" ||
       !allowedMimeTypes.includes(
         fileType
       )
@@ -241,10 +242,15 @@ export class ProjectController {
       );
     }
 
+    const parsedImages =
+      projectImageSchema
+        .array()
+        .parse(images);
+
     const project =
       await service.replaceImages(
         id,
-        images
+        parsedImages
       );
 
     return response.json({
