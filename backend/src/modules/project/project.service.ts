@@ -19,6 +19,8 @@ const PROJECT_ALLOWED_IMAGE_TYPES = [
 const PROJECT_MAX_IMAGE_SIZE =
   10 * 1024 * 1024;
 
+const PROJECT_MAX_GALLERY_IMAGES = 20;
+
 function normalizeProjectSlug(
   slug: string
 ) {
@@ -58,6 +60,16 @@ export class ProjectService {
           allowedContentTypes:
             PROJECT_ALLOWED_IMAGE_TYPES,
         }
+      );
+    }
+
+    if (
+      data.images.length >
+      PROJECT_MAX_GALLERY_IMAGES
+    ) {
+      throw new AppError(
+        `Um projeto pode ter no máximo ${PROJECT_MAX_GALLERY_IMAGES} imagens na galeria.`,
+        400
       );
     }
 
@@ -194,6 +206,16 @@ export class ProjectService {
 
     const maxImageSize =
       10 * 1024 * 1024;
+
+    if (
+      images.length >
+      PROJECT_MAX_GALLERY_IMAGES
+    ) {
+      throw new AppError(
+        `Um projeto pode ter no máximo ${PROJECT_MAX_GALLERY_IMAGES} imagens na galeria.`,
+        400
+      );
+    }
 
     for (const image of images) {
       await storage.validateObject(
