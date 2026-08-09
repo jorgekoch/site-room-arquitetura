@@ -25,15 +25,24 @@ export function ProjectGallery({
   return (
     <>
       <S.Group>
-        <label>Galeria</label>
+        <label htmlFor="project-gallery">
+          Galeria
+        </label>
 
         <input
+          id="project-gallery"
           multiple
           type="file"
           accept=".jpg,.jpeg,.png,.webp,.avif"
           onChange={onUpload}
           disabled={uploading}
         />
+
+        <small>
+          Formatos permitidos: JPG, PNG,
+          WebP e AVIF. Máximo de 10 MB
+          por imagem e 20 imagens no total.
+        </small>
 
         {uploading && (
           <small>
@@ -44,29 +53,35 @@ export function ProjectGallery({
 
       {images.length > 0 && (
         <S.Gallery>
-          {images.map((image, index) => (
-            <S.ImageCard
-              key={
-                image.storageKey ||
-                `${image.imageUrl}-${index}`
-              }
-            >
-              <img
-                src={image.imageUrl}
-                alt={image.alt ?? ""}
-              />
-
-              <button
-                type="button"
-                onClick={() =>
-                  onRemove(index)
+          {images.map(
+            (image, index) => (
+              <S.ImageCard
+                key={
+                  image.storageKey ||
+                  `${image.imageUrl}-${index}`
                 }
-                disabled={uploading}
               >
-                Remover
-              </button>
-            </S.ImageCard>
-          ))}
+                <img
+                  src={image.imageUrl}
+                  alt={
+                    image.alt ||
+                    `Imagem ${index + 1} do projeto`
+                  }
+                />
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    onRemove(index)
+                  }
+                  disabled={uploading}
+                  aria-label={`Remover imagem ${index + 1} da galeria`}
+                >
+                  Remover
+                </button>
+              </S.ImageCard>
+            )
+          )}
         </S.Gallery>
       )}
     </>
