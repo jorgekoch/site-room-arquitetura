@@ -327,14 +327,34 @@ export class ProjectRepository {
   }
 
   async feature(id: string) {
-    return prisma.project.update({
-      where: {
-        id,
+    return prisma.$transaction(
+      async (transaction) => {
+        const featuredCount =
+          await transaction.project.count({
+            where: {
+              featured: true,
+              published: true,
+            },
+          });
+
+        if (featuredCount >= 5) {
+          return null;
+        }
+
+        return transaction.project.update({
+          where: {
+            id,
+          },
+          data: {
+            featured: true,
+          },
+        });
       },
-      data: {
-        featured: true,
-      },
-    });
+      {
+        isolationLevel:
+          "Serializable",
+      }
+    );
   }
 
   async unfeature(id: string) {

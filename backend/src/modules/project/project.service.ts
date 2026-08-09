@@ -498,17 +498,17 @@ export class ProjectService {
       return project;
     }
 
-    const featuredCount =
-      await this.repository.countFeatured();
+    const featuredProject =
+      await this.repository.feature(id);
 
-    if (featuredCount >= 5) {
+    if (!featuredProject) {
       throw new AppError(
         "Já existem 5 projetos em destaque. Remova um destaque antes de adicionar outro.",
         400
       );
     }
 
-    return this.repository.feature(id);
+    return featuredProject;
   }
 
   async unfeature(id: string) {
