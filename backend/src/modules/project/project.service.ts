@@ -219,8 +219,8 @@ export class ProjectService {
       const uploadedStorageKeys = [
         ...(data.featuredImageStorageKey
           ? [
-              data.featuredImageStorageKey,
-            ]
+            data.featuredImageStorageKey,
+          ]
           : []),
         ...storageKeys,
       ];
@@ -340,7 +340,7 @@ export class ProjectService {
 
     if (
       normalizedData.featuredImage !==
-        undefined &&
+      undefined &&
       normalizedData.featuredImage &&
       !normalizedData.featuredImageStorageKey &&
       !currentProject.featuredImageStorageKey
@@ -353,10 +353,10 @@ export class ProjectService {
 
     if (
       normalizedData.featuredImageStorageKey !==
-        undefined &&
+      undefined &&
       normalizedData.featuredImageStorageKey &&
       normalizedData.featuredImage ===
-        undefined &&
+      undefined &&
       !currentProject.featuredImage
     ) {
       throw new AppError(
@@ -381,9 +381,9 @@ export class ProjectService {
 
     const featuredImageChanged =
       newFeaturedImageStorageKey !==
-        undefined &&
+      undefined &&
       newFeaturedImageStorageKey !==
-        oldFeaturedImageStorageKey;
+      oldFeaturedImageStorageKey;
 
     let updatedProject;
 
@@ -556,8 +556,8 @@ export class ProjectService {
       ),
       ...(project.featuredImageStorageKey
         ? [
-            project.featuredImageStorageKey,
-          ]
+          project.featuredImageStorageKey,
+        ]
         : []),
     ].filter(Boolean);
 
@@ -693,8 +693,13 @@ export class ProjectService {
   }
 
   async deleteImage(
+    projectId: string,
     imageId: string
   ) {
+    await this.findById(
+      projectId
+    );
+
     const image =
       await this.repository.findImageById(
         imageId
@@ -707,18 +712,21 @@ export class ProjectService {
       );
     }
 
-    /*
-     * Primeiro removemos a referência
-     * do banco.
-     */
+    if (
+      image.projectId !==
+      projectId
+    ) {
+      throw new AppError(
+        "A imagem não pertence a este projeto.",
+        400
+      );
+    }
+
     const deletedImage =
       await this.repository.deleteImage(
         imageId
       );
 
-    /*
-     * Depois removemos o arquivo físico.
-     */
     await this.deleteStorageKeys(
       [image.storageKey],
       "exclusão de imagem"

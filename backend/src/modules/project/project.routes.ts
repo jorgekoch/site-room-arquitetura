@@ -5,13 +5,12 @@ import { ProjectController } from "./project.controller";
 
 const projectRoutes = Router();
 
-const controller = new ProjectController();
+const controller =
+  new ProjectController();
 
 /*
-|--------------------------------------------------------------------------
-| Rotas públicas
-|--------------------------------------------------------------------------
-*/
+ * Rotas públicas
+ */
 
 projectRoutes.get(
   "/published",
@@ -41,18 +40,16 @@ projectRoutes.get(
 );
 
 /*
-|--------------------------------------------------------------------------
-| Rotas administrativas
-|--------------------------------------------------------------------------
-*/
+ * Rotas administrativas
+ */
 
-projectRoutes.use(ensureAuthenticated);
+projectRoutes.use(
+  ensureAuthenticated
+);
 
 /*
-|--------------------------------------------------------------------------
-| Uploads
-|--------------------------------------------------------------------------
-*/
+ * Uploads
+ */
 
 projectRoutes.post(
   "/upload-url",
@@ -64,10 +61,8 @@ projectRoutes.post(
 );
 
 /*
-|--------------------------------------------------------------------------
-| CRUD
-|--------------------------------------------------------------------------
-*/
+ * CRUD
+ */
 
 projectRoutes.get(
   "/",
@@ -124,10 +119,8 @@ projectRoutes.delete(
 );
 
 /*
-|--------------------------------------------------------------------------
-| Publicação
-|--------------------------------------------------------------------------
-*/
+ * Publicação
+ */
 
 projectRoutes.patch(
   "/:id/publish",
@@ -148,10 +141,8 @@ projectRoutes.patch(
 );
 
 /*
-|--------------------------------------------------------------------------
-| Destaque
-|--------------------------------------------------------------------------
-*/
+ * Destaque
+ */
 
 projectRoutes.patch(
   "/:id/feature",
@@ -181,13 +172,11 @@ projectRoutes.patch(
 );
 
 /*
-|--------------------------------------------------------------------------
-| Imagens
-|--------------------------------------------------------------------------
-*/
+ * Imagens
+ */
 
 projectRoutes.delete(
-  "/image/:imageId",
+  "/:id/images/:imageId",
   (request, response) =>
     controller.deleteImage(
       request,

@@ -1,4 +1,7 @@
-import type { Request, Response } from "express";
+import type {
+  Request,
+  Response,
+} from "express";
 
 import { AppError } from "../../utils/AppError";
 
@@ -10,7 +13,8 @@ import {
 
 import { ProjectService } from "./project.service";
 
-const service = new ProjectService();
+const service =
+  new ProjectService();
 
 const allowedMimeTypes = [
   "image/jpeg",
@@ -30,7 +34,8 @@ export class ProjectController {
     } = request.body;
 
     if (
-      typeof fileName !== "string" ||
+      typeof fileName !==
+        "string" ||
       !fileName.trim()
     ) {
       throw new AppError(
@@ -40,7 +45,8 @@ export class ProjectController {
     }
 
     if (
-      typeof fileType !== "string" ||
+      typeof fileType !==
+        "string" ||
       !allowedMimeTypes.includes(
         fileType
       )
@@ -65,15 +71,22 @@ export class ProjectController {
     response: Response
   ) {
     const data =
-      createProjectSchema.parse(request.body);
+      createProjectSchema.parse(
+        request.body
+      );
 
     const project =
-      await service.create(data);
+      await service.create(
+        data
+      );
 
-    return response.status(201).json({
-      message: "Projeto criado com sucesso.",
-      project,
-    });
+    return response
+      .status(201)
+      .json({
+        message:
+          "Projeto criado com sucesso.",
+        project,
+      });
   }
 
   async list(
@@ -83,7 +96,9 @@ export class ProjectController {
     const projects =
       await service.list();
 
-    return response.json(projects);
+    return response.json(
+      projects
+    );
   }
 
   async listPublished(
@@ -93,7 +108,9 @@ export class ProjectController {
     const projects =
       await service.listPublished();
 
-    return response.json(projects);
+    return response.json(
+      projects
+    );
   }
 
   async listFeatured(
@@ -103,16 +120,22 @@ export class ProjectController {
     const projects =
       await service.findFeatured();
 
-    return response.json(projects);
+    return response.json(
+      projects
+    );
   }
 
   async show(
     request: Request,
     response: Response
   ) {
-    const { id } = request.params;
+    const { id } =
+      request.params;
 
-    if (!id || Array.isArray(id)) {
+    if (
+      !id ||
+      Array.isArray(id)
+    ) {
       throw new AppError(
         "ID inválido.",
         400
@@ -122,16 +145,22 @@ export class ProjectController {
     const project =
       await service.findById(id);
 
-    return response.json(project);
+    return response.json(
+      project
+    );
   }
 
   async showBySlug(
     request: Request,
     response: Response
   ) {
-    const { slug } = request.params;
+    const { slug } =
+      request.params;
 
-    if (!slug || Array.isArray(slug)) {
+    if (
+      !slug ||
+      Array.isArray(slug)
+    ) {
       throw new AppError(
         "Slug inválido.",
         400
@@ -139,18 +168,26 @@ export class ProjectController {
     }
 
     const project =
-      await service.findBySlug(slug);
+      await service.findBySlug(
+        slug
+      );
 
-    return response.json(project);
+    return response.json(
+      project
+    );
   }
 
   async update(
     request: Request,
     response: Response
   ) {
-    const { id } = request.params;
+    const { id } =
+      request.params;
 
-    if (!id || Array.isArray(id)) {
+    if (
+      !id ||
+      Array.isArray(id)
+    ) {
       throw new AppError(
         "ID inválido.",
         400
@@ -158,13 +195,19 @@ export class ProjectController {
     }
 
     const data =
-      updateProjectSchema.parse(request.body);
+      updateProjectSchema.parse(
+        request.body
+      );
 
     const project =
-      await service.update(id, data);
+      await service.update(
+        id,
+        data
+      );
 
     return response.json({
-      message: "Projeto atualizado com sucesso.",
+      message:
+        "Projeto atualizado com sucesso.",
       project,
     });
   }
@@ -173,18 +216,25 @@ export class ProjectController {
     request: Request,
     response: Response
   ) {
-    const { id } = request.params;
+    const { id } =
+      request.params;
 
-    if (!id || Array.isArray(id)) {
+    if (
+      !id ||
+      Array.isArray(id)
+    ) {
       throw new AppError(
         "ID inválido.",
         400
       );
     }
 
-    const { images } = request.body;
+    const { images } =
+      request.body;
 
-    if (!Array.isArray(images)) {
+    if (
+      !Array.isArray(images)
+    ) {
       throw new AppError(
         "Lista de imagens inválida.",
         400
@@ -198,7 +248,8 @@ export class ProjectController {
       );
 
     return response.json({
-      message: "Galeria atualizada com sucesso.",
+      message:
+        "Galeria atualizada com sucesso.",
       project,
     });
   }
@@ -207,9 +258,13 @@ export class ProjectController {
     request: Request,
     response: Response
   ) {
-    const { id } = request.params;
+    const { id } =
+      request.params;
 
-    if (!id || Array.isArray(id)) {
+    if (
+      !id ||
+      Array.isArray(id)
+    ) {
       throw new AppError(
         "ID inválido.",
         400
@@ -218,16 +273,22 @@ export class ProjectController {
 
     await service.remove(id);
 
-    return response.status(204).send();
+    return response
+      .status(204)
+      .send();
   }
 
   async publish(
     request: Request,
     response: Response
   ) {
-    const { id } = request.params;
+    const { id } =
+      request.params;
 
-    if (!id || Array.isArray(id)) {
+    if (
+      !id ||
+      Array.isArray(id)
+    ) {
       throw new AppError(
         "ID inválido.",
         400
@@ -237,16 +298,22 @@ export class ProjectController {
     const project =
       await service.publish(id);
 
-    return response.json(project);
+    return response.json(
+      project
+    );
   }
 
   async unpublish(
     request: Request,
     response: Response
   ) {
-    const { id } = request.params;
+    const { id } =
+      request.params;
 
-    if (!id || Array.isArray(id)) {
+    if (
+      !id ||
+      Array.isArray(id)
+    ) {
       throw new AppError(
         "ID inválido.",
         400
@@ -256,16 +323,22 @@ export class ProjectController {
     const project =
       await service.unpublish(id);
 
-    return response.json(project);
+    return response.json(
+      project
+    );
   }
 
   async feature(
     request: Request,
     response: Response
   ) {
-    const { id } = request.params;
+    const { id } =
+      request.params;
 
-    if (!id || Array.isArray(id)) {
+    if (
+      !id ||
+      Array.isArray(id)
+    ) {
       throw new AppError(
         "ID inválido.",
         400
@@ -275,16 +348,22 @@ export class ProjectController {
     const project =
       await service.feature(id);
 
-    return response.json(project);
+    return response.json(
+      project
+    );
   }
 
   async unfeature(
     request: Request,
     response: Response
   ) {
-    const { id } = request.params;
+    const { id } =
+      request.params;
 
-    if (!id || Array.isArray(id)) {
+    if (
+      !id ||
+      Array.isArray(id)
+    ) {
       throw new AppError(
         "ID inválido.",
         400
@@ -292,9 +371,13 @@ export class ProjectController {
     }
 
     const project =
-      await service.unfeature(id);
+      await service.unfeature(
+        id
+      );
 
-    return response.json(project);
+    return response.json(
+      project
+    );
   }
 
   async updateFeaturedImage(
@@ -326,24 +409,47 @@ export class ProjectController {
         data.featuredImageStorageKey
       );
 
-    return response.json(project);
+    return response.json(
+      project
+    );
   }
 
   async deleteImage(
     request: Request,
     response: Response
   ) {
-    const { imageId } = request.params;
+    const {
+      id,
+      imageId,
+    } = request.params;
 
-    if (!imageId || Array.isArray(imageId)) {
+    if (
+      !id ||
+      Array.isArray(id)
+    ) {
+      throw new AppError(
+        "ID do projeto inválido.",
+        400
+      );
+    }
+
+    if (
+      !imageId ||
+      Array.isArray(imageId)
+    ) {
       throw new AppError(
         "Imagem inválida.",
         400
       );
     }
 
-    await service.deleteImage(imageId);
+    await service.deleteImage(
+      id,
+      imageId
+    );
 
-    return response.status(204).send();
+    return response
+      .status(204)
+      .send();
   }
 }
