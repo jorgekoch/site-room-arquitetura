@@ -28,6 +28,8 @@ export interface ProjectFormData {
   featured: boolean;
 
   images: ProjectImage[];
+
+  featuredImageStorageKey?: string | null;
 }
 
 export type UpdateProjectFormData =

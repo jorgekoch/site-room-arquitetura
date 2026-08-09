@@ -59,6 +59,7 @@ export function ProjectForm({
       description: "",
       content: "",
       featuredImage: null,
+      featuredImageStorageKey: null,
       videoUrl: null,
       published: true,
       featured: false,
@@ -117,7 +118,12 @@ export function ProjectForm({
       content: project.content ?? "",
       featuredImage:
         project.featuredImage ?? null,
-      videoUrl: project.videoUrl ?? null,
+
+      featuredImageStorageKey:
+        project.featuredImageStorageKey ?? null,
+
+      videoUrl:
+        project.videoUrl ?? null,
       published: project.published,
       featured: project.featured,
       images: normalizeProjectImages(project.images),
@@ -139,6 +145,11 @@ export function ProjectForm({
       setValue(
         "featuredImage",
         result.imageUrl
+      );
+
+      setValue(
+        "featuredImageStorageKey",
+        result.storageKey
       );
     } catch (error) {
       console.error(error);
