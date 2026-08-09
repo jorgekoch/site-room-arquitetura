@@ -229,16 +229,6 @@ export class ProjectService {
     const project =
       await this.findById(id);
 
-    const allowedContentTypes = [
-      "image/jpeg",
-      "image/png",
-      "image/webp",
-      "image/avif",
-    ];
-
-    const maxImageSize =
-      10 * 1024 * 1024;
-
     if (
       images.length >
       PROJECT_MAX_GALLERY_IMAGES
@@ -253,15 +243,19 @@ export class ProjectService {
       await storage.validateObject(
         image.storageKey,
         {
-          maxSize: maxImageSize,
-          allowedContentTypes,
+          maxSize:
+            PROJECT_MAX_IMAGE_SIZE,
+          allowedContentTypes:
+            PROJECT_ALLOWED_IMAGE_TYPES,
         }
       );
     }
 
     const oldStorageKeys =
       project.images
-        .map((image) => image.storageKey)
+        .map(
+          (image) => image.storageKey
+        )
         .filter(Boolean);
 
     const updatedProject =
