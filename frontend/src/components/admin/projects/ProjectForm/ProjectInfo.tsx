@@ -16,13 +16,19 @@ interface Props {
     string,
     string
   >;
+
+  onSlugChange(): void;
 }
 
 export function ProjectInfo({
   register,
   errors,
   fieldErrors,
+  onSlugChange,
 }: Props) {
+  const slugRegister =
+    register("slug");
+
   return (
     <>
       <S.Row>
@@ -50,7 +56,14 @@ export function ProjectInfo({
           <label>Slug</label>
 
           <input
-            {...register("slug")}
+            {...slugRegister}
+            onChange={(event) => {
+              slugRegister.onChange(
+                event
+              );
+
+              onSlugChange();
+            }}
           />
 
           {errors.slug && (
@@ -160,19 +173,26 @@ export function ProjectInfo({
 
         {errors.description && (
           <S.FieldError>
-            {errors.description.message}
+            {
+              errors.description
+                .message
+            }
           </S.FieldError>
         )}
 
         {fieldErrors.description && (
           <S.FieldError>
-            {fieldErrors.description}
+            {
+              fieldErrors.description
+            }
           </S.FieldError>
         )}
       </S.Group>
 
       <S.Group>
-        <label>Vídeo do projeto — YouTube</label>
+        <label>
+          Vídeo do projeto — YouTube
+        </label>
 
         <input
           type="url"
@@ -181,8 +201,9 @@ export function ProjectInfo({
         />
 
         <small>
-          Opcional. Cole aqui o link do vídeo
-          publicado no YouTube.
+          Opcional. Cole aqui o
+          link do vídeo publicado
+          no YouTube.
         </small>
       </S.Group>
 
@@ -196,7 +217,10 @@ export function ProjectInfo({
 
         {errors.content && (
           <S.FieldError>
-            {errors.content.message}
+            {
+              errors.content
+                .message
+            }
           </S.FieldError>
         )}
       </S.Group>
