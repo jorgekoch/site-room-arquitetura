@@ -122,7 +122,11 @@ export const createProjectSchema =
   });
 
 export const updateProjectSchema =
-  createProjectSchema.partial();
+  createProjectSchema
+    .omit({
+      images: true,
+    })
+    .partial();
 
 export type CreateProjectInput =
   z.infer<
