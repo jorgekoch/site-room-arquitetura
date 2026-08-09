@@ -258,16 +258,29 @@ export class ProjectService {
         )
         .filter(Boolean);
 
+    const newStorageKeys =
+      new Set(
+        images.map(
+          (image) => image.storageKey
+        )
+      );
+
+    const storageKeysToDelete =
+      oldStorageKeys.filter(
+        (key) =>
+          !newStorageKeys.has(key)
+      );
+
     const updatedProject =
       await this.repository.replaceImages(
         id,
         images
       );
 
-    if (oldStorageKeys.length) {
+    if (storageKeysToDelete.length) {
       try {
         await storage.deleteMany(
-          oldStorageKeys
+          storageKeysToDelete
         );
       } catch (error) {
         console.error(
