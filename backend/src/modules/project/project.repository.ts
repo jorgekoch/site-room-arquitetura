@@ -22,7 +22,11 @@ export class ProjectRepository {
 
         content: data.content,
 
-        featuredImage: data.featuredImage,
+        featuredImage:
+          data.featuredImage,
+
+        featuredImageStorageKey:
+          data.featuredImageStorageKey,
 
         videoUrl: data.videoUrl,
 
@@ -31,12 +35,20 @@ export class ProjectRepository {
         featured: data.featured,
 
         images: {
-          create: data.images.map((image) => ({
-            imageUrl: image.imageUrl,
-            storageKey: image.storageKey,
-            alt: image.alt,
-            sortOrder: image.sortOrder,
-          })),
+          create: data.images.map(
+            (image) => ({
+              imageUrl:
+                image.imageUrl,
+
+              storageKey:
+                image.storageKey,
+
+              alt: image.alt,
+
+              sortOrder:
+                image.sortOrder,
+            })
+          ),
         },
       },
 
