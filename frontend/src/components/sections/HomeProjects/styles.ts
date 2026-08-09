@@ -189,11 +189,11 @@ export const Card = styled.div`
 
   transition:
     transform
-    ${({ theme }) =>
-      theme.transitions.default},
+      ${({ theme }) =>
+        theme.transitions.default},
     box-shadow
-    ${({ theme }) =>
-      theme.transitions.default};
+      ${({ theme }) =>
+        theme.transitions.default};
 
   &:hover {
     transform:
@@ -255,19 +255,120 @@ export const CardLocation = styled.span`
       theme.fontSizes.xs};
 `;
 
-export const ViewAll = styled(Link)`
-  display: block;
+export const ViewAllCard = styled(Link)`
+  min-height: 300px;
 
-  width: fit-content;
+  display: flex;
 
-  margin:
-    2rem auto 0;
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 2rem;
+
+  border: 1px solid
+    ${({ theme }) =>
+      theme.colors.border};
+
+  border-radius:
+    ${({ theme }) =>
+      theme.radius.lg};
+
+  background:
+    ${({ theme }) =>
+      theme.colors.surface};
+
+  color:
+    ${({ theme }) =>
+      theme.colors.text};
+
+  text-align: center;
+
+  text-decoration: none;
+
+  transition:
+    transform
+      ${({ theme }) =>
+        theme.transitions.default},
+    box-shadow
+      ${({ theme }) =>
+        theme.transitions.default},
+    background
+      ${({ theme }) =>
+        theme.transitions.default};
+
+  &:hover {
+    transform:
+      translateY(-3px);
+
+    box-shadow:
+      ${({ theme }) =>
+        theme.shadow.md};
+
+    background:
+      ${({ theme }) =>
+        theme.colors.backgroundSoft};
+  }
+`;
+
+export const ViewAllIcon = styled.span`
+  width: 56px;
+
+  height: 56px;
+
+  display: grid;
+
+  place-items: center;
+
+  margin-bottom: 1.25rem;
+
+  border-radius: 50%;
+
+  background:
+    ${({ theme }) =>
+      theme.colors.primarySoft};
 
   color:
     ${({ theme }) =>
       theme.colors.primary};
 
-  font-weight: 700;
+  font-size: 1.5rem;
 
-  text-decoration: none;
+  transition:
+    transform
+      ${({ theme }) =>
+        theme.transitions.default};
+
+  ${ViewAllCard}:hover & {
+    transform:
+      translateX(4px);
+  }
+`;
+
+export const ViewAllTitle = styled.h3`
+  margin: 0 0 0.6rem;
+
+  color:
+    ${({ theme }) =>
+      theme.colors.text};
+
+  font-size: 1.2rem;
+`;
+
+export const ViewAllText = styled.p`
+  max-width: 220px;
+
+  margin: 0;
+
+  color:
+    ${({ theme }) =>
+      theme.colors.textSoft};
+
+  font-size:
+    ${({ theme }) =>
+      theme.fontSizes.xs};
+
+  line-height: 1.6;
 `;

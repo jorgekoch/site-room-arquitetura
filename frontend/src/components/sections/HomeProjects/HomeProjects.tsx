@@ -17,7 +17,6 @@ export function HomeProjects() {
     return (
       <S.Section>
         <S.Container>
-
           <S.Header>
             <S.Eyebrow>
               Projetos
@@ -44,17 +43,18 @@ export function HomeProjects() {
               Carregando projetos...
             </S.ConstructionTitle>
           </S.ConstructionCard>
-
         </S.Container>
       </S.Section>
     );
   }
 
-  if (error || projects.length === 0) {
+  if (
+    error ||
+    projects.length === 0
+  ) {
     return (
       <S.Section>
         <S.Container>
-
           <S.Header>
             <S.Eyebrow>
               Projetos
@@ -73,7 +73,6 @@ export function HomeProjects() {
           </S.Header>
 
           <S.ConstructionCard>
-
             <S.ConstructionIcon>
               ✦
             </S.ConstructionIcon>
@@ -89,9 +88,7 @@ export function HomeProjects() {
               da ROOM Arquitetura
               Sustentável estarão aqui.
             </S.ConstructionText>
-
           </S.ConstructionCard>
-
         </S.Container>
       </S.Section>
     );
@@ -100,7 +97,6 @@ export function HomeProjects() {
   return (
     <S.Section>
       <S.Container>
-
         <S.Header>
           <S.Eyebrow>
             Projetos
@@ -119,18 +115,21 @@ export function HomeProjects() {
         </S.Header>
 
         <S.Grid>
-
-          {projects.map((project) => (
+          {projects.map(
+            (project) => (
               <S.Card
                 key={project.id}
                 as={Link}
                 to={`/projetos/${project.slug}`}
               >
-
                 {project.featuredImage ? (
                   <S.Image
-                    src={project.featuredImage}
-                    alt={project.title}
+                    src={
+                      project.featuredImage
+                    }
+                    alt={
+                      project.title
+                    }
                   />
                 ) : (
                   <S.ImagePlaceholder>
@@ -139,33 +138,43 @@ export function HomeProjects() {
                 )}
 
                 <S.CardContent>
-
                   <S.CardTitle>
                     {project.title}
                   </S.CardTitle>
 
                   <S.CardLocation>
                     {project.city}
+
                     {project.city &&
                     project.state
                       ? " / "
                       : ""}
+
                     {project.state}
                   </S.CardLocation>
-
                 </S.CardContent>
-
               </S.Card>
-            ))}
+            )
+          )}
 
+          <S.ViewAllCard
+            to="/projetos"
+            aria-label="Ver todos os projetos"
+          >
+            <S.ViewAllIcon>
+              →
+            </S.ViewAllIcon>
+
+            <S.ViewAllTitle>
+              Ver todos os projetos
+            </S.ViewAllTitle>
+
+            <S.ViewAllText>
+              Conheça todos os projetos
+              da ROOM Arquitetura.
+            </S.ViewAllText>
+          </S.ViewAllCard>
         </S.Grid>
-
-        <S.ViewAll
-          to="/projetos"
-        >
-          Ver todos os projetos →
-        </S.ViewAll>
-
       </S.Container>
     </S.Section>
   );
