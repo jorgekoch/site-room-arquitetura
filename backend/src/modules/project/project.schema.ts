@@ -1,93 +1,138 @@
 import { z } from "zod";
+
 import { ProjectCategory } from "@prisma/client";
 
-export const projectImageSchema = z.object({
-  imageUrl: z.string().url(),
+export const projectImageSchema =
+  z.object({
+    imageUrl: z.string().url(),
 
-  storageKey: z.string(),
+    storageKey: z
+      .string()
+      .trim()
+      .min(
+        1,
+        "A chave de armazenamento é obrigatória."
+      ),
 
-  alt: z.string().optional().nullable(),
+    alt: z
+      .string()
+      .optional()
+      .nullable(),
 
-  sortOrder: z
-  .number()
-  .int()
-  .min(
-    0,
-    "A ordem da imagem não pode ser negativa."
-  )
-  .default(0),
-});
+    sortOrder: z
+      .number()
+      .int()
+      .min(0)
+      .default(0),
+  });
 
-export const createProjectSchema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(
-      3,
-      "O título deve ter pelo menos 3 caracteres."
-    ),
+export const createProjectSchema =
+  z.object({
+    title: z
+      .string()
+      .trim()
+      .min(
+        3,
+        "O título deve ter pelo menos 3 caracteres."
+      ),
 
-  slug: z
-    .string()
-    .trim()
-    .min(
-      3,
-      "O slug deve ter pelo menos 3 caracteres."
-    )
-    .regex(
-      /^[a-z0-9-]+$/,
-      "O slug pode conter apenas letras minúsculas, números e hífens."
-    ),
+    slug: z
+      .string()
+      .trim()
+      .min(
+        1,
+        "O slug é obrigatório."
+      ),
 
-  category: z.nativeEnum(ProjectCategory),
+    category:
+      z.nativeEnum(ProjectCategory),
 
-  city: z.string().optional().nullable(),
+    city: z
+      .string()
+      .trim()
+      .optional()
+      .nullable(),
 
-  state: z.string().optional().nullable(),
+    state: z
+      .string()
+      .trim()
+      .optional()
+      .nullable(),
 
-  year: z.coerce.number().optional().nullable(),
+    year: z
+      .coerce
+      .number()
+      .int()
+      .min(1900)
+      .max(2100)
+      .optional()
+      .nullable(),
 
-  area: z.string().optional().nullable(),
+    area: z
+      .string()
+      .trim()
+      .optional()
+      .nullable(),
 
-  description: z
-    .string()
-    .trim()
-    .min(
-      10,
-      "A descrição deve ter pelo menos 10 caracteres."
-    ),
+    description: z
+      .string()
+      .trim()
+      .min(
+        10,
+        "A descrição deve ter pelo menos 10 caracteres."
+      ),
 
-  content: z.string().optional().nullable(),
+    content: z
+      .string()
+      .optional()
+      .nullable(),
 
-  featuredImage: z
-  .string()
-  .url()
-  .optional()
-  .nullable(),
+    featuredImage: z
+      .string()
+      .url()
+      .optional()
+      .nullable(),
 
-  featuredImageStorageKey: z
-  .string()
-  .optional()
-  .nullable(),
+    featuredImageStorageKey: z
+      .string()
+      .trim()
+      .min(1)
+      .optional()
+      .nullable(),
 
-  videoUrl: z
-  .string()
-  .url("Informe uma URL válida do YouTube.")
-  .optional()
-  .nullable(),
+    videoUrl: z
+      .string()
+      .url(
+        "Informe uma URL válida do YouTube."
+      )
+      .optional()
+      .nullable(),
 
-  published: z.boolean().default(true),
+    published: z
+      .boolean()
+      .default(true),
 
-  featured: z.boolean().default(false),
+    featured: z
+      .boolean()
+      .default(false),
 
-  images: z
-  .array(projectImageSchema)
-  .max(
-    20,
-    "Um projeto pode ter no máximo 20 imagens na galeria."
-  )
-  .default([]),
-});
+    images: z
+      .array(projectImageSchema)
+      .default([]),
+  });
+
+export const updateProjectSchema =
+  createProjectSchema.partial();
+
+export type CreateProjectInput =
+  z.infer<
+    typeof createProjectSchema
+  >;
+
+export type UpdateProjectInput =
+  z.infer<
+    typeof updateProjectSchema
+  >;
 
 export const updateFeaturedImageSchema =
   z.object({
@@ -99,14 +144,6 @@ export const updateFeaturedImageSchema =
     featuredImageStorageKey: z
       .string()
       .trim()
+      .min(1)
       .nullable(),
   });
-
-export const updateProjectSchema =
-  createProjectSchema.partial();
-
-export type CreateProjectInput =
-  z.infer<typeof createProjectSchema>;
-
-export type UpdateProjectInput =
-  z.infer<typeof updateProjectSchema>;

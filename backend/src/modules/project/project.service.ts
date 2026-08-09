@@ -55,7 +55,18 @@ export class ProjectService {
     data: CreateProjectInput
   ) {
     const normalizedSlug =
-      normalizeProjectSlug(data.slug);
+      normalizeProjectSlug(
+        data.slug
+      );
+
+    if (
+      normalizedSlug.length < 3
+    ) {
+      throw new AppError(
+        "O slug precisa resultar em pelo menos 3 caracteres válidos.",
+        400
+      );
+    }
 
     const slugAlreadyExists =
       await this.repository.existsBySlug(
@@ -200,8 +211,22 @@ export class ProjectService {
   }
 
   async findBySlug(slug: string) {
+    const normalizedSlug =
+      normalizeProjectSlug(slug);
+
+    if (
+      normalizedSlug.length < 3
+    ) {
+      throw new AppError(
+        "Slug inválido.",
+        400
+      );
+    }
+
     const project =
-      await this.repository.findBySlug(slug);
+      await this.repository.findBySlug(
+        normalizedSlug
+      );
 
     if (!project) {
       throw new AppError(
@@ -220,13 +245,25 @@ export class ProjectService {
     const currentProject =
       await this.findById(id);
 
-    let normalizedData = data;
+    let normalizedData =
+      data;
 
-    if (data.slug) {
+    if (
+      data.slug !== undefined
+    ) {
       const normalizedSlug =
         normalizeProjectSlug(
           data.slug
         );
+
+      if (
+        normalizedSlug.length < 3
+      ) {
+        throw new AppError(
+          "O slug precisa resultar em pelo menos 3 caracteres válidos.",
+          400
+        );
+      }
 
       const existing =
         await this.repository.findAnyBySlug(
