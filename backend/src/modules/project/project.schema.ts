@@ -8,7 +8,14 @@ export const projectImageSchema = z.object({
 
   alt: z.string().optional().nullable(),
 
-  sortOrder: z.number().default(0),
+  sortOrder: z
+  .number()
+  .int()
+  .min(
+    0,
+    "A ordem da imagem não pode ser negativa."
+  )
+  .default(0),
 });
 
 export const createProjectSchema = z.object({
@@ -74,8 +81,12 @@ export const createProjectSchema = z.object({
   featured: z.boolean().default(false),
 
   images: z
-    .array(projectImageSchema)
-    .default([]),
+  .array(projectImageSchema)
+  .max(
+    20,
+    "Um projeto pode ter no máximo 20 imagens na galeria."
+  )
+  .default([]),
 });
 
 export const updateProjectSchema =
