@@ -58,6 +58,11 @@ export const createProjectSchema = z.object({
   .optional()
   .nullable(),
 
+  featuredImageStorageKey: z
+  .string()
+  .optional()
+  .nullable(),
+
   videoUrl: z
   .string()
   .url("Informe uma URL válida do YouTube.")

@@ -57,23 +57,24 @@ model AdminUser {
 }
 
 model Project {
-  id            String          @id @default(cuid())
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  title         String
-  slug          String          @unique
-  category      ProjectCategory
-  city          String?
-  state         String?
-  year          Int?
-  area          String?
-  description   String
-  content       String?
-  featuredImage String?
-  videoUrl      String?
-  published     Boolean         @default(true)
-  featured      Boolean         @default(false)
-  images        ProjectImage[]
+  id                      String          @id @default(cuid())
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+  title                   String
+  slug                    String          @unique
+  category                ProjectCategory
+  city                    String?
+  state                   String?
+  year                    Int?
+  area                    String?
+  description             String
+  content                 String?
+  featuredImage           String?
+  published               Boolean         @default(true)
+  featured                Boolean         @default(false)
+  videoUrl                String?
+  featuredImageStorageKey String?
+  images                  ProjectImage[]
 
   @@map("projects")
 }

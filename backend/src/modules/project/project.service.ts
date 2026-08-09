@@ -69,7 +69,8 @@ export class ProjectService {
     id: string,
     data: UpdateProjectInput
   ) {
-    await this.findById(id);
+    const project =
+      await this.findById(id);
 
     if (data.slug) {
       const existing =
@@ -88,44 +89,97 @@ export class ProjectService {
       }
     }
 
-    return this.repository.update(
-      id,
-      data
-    );
+    const oldFeaturedImageStorageKey =
+      project.featuredImageStorageKey;
+
+    const featuredImageChanged =
+      data.featuredImageStorageKey !== undefined &&
+      data.featuredImageStorageKey !==
+        oldFeaturedImageStorageKey;
+
+    const updatedProject =
+      await this.repository.update(
+        id,
+        data
+      );
+
+    if (
+      featuredImageChanged &&
+      oldFeaturedImageStorageKey
+    ) {
+      try {
+        await storage.delete(
+          oldFeaturedImageStorageKey
+        );
+      } catch (error) {
+        console.error(
+          "Erro ao remover a capa antiga do R2:",
+          error
+        );
+      }
+    }
+
+    return updatedProject;
   }
 
   async replaceImages(
     id: string,
     images: CreateProjectInput["images"]
   ) {
-    const project = await this.findById(id);
+    const project =
+      await this.findById(id);
 
-    const storageKeys =
-      project.images.map(
-        (image) => image.storageKey
+    const oldStorageKeys =
+      project.images
+        .map((image) => image.storageKey)
+        .filter(Boolean);
+
+    const updatedProject =
+      await this.repository.replaceImages(
+        id,
+        images
       );
 
-    if (storageKeys.length) {
-      await storage.deleteMany(storageKeys);
+    if (oldStorageKeys.length) {
+      try {
+        await storage.deleteMany(
+          oldStorageKeys
+        );
+      } catch (error) {
+        console.error(
+          "Erro ao remover imagens antigas da galeria no R2:",
+          error
+        );
+      }
     }
 
-    return this.repository.replaceImages(
-      id,
-      images
-    );
+    return updatedProject;
   }
 
   async remove(id: string) {
     const project =
       await this.findById(id);
 
-    const storageKeys =
-      project.images.map(
+    const storageKeys = [
+      ...project.images.map(
         (image) => image.storageKey
-      );
+      ),
+      ...(project.featuredImageStorageKey
+        ? [project.featuredImageStorageKey]
+        : []),
+    ].filter(Boolean);
 
     if (storageKeys.length) {
-      await storage.deleteMany(storageKeys);
+      try {
+        await storage.deleteMany(
+          storageKeys
+        );
+      } catch (error) {
+        console.error(
+          "Erro ao remover arquivos do projeto no R2:",
+          error
+        );
+      }
     }
 
     await this.repository.delete(id);

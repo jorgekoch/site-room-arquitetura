@@ -182,6 +182,11 @@ export class ProjectRepository {
           featuredImage: data.featuredImage,
         }),
 
+        ...(data.featuredImageStorageKey !== undefined && {
+          featuredImageStorageKey:
+            data.featuredImageStorageKey,
+        }),
+
         ...(data.videoUrl !== undefined && {
           videoUrl: data.videoUrl,
         }),
