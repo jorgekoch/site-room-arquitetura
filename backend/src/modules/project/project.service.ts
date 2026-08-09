@@ -52,6 +52,26 @@ export class ProjectService {
       );
     }
 
+    if (
+      data.featuredImage &&
+      !data.featuredImageStorageKey
+    ) {
+      throw new AppError(
+        "A imagem de capa precisa possuir uma chave de armazenamento.",
+        400
+      );
+    }
+
+    if (
+      data.featuredImageStorageKey &&
+      !data.featuredImage
+    ) {
+      throw new AppError(
+        "A chave de armazenamento da capa exige uma URL de imagem.",
+        400
+      );
+    }
+
     if (data.featuredImageStorageKey) {
       await storage.validateObject(
         data.featuredImageStorageKey,
@@ -199,6 +219,33 @@ export class ProjectService {
         ...data,
         slug: normalizedSlug,
       };
+    }
+
+    if (
+      normalizedData.featuredImage !==
+      undefined &&
+      normalizedData.featuredImage &&
+      !normalizedData.featuredImageStorageKey &&
+      !currentProject.featuredImageStorageKey
+    ) {
+      throw new AppError(
+        "A imagem de capa precisa possuir uma chave de armazenamento.",
+        400
+      );
+    }
+
+    if (
+      normalizedData.featuredImageStorageKey !==
+      undefined &&
+      normalizedData.featuredImageStorageKey &&
+      normalizedData.featuredImage ===
+      undefined &&
+      !currentProject.featuredImage
+    ) {
+      throw new AppError(
+        "A chave de armazenamento da capa exige uma URL de imagem.",
+        400
+      );
     }
 
     if (
