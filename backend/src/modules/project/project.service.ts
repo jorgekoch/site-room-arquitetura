@@ -27,9 +27,17 @@ function normalizeProjectSlug(
     .trim()
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+    .replace(
+      /[\u0300-\u036f]/g,
+      ""
+    )
+    .replace(
+      /[^a-z0-9]+/g,
+      "-"
+    )
+    .replace(
+      /^-+|-+$/g,
+      "");
 }
 
 export class ProjectService {
@@ -47,6 +55,44 @@ export class ProjectService {
       throw new AppError(
         "Arquivo inválido para este projeto.",
         400
+      );
+    }
+  }
+
+  private async validateProjectImage(
+    storageKey: string
+  ) {
+    this.validateProjectStorageKey(
+      storageKey
+    );
+
+    await storage.validateObject(
+      storageKey,
+      {
+        maxSize:
+          PROJECT_MAX_IMAGE_SIZE,
+        allowedContentTypes:
+          PROJECT_ALLOWED_IMAGE_TYPES,
+      }
+    );
+  }
+
+  private async deleteStorageKeys(
+    storageKeys: string[],
+    context: string
+  ) {
+    if (!storageKeys.length) {
+      return;
+    }
+
+    try {
+      await storage.deleteMany(
+        storageKeys
+      );
+    } catch (error) {
+      console.error(
+        `[ProjectService] Erro ao remover arquivos do R2 (${context}):`,
+        error
       );
     }
   }
@@ -103,18 +149,8 @@ export class ProjectService {
     if (
       data.featuredImageStorageKey
     ) {
-      this.validateProjectStorageKey(
+      await this.validateProjectImage(
         data.featuredImageStorageKey
-      );
-
-      await storage.validateObject(
-        data.featuredImageStorageKey,
-        {
-          maxSize:
-            PROJECT_MAX_IMAGE_SIZE,
-          allowedContentTypes:
-            PROJECT_ALLOWED_IMAGE_TYPES,
-        }
       );
     }
 
@@ -159,18 +195,8 @@ export class ProjectService {
     }
 
     for (const image of data.images) {
-      this.validateProjectStorageKey(
+      await this.validateProjectImage(
         image.storageKey
-      );
-
-      await storage.validateObject(
-        image.storageKey,
-        {
-          maxSize:
-            PROJECT_MAX_IMAGE_SIZE,
-          allowedContentTypes:
-            PROJECT_ALLOWED_IMAGE_TYPES,
-        }
       );
     }
 
@@ -179,9 +205,33 @@ export class ProjectService {
       slug: normalizedSlug,
     };
 
-    return this.repository.create(
-      normalizedData
-    );
+    try {
+      return await this.repository.create(
+        normalizedData
+      );
+    } catch (error) {
+      /*
+       * Se o banco falhar depois que os
+       * uploads já foram feitos, tentamos
+       * remover os arquivos recém-enviados
+       * para evitar órfãos.
+       */
+      const uploadedStorageKeys = [
+        ...(data.featuredImageStorageKey
+          ? [
+              data.featuredImageStorageKey,
+            ]
+          : []),
+        ...storageKeys,
+      ];
+
+      await this.deleteStorageKeys(
+        uploadedStorageKeys,
+        "rollback após falha na criação"
+      );
+
+      throw error;
+    }
   }
 
   async list() {
@@ -193,7 +243,9 @@ export class ProjectService {
   }
 
   async findFeatured() {
-    return this.repository.findFeatured(5);
+    return this.repository.findFeatured(
+      5
+    );
   }
 
   async findById(id: string) {
@@ -288,7 +340,7 @@ export class ProjectService {
 
     if (
       normalizedData.featuredImage !==
-      undefined &&
+        undefined &&
       normalizedData.featuredImage &&
       !normalizedData.featuredImageStorageKey &&
       !currentProject.featuredImageStorageKey
@@ -301,10 +353,10 @@ export class ProjectService {
 
     if (
       normalizedData.featuredImageStorageKey !==
-      undefined &&
+        undefined &&
       normalizedData.featuredImageStorageKey &&
       normalizedData.featuredImage ===
-      undefined &&
+        undefined &&
       !currentProject.featuredImage
     ) {
       throw new AppError(
@@ -316,18 +368,8 @@ export class ProjectService {
     if (
       normalizedData.featuredImageStorageKey
     ) {
-      this.validateProjectStorageKey(
+      await this.validateProjectImage(
         normalizedData.featuredImageStorageKey
-      );
-
-      await storage.validateObject(
-        normalizedData.featuredImageStorageKey,
-        {
-          maxSize:
-            PROJECT_MAX_IMAGE_SIZE,
-          allowedContentTypes:
-            PROJECT_ALLOWED_IMAGE_TYPES,
-        }
       );
     }
 
@@ -339,30 +381,54 @@ export class ProjectService {
 
     const featuredImageChanged =
       newFeaturedImageStorageKey !==
-      undefined &&
+        undefined &&
       newFeaturedImageStorageKey !==
-      oldFeaturedImageStorageKey;
+        oldFeaturedImageStorageKey;
 
-    const updatedProject =
-      await this.repository.update(
-        id,
-        normalizedData
-      );
+    let updatedProject;
 
+    try {
+      updatedProject =
+        await this.repository.update(
+          id,
+          normalizedData
+        );
+    } catch (error) {
+      /*
+       * Se uma nova capa foi enviada para
+       * o R2, mas a atualização do banco
+       * falhou, ela não ficou vinculada
+       * ao projeto.
+       */
+      if (
+        featuredImageChanged &&
+        newFeaturedImageStorageKey
+      ) {
+        await this.deleteStorageKeys(
+          [
+            newFeaturedImageStorageKey,
+          ],
+          "rollback após falha na atualização"
+        );
+      }
+
+      throw error;
+    }
+
+    /*
+     * O banco já aponta para a nova capa.
+     * Só agora removemos a antiga.
+     */
     if (
       featuredImageChanged &&
       oldFeaturedImageStorageKey
     ) {
-      try {
-        await storage.delete(
-          oldFeaturedImageStorageKey
-        );
-      } catch (error) {
-        console.error(
-          "Erro ao remover a capa antiga do R2:",
-          error
-        );
-      }
+      await this.deleteStorageKeys(
+        [
+          oldFeaturedImageStorageKey,
+        ],
+        "substituição da capa"
+      );
     }
 
     return updatedProject;
@@ -399,17 +465,17 @@ export class ProjectService {
       );
     }
 
-    const storageKeys =
+    const newStorageKeys =
       images.map(
         (image) => image.storageKey
       );
 
     const uniqueStorageKeys =
-      new Set(storageKeys);
+      new Set(newStorageKeys);
 
     if (
       uniqueStorageKeys.size !==
-      storageKeys.length
+      newStorageKeys.length
     ) {
       throw new AppError(
         "A galeria não pode conter imagens duplicadas.",
@@ -418,18 +484,8 @@ export class ProjectService {
     }
 
     for (const image of images) {
-      this.validateProjectStorageKey(
+      await this.validateProjectImage(
         image.storageKey
-      );
-
-      await storage.validateObject(
-        image.storageKey,
-        {
-          maxSize:
-            PROJECT_MAX_IMAGE_SIZE,
-          allowedContentTypes:
-            PROJECT_ALLOWED_IMAGE_TYPES,
-        }
       );
     }
 
@@ -440,39 +496,52 @@ export class ProjectService {
         )
         .filter(Boolean);
 
-    const newStorageKeys =
-      new Set(
-        images.map(
-          (image) => image.storageKey
-        )
-      );
-
     const storageKeysToDelete =
       oldStorageKeys.filter(
         (key) =>
-          !newStorageKeys.has(key)
+          !uniqueStorageKeys.has(key)
       );
 
-    const updatedProject =
-      await this.repository.replaceImages(
-        id,
-        images
+    let updatedProject;
+
+    try {
+      updatedProject =
+        await this.repository.replaceImages(
+          id,
+          images
+        );
+    } catch (error) {
+      /*
+       * As novas imagens já estavam
+       * no R2, mas não foram vinculadas
+       * ao projeto porque o banco falhou.
+       */
+      const oldStorageKeySet =
+        new Set(oldStorageKeys);
+
+      const newFilesToRollback =
+        newStorageKeys.filter(
+          (key) =>
+            !oldStorageKeySet.has(key)
+        );
+
+      await this.deleteStorageKeys(
+        newFilesToRollback,
+        "rollback após falha na galeria"
       );
 
-    if (
-      storageKeysToDelete.length
-    ) {
-      try {
-        await storage.deleteMany(
-          storageKeysToDelete
-        );
-      } catch (error) {
-        console.error(
-          "Erro ao remover imagens antigas da galeria no R2:",
-          error
-        );
-      }
+      throw error;
     }
+
+    /*
+     * O banco já contém a nova galeria.
+     * Agora podemos remover os arquivos
+     * que deixaram de ser utilizados.
+     */
+    await this.deleteStorageKeys(
+      storageKeysToDelete,
+      "substituição da galeria"
+    );
 
     return updatedProject;
   }
@@ -487,25 +556,23 @@ export class ProjectService {
       ),
       ...(project.featuredImageStorageKey
         ? [
-          project.featuredImageStorageKey,
-        ]
+            project.featuredImageStorageKey,
+          ]
         : []),
     ].filter(Boolean);
 
-    if (storageKeys.length) {
-      try {
-        await storage.deleteMany(
-          storageKeys
-        );
-      } catch (error) {
-        console.error(
-          "Erro ao remover arquivos do projeto no R2:",
-          error
-        );
-      }
-    }
-
+    /*
+     * Primeiro removemos o projeto do
+     * banco. Se o R2 falhar, o projeto
+     * já não existe mais e podemos tratar
+     * o arquivo como órfão.
+     */
     await this.repository.delete(id);
+
+    await this.deleteStorageKeys(
+      storageKeys,
+      "exclusão do projeto"
+    );
   }
 
   async publish(id: string) {
@@ -517,7 +584,9 @@ export class ProjectService {
   async unpublish(id: string) {
     await this.findById(id);
 
-    return this.repository.unpublish(id);
+    return this.repository.unpublish(
+      id
+    );
   }
 
   async feature(id: string) {
@@ -536,7 +605,9 @@ export class ProjectService {
     }
 
     const featuredProject =
-      await this.repository.feature(id);
+      await this.repository.feature(
+        id
+      );
 
     if (!featuredProject) {
       throw new AppError(
@@ -551,7 +622,9 @@ export class ProjectService {
   async unfeature(id: string) {
     await this.findById(id);
 
-    return this.repository.unfeature(id);
+    return this.repository.unfeature(
+      id
+    );
   }
 
   async updateFeaturedImage(
@@ -568,46 +641,52 @@ export class ProjectService {
       project.featuredImageStorageKey;
 
     if (featuredImageStorageKey) {
-      this.validateProjectStorageKey(
+      await this.validateProjectImage(
         featuredImageStorageKey
-      );
-
-      await storage.validateObject(
-        featuredImageStorageKey,
-        {
-          maxSize:
-            PROJECT_MAX_IMAGE_SIZE,
-          allowedContentTypes:
-            PROJECT_ALLOWED_IMAGE_TYPES,
-        }
       );
     }
-
-    const updatedProject =
-      await this.repository.updateFeaturedImage(
-        id,
-        featuredImage,
-        featuredImageStorageKey
-      );
 
     const storageKeyChanged =
       featuredImageStorageKey !==
       oldStorageKey;
 
+    let updatedProject;
+
+    try {
+      updatedProject =
+        await this.repository.updateFeaturedImage(
+          id,
+          featuredImage,
+          featuredImageStorageKey
+        );
+    } catch (error) {
+      /*
+       * A nova imagem foi enviada ao R2,
+       * mas não foi vinculada ao projeto.
+       */
+      if (
+        storageKeyChanged &&
+        featuredImageStorageKey
+      ) {
+        await this.deleteStorageKeys(
+          [
+            featuredImageStorageKey,
+          ],
+          "rollback após falha na capa"
+        );
+      }
+
+      throw error;
+    }
+
     if (
       storageKeyChanged &&
       oldStorageKey
     ) {
-      try {
-        await storage.delete(
-          oldStorageKey
-        );
-      } catch (error) {
-        console.error(
-          "Erro ao remover a capa anterior do R2:",
-          error
-        );
-      }
+      await this.deleteStorageKeys(
+        [oldStorageKey],
+        "substituição da capa"
+      );
     }
 
     return updatedProject;
@@ -628,21 +707,22 @@ export class ProjectService {
       );
     }
 
+    /*
+     * Primeiro removemos a referência
+     * do banco.
+     */
     const deletedImage =
       await this.repository.deleteImage(
         imageId
       );
 
-    try {
-      await storage.delete(
-        image.storageKey
-      );
-    } catch (error) {
-      console.error(
-        "Erro ao remover imagem do R2 após exclusão no banco:",
-        error
-      );
-    }
+    /*
+     * Depois removemos o arquivo físico.
+     */
+    await this.deleteStorageKeys(
+      [image.storageKey],
+      "exclusão de imagem"
+    );
 
     return deletedImage;
   }
@@ -674,7 +754,8 @@ export class ProjectService {
 
     return storage.generateSignedUrl({
       folder: "projects",
-      fileName: fileName.trim(),
+      fileName:
+        fileName.trim(),
       fileType,
     });
   }
