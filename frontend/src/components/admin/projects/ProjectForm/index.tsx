@@ -77,6 +77,18 @@ export function ProjectForm({
   const featuredImage =
     watch("featuredImage");
 
+  function handleCoverRemove() {
+    setValue(
+      "featuredImage",
+      null
+    );
+
+    setValue(
+      "featuredImageStorageKey",
+      null
+    );
+  }
+
   const images =
     watch("images") ?? [];
 
@@ -262,6 +274,9 @@ export function ProjectForm({
         }
         onUpload={
           handleCoverUpload
+        }
+        onRemove={
+          handleCoverRemove
         }
       />
 
