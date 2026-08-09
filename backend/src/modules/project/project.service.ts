@@ -91,6 +91,18 @@ export class ProjectService {
       );
     }
 
+    if (
+      data.featuredImageStorageKey &&
+      uniqueStorageKeys.has(
+        data.featuredImageStorageKey
+      )
+    ) {
+      throw new AppError(
+        "A imagem de capa não pode ser repetida na galeria.",
+        400
+      );
+    }
+
     for (const image of data.images) {
       await storage.validateObject(
         image.storageKey,
@@ -253,6 +265,20 @@ export class ProjectService {
     ) {
       throw new AppError(
         `Um projeto pode ter no máximo ${PROJECT_MAX_GALLERY_IMAGES} imagens na galeria.`,
+        400
+      );
+    }
+
+    if (
+      project.featuredImageStorageKey &&
+      images.some(
+        (image) =>
+          image.storageKey ===
+          project.featuredImageStorageKey
+      )
+    ) {
+      throw new AppError(
+        "A imagem de capa não pode ser repetida na galeria.",
         400
       );
     }
