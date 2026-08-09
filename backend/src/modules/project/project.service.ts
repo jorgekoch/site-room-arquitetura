@@ -34,9 +34,27 @@ function normalizeProjectSlug(
 }
 
 export class ProjectService {
-  private readonly repository = new ProjectRepository();
+  private readonly repository =
+    new ProjectRepository();
 
-  async create(data: CreateProjectInput) {
+  private validateProjectStorageKey(
+    storageKey: string
+  ) {
+    if (
+      !storageKey.startsWith(
+        "projects/"
+      )
+    ) {
+      throw new AppError(
+        "Arquivo inválido para este projeto.",
+        400
+      );
+    }
+  }
+
+  async create(
+    data: CreateProjectInput
+  ) {
     const normalizedSlug =
       normalizeProjectSlug(data.slug);
 
@@ -72,11 +90,18 @@ export class ProjectService {
       );
     }
 
-    if (data.featuredImageStorageKey) {
+    if (
+      data.featuredImageStorageKey
+    ) {
+      this.validateProjectStorageKey(
+        data.featuredImageStorageKey
+      );
+
       await storage.validateObject(
         data.featuredImageStorageKey,
         {
-          maxSize: PROJECT_MAX_IMAGE_SIZE,
+          maxSize:
+            PROJECT_MAX_IMAGE_SIZE,
           allowedContentTypes:
             PROJECT_ALLOWED_IMAGE_TYPES,
         }
@@ -124,10 +149,15 @@ export class ProjectService {
     }
 
     for (const image of data.images) {
+      this.validateProjectStorageKey(
+        image.storageKey
+      );
+
       await storage.validateObject(
         image.storageKey,
         {
-          maxSize: PROJECT_MAX_IMAGE_SIZE,
+          maxSize:
+            PROJECT_MAX_IMAGE_SIZE,
           allowedContentTypes:
             PROJECT_ALLOWED_IMAGE_TYPES,
         }
@@ -191,8 +221,7 @@ export class ProjectService {
     const currentProject =
       await this.findById(id);
 
-    let normalizedData =
-      data;
+    let normalizedData = data;
 
     if (data.slug) {
       const normalizedSlug =
@@ -223,7 +252,7 @@ export class ProjectService {
 
     if (
       normalizedData.featuredImage !==
-      undefined &&
+        undefined &&
       normalizedData.featuredImage &&
       !normalizedData.featuredImageStorageKey &&
       !currentProject.featuredImageStorageKey
@@ -236,10 +265,10 @@ export class ProjectService {
 
     if (
       normalizedData.featuredImageStorageKey !==
-      undefined &&
+        undefined &&
       normalizedData.featuredImageStorageKey &&
       normalizedData.featuredImage ===
-      undefined &&
+        undefined &&
       !currentProject.featuredImage
     ) {
       throw new AppError(
@@ -249,10 +278,14 @@ export class ProjectService {
     }
 
     if (
-      data.featuredImageStorageKey
+      normalizedData.featuredImageStorageKey
     ) {
+      this.validateProjectStorageKey(
+        normalizedData.featuredImageStorageKey
+      );
+
       await storage.validateObject(
-        data.featuredImageStorageKey,
+        normalizedData.featuredImageStorageKey,
         {
           maxSize:
             PROJECT_MAX_IMAGE_SIZE,
@@ -270,9 +303,9 @@ export class ProjectService {
 
     const featuredImageChanged =
       newFeaturedImageStorageKey !==
-      undefined &&
+        undefined &&
       newFeaturedImageStorageKey !==
-      oldFeaturedImageStorageKey;
+        oldFeaturedImageStorageKey;
 
     const updatedProject =
       await this.repository.update(
@@ -349,6 +382,10 @@ export class ProjectService {
     }
 
     for (const image of images) {
+      this.validateProjectStorageKey(
+        image.storageKey
+      );
+
       await storage.validateObject(
         image.storageKey,
         {
@@ -386,7 +423,9 @@ export class ProjectService {
         images
       );
 
-    if (storageKeysToDelete.length) {
+    if (
+      storageKeysToDelete.length
+    ) {
       try {
         await storage.deleteMany(
           storageKeysToDelete
@@ -411,7 +450,9 @@ export class ProjectService {
         (image) => image.storageKey
       ),
       ...(project.featuredImageStorageKey
-        ? [project.featuredImageStorageKey]
+        ? [
+            project.featuredImageStorageKey,
+          ]
         : []),
     ].filter(Boolean);
 
@@ -486,7 +527,9 @@ export class ProjectService {
   async updateFeaturedImage(
     id: string,
     featuredImage: string | null,
-    featuredImageStorageKey: string | null
+    featuredImageStorageKey:
+      | string
+      | null
   ) {
     const project =
       await this.findById(id);
@@ -494,9 +537,11 @@ export class ProjectService {
     const oldStorageKey =
       project.featuredImageStorageKey;
 
-    if (
-      featuredImageStorageKey
-    ) {
+    if (featuredImageStorageKey) {
+      this.validateProjectStorageKey(
+        featuredImageStorageKey
+      );
+
       await storage.validateObject(
         featuredImageStorageKey,
         {
@@ -538,7 +583,9 @@ export class ProjectService {
     return updatedProject;
   }
 
-  async deleteImage(imageId: string) {
+  async deleteImage(
+    imageId: string
+  ) {
     const image =
       await this.repository.findImageById(
         imageId
