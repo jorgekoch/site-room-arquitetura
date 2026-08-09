@@ -321,6 +321,7 @@ export class ProjectRepository {
       },
       data: {
         published: false,
+        featured: false,
       },
     });
   }

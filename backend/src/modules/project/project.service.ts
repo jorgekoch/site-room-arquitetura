@@ -7,7 +7,6 @@ import {
 
 import { ProjectRepository } from "./project.repository";
 import { storage } from "../../services/storage";
-import { prisma } from "../../database/prisma";
 
 const PROJECT_ALLOWED_IMAGE_TYPES = [
   "image/jpeg",
@@ -252,7 +251,7 @@ export class ProjectService {
 
     if (
       normalizedData.featuredImage !==
-        undefined &&
+      undefined &&
       normalizedData.featuredImage &&
       !normalizedData.featuredImageStorageKey &&
       !currentProject.featuredImageStorageKey
@@ -265,10 +264,10 @@ export class ProjectService {
 
     if (
       normalizedData.featuredImageStorageKey !==
-        undefined &&
+      undefined &&
       normalizedData.featuredImageStorageKey &&
       normalizedData.featuredImage ===
-        undefined &&
+      undefined &&
       !currentProject.featuredImage
     ) {
       throw new AppError(
@@ -303,9 +302,9 @@ export class ProjectService {
 
     const featuredImageChanged =
       newFeaturedImageStorageKey !==
-        undefined &&
+      undefined &&
       newFeaturedImageStorageKey !==
-        oldFeaturedImageStorageKey;
+      oldFeaturedImageStorageKey;
 
     const updatedProject =
       await this.repository.update(
@@ -451,8 +450,8 @@ export class ProjectService {
       ),
       ...(project.featuredImageStorageKey
         ? [
-            project.featuredImageStorageKey,
-          ]
+          project.featuredImageStorageKey,
+        ]
         : []),
     ].filter(Boolean);
 
@@ -479,15 +478,9 @@ export class ProjectService {
   }
 
   async unpublish(id: string) {
-    return prisma.project.update({
-      where: {
-        id,
-      },
-      data: {
-        published: false,
-        featured: false,
-      },
-    });
+    await this.findById(id);
+
+    return this.repository.unpublish(id);
   }
 
   async feature(id: string) {
@@ -618,34 +611,34 @@ export class ProjectService {
   }
 
   async generateUploadUrl(
-  fileName: string,
-  fileType: string
-) {
-  if (
-    !PROJECT_ALLOWED_IMAGE_TYPES.includes(
-      fileType
-    )
+    fileName: string,
+    fileType: string
   ) {
-    throw new AppError(
-      "Formato de imagem não permitido.",
-      400
-    );
-  }
+    if (
+      !PROJECT_ALLOWED_IMAGE_TYPES.includes(
+        fileType
+      )
+    ) {
+      throw new AppError(
+        "Formato de imagem não permitido.",
+        400
+      );
+    }
 
-  if (
-    !fileName ||
-    !fileName.trim()
-  ) {
-    throw new AppError(
-      "Nome do arquivo não informado.",
-      400
-    );
-  }
+    if (
+      !fileName ||
+      !fileName.trim()
+    ) {
+      throw new AppError(
+        "Nome do arquivo não informado.",
+        400
+      );
+    }
 
-  return storage.generateSignedUrl({
-    folder: "projects",
-    fileName: fileName.trim(),
-    fileType,
-  });
-}
+    return storage.generateSignedUrl({
+      folder: "projects",
+      fileName: fileName.trim(),
+      fileType,
+    });
+  }
 }
