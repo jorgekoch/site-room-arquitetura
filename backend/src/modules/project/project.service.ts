@@ -485,14 +485,57 @@ export class ProjectService {
 
   async updateFeaturedImage(
     id: string,
-    featuredImage: string
+    featuredImage: string | null,
+    featuredImageStorageKey: string | null
   ) {
-    await this.findById(id);
+    const project =
+      await this.findById(id);
 
-    return this.repository.updateFeaturedImage(
-      id,
-      featuredImage
-    );
+    const oldStorageKey =
+      project.featuredImageStorageKey;
+
+    if (
+      featuredImageStorageKey
+    ) {
+      await storage.validateObject(
+        featuredImageStorageKey,
+        {
+          maxSize:
+            PROJECT_MAX_IMAGE_SIZE,
+          allowedContentTypes:
+            PROJECT_ALLOWED_IMAGE_TYPES,
+        }
+      );
+    }
+
+    const updatedProject =
+      await this.repository.updateFeaturedImage(
+        id,
+        featuredImage,
+        featuredImageStorageKey
+      );
+
+    const storageKeyChanged =
+      featuredImageStorageKey !==
+      oldStorageKey;
+
+    if (
+      storageKeyChanged &&
+      oldStorageKey
+    ) {
+      try {
+        await storage.delete(
+          oldStorageKey
+        );
+      } catch (error) {
+        console.error(
+          "Erro ao remover a capa anterior do R2:",
+          error
+        );
+      }
+    }
+
+    return updatedProject;
   }
 
   async deleteImage(imageId: string) {

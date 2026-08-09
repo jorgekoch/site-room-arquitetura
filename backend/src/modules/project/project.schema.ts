@@ -89,6 +89,19 @@ export const createProjectSchema = z.object({
   .default([]),
 });
 
+export const updateFeaturedImageSchema =
+  z.object({
+    featuredImage: z
+      .string()
+      .url()
+      .nullable(),
+
+    featuredImageStorageKey: z
+      .string()
+      .trim()
+      .nullable(),
+  });
+
 export const updateProjectSchema =
   createProjectSchema.partial();
 

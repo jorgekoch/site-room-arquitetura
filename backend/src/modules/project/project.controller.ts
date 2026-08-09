@@ -4,6 +4,7 @@ import { AppError } from "../../utils/AppError";
 
 import {
   createProjectSchema,
+  updateFeaturedImageSchema,
   updateProjectSchema,
 } from "./project.schema";
 
@@ -41,8 +42,8 @@ export class ProjectController {
 
     const upload =
       await service.generateUploadUrl(
-          fileName,
-          fileType
+        fileName,
+        fileType
       );
 
     return response.json(upload);
@@ -289,30 +290,29 @@ export class ProjectController {
     request: Request,
     response: Response
   ) {
-    const { id } = request.params;
+    const { id } =
+      request.params;
 
-    if (!id || Array.isArray(id)) {
+    if (
+      !id ||
+      Array.isArray(id)
+    ) {
       throw new AppError(
         "ID inválido.",
         400
       );
     }
 
-    const { featuredImage } = request.body;
-
-    if (
-      typeof featuredImage !== "string"
-    ) {
-      throw new AppError(
-        "Imagem de capa inválida.",
-        400
+    const data =
+      updateFeaturedImageSchema.parse(
+        request.body
       );
-    }
 
     const project =
       await service.updateFeaturedImage(
         id,
-        featuredImage
+        data.featuredImage,
+        data.featuredImageStorageKey
       );
 
     return response.json(project);

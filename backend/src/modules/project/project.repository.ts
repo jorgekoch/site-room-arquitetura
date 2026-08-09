@@ -349,7 +349,8 @@ export class ProjectRepository {
 
   async updateFeaturedImage(
     id: string,
-    featuredImage: string
+    featuredImage: string | null,
+    featuredImageStorageKey: string | null
   ) {
     return prisma.project.update({
       where: {
@@ -357,6 +358,15 @@ export class ProjectRepository {
       },
       data: {
         featuredImage,
+        featuredImageStorageKey,
+      },
+
+      include: {
+        images: {
+          orderBy: {
+            sortOrder: "asc",
+          },
+        },
       },
     });
   }
@@ -370,33 +380,33 @@ export class ProjectRepository {
   }
 
   async findLatestProjects(limit: number) {
-  return prisma.project.findMany({
-    include: {
-      images: {
-        orderBy: {
-          sortOrder: "asc",
+    return prisma.project.findMany({
+      include: {
+        images: {
+          orderBy: {
+            sortOrder: "asc",
+          },
         },
       },
-    },
 
-    orderBy: {
-      createdAt: "desc",
-    },
+      orderBy: {
+        createdAt: "desc",
+      },
 
-    take: limit,
-  });
+      take: limit,
+    });
 
-}
+  }
 
 
-async countFeatured() {
-  return prisma.project.count({
-    where: {
-      featured: true,
-      published: true,
-    },
-  });
-}
+  async countFeatured() {
+    return prisma.project.count({
+      where: {
+        featured: true,
+        published: true,
+      },
+    });
+  }
 
 
 }
