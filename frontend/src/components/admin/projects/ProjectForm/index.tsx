@@ -39,15 +39,15 @@ export function ProjectForm({
   fieldErrors = {},
 }: Props) {
   const {
-  register,
-  handleSubmit,
-  watch,
-  setValue,
-  reset,
-  formState: {
-    errors,
-  },
-} = useForm<ProjectFormData>({
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    reset,
+    formState: {
+      errors,
+    },
+  } = useForm<ProjectFormData>({
     defaultValues: {
       title: "",
       slug: "",
@@ -118,15 +118,15 @@ export function ProjectForm({
       content: project.content ?? "",
       featuredImage:
         project.featuredImage ?? null,
-
       featuredImageStorageKey:
-        project.featuredImageStorageKey ?? null,
-
-      videoUrl:
-        project.videoUrl ?? null,
+        project.featuredImageStorageKey ??
+        null,
+      videoUrl: project.videoUrl ?? null,
       published: project.published,
       featured: project.featured,
-      images: normalizeProjectImages(project.images),
+      images: normalizeProjectImages(
+        project.images
+      ),
     });
   }, [project, reset]);
 
@@ -136,7 +136,9 @@ export function ProjectForm({
     const file =
       event.target.files?.[0];
 
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     try {
       const result =
@@ -152,57 +154,83 @@ export function ProjectForm({
         result.storageKey
       );
     } catch (error) {
-      console.error(error);
+      console.error(
+        "Erro ao enviar imagem de capa:",
+        error
+      );
+
+      alert(
+        "Não foi possível enviar a imagem de capa."
+      );
+    } finally {
+      event.target.value = "";
     }
   }
 
-async function handleGalleryUpload(
-  event: ChangeEvent<HTMLInputElement>
-) {
-  const files = event.target.files;
+  async function handleGalleryUpload(
+    event: ChangeEvent<HTMLInputElement>
+  ) {
+    const files = event.target.files;
 
-  if (!files?.length) {
-    return;
-  }
+    if (!files?.length) {
+      return;
+    }
 
-  const uploaded: ProjectImage[] = [];
+    const MAX_GALLERY_IMAGES = 20;
 
-  try {
-    for (const file of Array.from(files)) {
-      try {
-        const result = await upload(file);
+    if (
+      images.length + files.length >
+      MAX_GALLERY_IMAGES
+    ) {
+      alert(
+        `Um projeto pode ter no máximo ${MAX_GALLERY_IMAGES} imagens na galeria.`
+      );
 
-        uploaded.push({
-          imageUrl: result.imageUrl,
-          storageKey: result.storageKey,
-          alt: file.name,
-          sortOrder:
-            images.length + uploaded.length,
-        });
-      } catch (error) {
-        console.error(
-          `Erro ao enviar ${file.name}:`,
-          error
-        );
+      event.target.value = "";
 
-        alert(
-          `Não foi possível enviar a imagem "${file.name}".`
-        );
+      return;
+    }
+
+    const uploaded: ProjectImage[] = [];
+
+    try {
+      for (const file of Array.from(files)) {
+        try {
+          const result =
+            await upload(file);
+
+          uploaded.push({
+            imageUrl: result.imageUrl,
+            storageKey: result.storageKey,
+            alt: file.name,
+            sortOrder:
+              images.length +
+              uploaded.length,
+          });
+        } catch (error) {
+          console.error(
+            `Erro ao enviar ${file.name}:`,
+            error
+          );
+
+          alert(
+            `Não foi possível enviar a imagem "${file.name}".`
+          );
+        }
       }
-    }
 
-    if (uploaded.length > 0) {
-      setValue("images", [
-        ...images,
-        ...uploaded,
-      ]);
+      if (uploaded.length > 0) {
+        setValue("images", [
+          ...images,
+          ...uploaded,
+        ]);
+      }
+    } finally {
+      // Permite selecionar novamente
+      // os mesmos arquivos.
+      event.target.value = "";
     }
-  } finally {
-    // Permite selecionar novamente
-    // os mesmos arquivos.
-    event.target.value = "";
   }
-}
 
   function removeImage(
     index: number
@@ -265,10 +293,10 @@ async function handleGalleryUpload(
           {loading
             ? "Salvando..."
             : uploading
-            ? "Enviando imagens..."
-            : project
-            ? "Atualizar Projeto"
-            : "Salvar Projeto"}
+              ? "Enviando imagens..."
+              : project
+                ? "Atualizar Projeto"
+                : "Salvar Projeto"}
         </button>
       </S.Actions>
     </S.Form>
