@@ -138,7 +138,8 @@ export class ProjectService {
     id: string,
     data: UpdateProjectInput
   ) {
-    await this.findById(id);
+    const currentProject =
+      await this.findById(id);
 
     let normalizedData =
       data;
@@ -184,10 +185,41 @@ export class ProjectService {
       );
     }
 
-    return this.repository.update(
-      id,
-      normalizedData
-    );
+    const oldFeaturedImageStorageKey =
+      currentProject.featuredImageStorageKey;
+
+    const newFeaturedImageStorageKey =
+      normalizedData.featuredImageStorageKey;
+
+    const featuredImageChanged =
+      newFeaturedImageStorageKey !==
+      undefined &&
+      newFeaturedImageStorageKey !==
+      oldFeaturedImageStorageKey;
+
+    const updatedProject =
+      await this.repository.update(
+        id,
+        normalizedData
+      );
+
+    if (
+      featuredImageChanged &&
+      oldFeaturedImageStorageKey
+    ) {
+      try {
+        await storage.delete(
+          oldFeaturedImageStorageKey
+        );
+      } catch (error) {
+        console.error(
+          "Erro ao remover a capa antiga do R2:",
+          error
+        );
+      }
+    }
+
+    return updatedProject;
   }
 
   async replaceImages(
