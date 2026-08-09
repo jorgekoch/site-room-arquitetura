@@ -73,6 +73,24 @@ export class ProjectService {
       );
     }
 
+    const storageKeys =
+      data.images.map(
+        (image) => image.storageKey
+      );
+
+    const uniqueStorageKeys =
+      new Set(storageKeys);
+
+    if (
+      uniqueStorageKeys.size !==
+      storageKeys.length
+    ) {
+      throw new AppError(
+        "A galeria não pode conter imagens duplicadas.",
+        400
+      );
+    }
+
     for (const image of data.images) {
       await storage.validateObject(
         image.storageKey,
@@ -235,6 +253,24 @@ export class ProjectService {
     ) {
       throw new AppError(
         `Um projeto pode ter no máximo ${PROJECT_MAX_GALLERY_IMAGES} imagens na galeria.`,
+        400
+      );
+    }
+
+    const storageKeys =
+      images.map(
+        (image) => image.storageKey
+      );
+
+    const uniqueStorageKeys =
+      new Set(storageKeys);
+
+    if (
+      uniqueStorageKeys.size !==
+      storageKeys.length
+    ) {
+      throw new AppError(
+        "A galeria não pode conter imagens duplicadas.",
         400
       );
     }
