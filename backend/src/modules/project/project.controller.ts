@@ -24,16 +24,27 @@ export class ProjectController {
     request: Request,
     response: Response
   ) {
-    const { fileName, fileType } = request.body;
+    const {
+      fileName,
+      fileType,
+    } = request.body;
 
-    if (!fileName || !fileType) {
+    if (
+      typeof fileName !== "string" ||
+      !fileName.trim()
+    ) {
       throw new AppError(
-        "Dados do arquivo não enviados.",
+        "Nome do arquivo não informado.",
         400
       );
     }
 
-    if (!allowedMimeTypes.includes(fileType)) {
+    if (
+      typeof fileType !== "string" ||
+      !allowedMimeTypes.includes(
+        fileType
+      )
+    ) {
       throw new AppError(
         "Formato de imagem não permitido.",
         400

@@ -618,13 +618,34 @@ export class ProjectService {
   }
 
   async generateUploadUrl(
-    fileName: string,
-    fileType: string
+  fileName: string,
+  fileType: string
+) {
+  if (
+    !PROJECT_ALLOWED_IMAGE_TYPES.includes(
+      fileType
+    )
   ) {
-    return storage.generateSignedUrl({
-      folder: "projects",
-      fileName,
-      fileType,
-    });
+    throw new AppError(
+      "Formato de imagem não permitido.",
+      400
+    );
   }
+
+  if (
+    !fileName ||
+    !fileName.trim()
+  ) {
+    throw new AppError(
+      "Nome do arquivo não informado.",
+      400
+    );
+  }
+
+  return storage.generateSignedUrl({
+    folder: "projects",
+    fileName: fileName.trim(),
+    fileType,
+  });
+}
 }
