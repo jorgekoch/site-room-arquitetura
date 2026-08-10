@@ -1,6 +1,5 @@
 import { Router } from "express";
 
-import { ensureAuthenticated } from "../../middlewares/ensureAuthenticated";
 import { ensureOwner } from "../../middlewares/ensureOwner";
 
 import { SettingsController } from "./settings.controller";
@@ -10,10 +9,6 @@ const settingsRoutes =
 
 const controller =
   new SettingsController();
-
-settingsRoutes.use(
-  ensureAuthenticated
-);
 
 settingsRoutes.get(
   "/",
