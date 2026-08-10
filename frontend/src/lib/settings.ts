@@ -1,4 +1,8 @@
 import { publicApiFetch } from "./publicApi";
+import {
+  apiGet,
+  apiPatch,
+} from "./api";
 
 export interface SiteSettings {
   id: string;
@@ -11,35 +15,11 @@ export interface SiteSettings {
 }
 
 export async function getSiteSettings(): Promise<SiteSettings> {
-  const token =
-    localStorage.getItem("room_admin_token");
+  const response = await apiGet<{
+    settings: SiteSettings;
+  }>("/settings");
 
-  const response = await publicApiFetch(
-    "/settings",
-    {
-      headers: {
-        Authorization:
-          `Bearer ${token}`,
-      },
-    }
-  );
-
-  if (!response.ok) {
-    const data =
-      await response.json().catch(
-        () => null
-      );
-
-    throw new Error(
-      data?.message ||
-        "Não foi possível carregar as configurações do site."
-    );
-  }
-
-  const data =
-    await response.json();
-
-  return data.settings;
+  return response.settings;
 }
 
 export interface UpdateSiteSettingsInput {
@@ -52,40 +32,13 @@ export interface UpdateSiteSettingsInput {
 export async function updateSiteSettings(
   data: UpdateSiteSettingsInput
 ): Promise<SiteSettings> {
-  const token =
-    localStorage.getItem("room_admin_token");
-
   const response =
-    await publicApiFetch(
-      "/settings",
-      {
-        method: "PATCH",
+    await apiPatch<{
+      message: string;
+      settings: SiteSettings;
+    }>("/settings", data);
 
-        headers: {
-          Authorization:
-            `Bearer ${token}`,
-          "Content-Type":
-            "application/json",
-        },
-
-        body: JSON.stringify(data),
-      }
-    );
-
-  const responseData =
-    await response.json().catch(
-      () => null
-    );
-
-  if (!response.ok) {
-    throw new Error(
-      responseData?.message ||
-        "Não foi possível atualizar as configurações do site."
-    );
-  }
-
-  return responseData.settings;
-  
+  return response.settings;
 }
 
 export async function getPublicSiteSettings(): Promise<SiteSettings> {
