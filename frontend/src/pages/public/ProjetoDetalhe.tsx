@@ -146,6 +146,62 @@ const DescriptionText = styled.p`
   margin: 0.75rem 0 0;
 `;
 
+const ContentSection = styled.div`
+  margin-top: 2rem;
+  width: 100%;
+`;
+
+const ContentCard = styled.div`
+  padding: 1.5rem;
+
+  border-radius:
+    ${({ theme }) =>
+    theme.radius.lg};
+
+  border: 1px solid
+    ${({ theme }) =>
+    theme.colors.border};
+
+  background:
+    ${({ theme }) =>
+    theme.colors.surface};
+
+  box-shadow:
+    ${({ theme }) =>
+    theme.shadow.sm};
+
+  @media ${media.tablet} {
+    padding: 2rem;
+  }
+`;
+
+const ContentTitle = styled.h2`
+  margin: 0 0 1.25rem;
+
+  font-size: clamp(
+    1.35rem,
+    3vw,
+    2rem
+  );
+
+  line-height: 1.08;
+`;
+
+const ContentText = styled.div`
+  display: grid;
+  gap: 1rem;
+
+  color:
+    ${({ theme }) =>
+    theme.colors.textSoft};
+
+  line-height: 1.85;
+
+  p {
+    margin: 0;
+  }
+`;
+
 const VideoCard = styled.div`
   padding: 1.25rem;
   border-radius: ${({ theme }) => theme.radius.lg};
@@ -501,7 +557,7 @@ export default function ProjetoDetalhe() {
 
     const nextIndex =
       selectedIndex <
-      project.images.length - 1
+        project.images.length - 1
         ? selectedIndex + 1
         : 0;
 
@@ -602,21 +658,21 @@ export default function ProjetoDetalhe() {
 
                     {(project.city ||
                       project.state) && (
-                      <InfoItem>
-                        <InfoLabel>
-                          Local
-                        </InfoLabel>
+                        <InfoItem>
+                          <InfoLabel>
+                            Local
+                          </InfoLabel>
 
-                        <InfoValue>
-                          {project.city}
-                          {project.city &&
-                          project.state
-                            ? " / "
-                            : ""}
-                          {project.state}
-                        </InfoValue>
-                      </InfoItem>
-                    )}
+                          <InfoValue>
+                            {project.city}
+                            {project.city &&
+                              project.state
+                              ? " / "
+                              : ""}
+                            {project.state}
+                          </InfoValue>
+                        </InfoItem>
+                      )}
 
                     {project.year && (
                       <InfoItem>
@@ -662,7 +718,29 @@ export default function ProjetoDetalhe() {
           </DescriptionCard>
         </DescriptionSection>
 
-                {galleryImages.length > 0 && (
+        {project.content?.trim() && (
+          <ContentSection>
+            <ContentCard>
+              <ContentTitle>
+                Sobre o projeto
+              </ContentTitle>
+
+              <ContentText>
+                {project.content
+                  .split(/\n\s*\n/)
+                  .map(
+                    (paragraph, index) => (
+                      <p key={index}>
+                        {paragraph.trim()}
+                      </p>
+                    )
+                  )}
+              </ContentText>
+            </ContentCard>
+          </ContentSection>
+        )}
+
+        {galleryImages.length > 0 && (
           <GallerySection>
             <GalleryHeader>
               <GalleryTitle>
@@ -690,11 +768,9 @@ export default function ProjetoDetalhe() {
                         index
                       )
                     }
-                    aria-label={`Abrir imagem ${
-                      index + 1
-                    } de ${
-                      project.title
-                    }`}
+                    aria-label={`Abrir imagem ${index + 1
+                      } de ${project.title
+                      }`}
                   >
                     <GalleryImage
                       src={
@@ -702,8 +778,7 @@ export default function ProjetoDetalhe() {
                       }
                       alt={
                         image.alt ||
-                        `${project.title} ${
-                          index + 1
+                        `${project.title} ${index + 1
                         }`
                       }
                       loading="lazy"
@@ -715,7 +790,7 @@ export default function ProjetoDetalhe() {
           </GallerySection>
         )}
 
-                {selectedImage && (
+        {selectedImage && (
           <ModalOverlay
             onClick={closeImage}
           >
