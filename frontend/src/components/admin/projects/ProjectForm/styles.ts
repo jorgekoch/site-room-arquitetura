@@ -175,13 +175,35 @@ export const ImageCard = styled.div`
     cursor: pointer;
 
     background: ${({ theme }) =>
-      theme.colors.danger};
+    theme.colors.danger};
 
     color: white;
 
     font-size: .85rem;
   }
 `;
+
+export const CoverRemoveButton = styled.button`
+  align-self: flex-start;
+
+  width: auto;
+
+  border: none;
+
+  border-radius: 8px;
+
+  padding: 10px;
+
+  cursor: pointer;
+
+  background: ${({ theme }) =>
+    theme.colors.danger};
+
+  color: white;
+
+  font-size: 0.85rem;
+`;
+
 export const CoverPreview = styled.img`
   width: 260px;
 

@@ -49,17 +49,14 @@ export function ProjectCover({
             }}
           />
 
-          <button
+          <S.CoverRemoveButton
             type="button"
             onClick={onRemove}
             disabled={uploading}
-            style={{
-              display: "block",
-              marginTop: "12px",
-            }}
+            aria-label="Remover imagem de capa"
           >
             Remover imagem de capa
-          </button>
+          </S.CoverRemoveButton>
         </>
       )}
     </S.Group>
