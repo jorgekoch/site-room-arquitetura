@@ -85,4 +85,23 @@ export async function updateSiteSettings(
   }
 
   return responseData.settings;
+  
+}
+
+export async function getPublicSiteSettings(): Promise<SiteSettings> {
+  const response =
+    await publicApiFetch(
+      "/settings"
+    );
+
+  if (!response.ok) {
+    throw new Error(
+      "Não foi possível carregar as configurações públicas."
+    );
+  }
+
+  const data =
+    await response.json();
+
+  return data.settings;
 }
