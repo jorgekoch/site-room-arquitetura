@@ -10,10 +10,14 @@ interface Props {
   uploading: boolean;
 
   onUpload(
-    event: ChangeEvent<HTMLInputElement>
+    event: ChangeEvent
   ): void;
 
   onRemove(index: number): void;
+
+  maxProjectImages: number;
+
+  maxProjectImageSizeMb: number;
 }
 
 export function ProjectGallery({
@@ -21,13 +25,13 @@ export function ProjectGallery({
   uploading,
   onUpload,
   onRemove,
+  maxProjectImages,
+  maxProjectImageSizeMb,
 }: Props) {
   return (
     <>
       <S.Group>
-        <label htmlFor="project-gallery">
-          Galeria
-        </label>
+        Galeria
 
         <input
           id="project-gallery"
@@ -35,13 +39,20 @@ export function ProjectGallery({
           type="file"
           accept=".jpg,.jpeg,.png,.webp,.avif"
           onChange={onUpload}
-          disabled={uploading}
+          disabled={
+            uploading ||
+            images.length >=
+              maxProjectImages
+          }
         />
 
         <small>
           Formatos permitidos: JPG, PNG,
-          WebP e AVIF. Máximo de 10 MB
-          por imagem e 20 imagens no total.
+          WebP e AVIF. Máximo de{" "}
+          {maxProjectImageSizeMb} MB
+          por imagem e{" "}
+          {maxProjectImages} imagens no
+          total.
         </small>
 
         {uploading && (
@@ -62,7 +73,9 @@ export function ProjectGallery({
                 }
               >
                 <img
-                  src={image.imageUrl}
+                  src={
+                    image.imageUrl
+                  }
                   alt={
                     image.alt ||
                     `Imagem ${index + 1} do projeto`
@@ -74,7 +87,9 @@ export function ProjectGallery({
                   onClick={() =>
                     onRemove(index)
                   }
-                  disabled={uploading}
+                  disabled={
+                    uploading
+                  }
                   aria-label={`Remover imagem ${index + 1} da galeria`}
                 >
                   Remover

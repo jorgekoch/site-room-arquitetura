@@ -2,9 +2,12 @@ import {
   ChangeEvent,
   useEffect,
   useRef,
+  useState,
 } from "react";
 
 import { useForm } from "react-hook-form";
+
+import { getSiteSettings } from "../../../../lib/settings";
 
 import {
   Project,
@@ -38,37 +41,25 @@ interface Props {
   >;
 }
 
-const MAX_IMAGE_SIZE =
-  10 * 1024 * 1024;
-
-const MAX_GALLERY_IMAGES = 20;
-
-function normalizeSlug(
-  value: string
-) {
-  return value
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(
-      /[\u0300-\u036f]/g,
-      ""
-    )
-    .replace(
-      /[^a-z0-9]+/g,
-      "-"
-    )
-    .replace(
-      /^-+|-+$/g,
-      "");
-}
-
 export function ProjectForm({
   project,
   onSubmit,
   loading = false,
   fieldErrors = {},
 }: Props) {
+  const [
+    maxImageSizeMb,
+    setMaxImageSizeMb,
+  ] = useState(10);
+
+  const [
+    maxGalleryImages,
+    setMaxGalleryImages,
+  ] = useState(20);
+
+  const MAX_IMAGE_SIZE =
+    maxImageSizeMb * 1024 * 1024;
+
   const {
     register,
     handleSubmit,
@@ -97,6 +88,42 @@ export function ProjectForm({
       images: [],
     },
   });
+
+  /**
+   * Carrega as configurações
+   * do site.
+   */
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSettings() {
+      try {
+        const settings =
+          await getSiteSettings();
+
+        if (!cancelled) {
+          setMaxImageSizeMb(
+            settings.maxProjectImageSizeMb
+          );
+
+          setMaxGalleryImages(
+            settings.maxProjectImages
+          );
+        }
+      } catch (error) {
+        console.error(
+          "Erro ao carregar configurações do site:",
+          error
+        );
+      }
+    }
+
+    loadSettings();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const {
     upload,
@@ -292,7 +319,7 @@ export function ProjectForm({
       MAX_IMAGE_SIZE
     ) {
       alert(
-        "A imagem de capa deve ter no máximo 10 MB."
+        `A imagem de capa deve ter no máximo ${maxImageSizeMb} MB.`
       );
 
       event.target.value = "";
@@ -343,10 +370,10 @@ export function ProjectForm({
     if (
       images.length +
         files.length >
-      MAX_GALLERY_IMAGES
+      maxGalleryImages
     ) {
       alert(
-        `Um projeto pode ter no máximo ${MAX_GALLERY_IMAGES} imagens na galeria.`
+        `Um projeto pode ter no máximo ${maxGalleryImages} imagens na galeria.`
       );
 
       event.target.value = "";
@@ -376,7 +403,7 @@ export function ProjectForm({
           MAX_IMAGE_SIZE
         ) {
           alert(
-            `A imagem "${file.name}" deve ter no máximo 10 MB.`
+            `A imagem "${file.name}" deve ter no máximo ${maxImageSizeMb} MB.`
           );
 
           continue;
@@ -498,7 +525,8 @@ export function ProjectForm({
   function handleFormSubmit(
     data: ProjectFormData
   ) {
-    const normalizedData: ProjectFormData =
+    const normalizedData:
+      ProjectFormData =
       {
         ...data,
 
@@ -522,7 +550,7 @@ export function ProjectForm({
       normalizedData
     );
   }
-  
+
   return (
     <S.Form
       onSubmit={handleSubmit(
@@ -572,6 +600,12 @@ export function ProjectForm({
         onRemove={
           removeImage
         }
+        maxProjectImages={
+          maxGalleryImages
+        }
+        maxProjectImageSizeMb={
+          maxImageSizeMb
+        }
       />
 
       <ProjectSettings
@@ -599,4 +633,24 @@ export function ProjectForm({
       </S.Actions>
     </S.Form>
   );
+}
+
+function normalizeSlug(
+  value: string
+) {
+  return value
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(
+      /[\u0300-\u036f]/g,
+      ""
+    )
+    .replace(
+      /[^a-z0-9]+/g,
+      "-"
+    )
+    .replace(
+      /^-+|-+$/g,
+      "");
 }
