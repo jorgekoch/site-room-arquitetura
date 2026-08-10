@@ -1,5 +1,6 @@
 import { Router } from "express";
 
+import { ensureAuthenticated } from "../../middlewares/ensureAuthenticated";
 import { ensureOwner } from "../../middlewares/ensureOwner";
 
 import { SettingsController } from "./settings.controller";
@@ -21,6 +22,7 @@ settingsRoutes.get(
 
 settingsRoutes.patch(
   "/",
+  ensureAuthenticated,
   ensureOwner,
   (request, response) =>
     controller.update(
