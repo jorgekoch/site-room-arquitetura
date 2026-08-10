@@ -39,6 +39,11 @@ export default function AdminProjetos() {
   >();
 
   const [
+    saving,
+    setSaving,
+  ] = useState(false);
+
+  const [
     fieldErrors,
     setFieldErrors,
   ] = useState<
@@ -61,7 +66,7 @@ export default function AdminProjetos() {
   ) {
     try {
       setFieldErrors({});
-      setActionError("");
+      setSaving(true);
 
       if (editingProject) {
         const {
@@ -82,6 +87,7 @@ export default function AdminProjetos() {
 
         const normalizedProjectData = {
           ...projectData,
+
           ...(coverWasChanged
             ? {
               featuredImage:
@@ -111,9 +117,7 @@ export default function AdminProjetos() {
           }
         );
 
-        setEditingProject(
-          undefined
-        );
+        setEditingProject(undefined);
 
         return;
       }
@@ -122,34 +126,27 @@ export default function AdminProjetos() {
     } catch (error) {
       console.error(error);
 
-      const apiError =
-        error as {
-          issues?: {
-            fieldErrors?: Record<
-              string,
-              string[]
-            >;
-          };
+      const apiError = error as {
+        issues?: {
+          fieldErrors?: Record<
+            string,
+            string[]
+          >;
         };
+      };
 
       const errors =
-        apiError.issues
-          ?.fieldErrors;
+        apiError.issues?.fieldErrors;
 
       if (errors) {
         const normalizedErrors =
           Object.fromEntries(
-            Object.entries(
-              errors
-            ).map(
-              ([
+            Object.entries(errors).map(
+              ([field, messages]) => [
                 field,
-                messages,
-              ]) => [
-                  field,
-                  messages?.[0] ||
-                  "Campo inválido.",
-                ]
+                messages?.[0] ||
+                "Campo inválido.",
+              ]
             )
           );
 
@@ -160,11 +157,13 @@ export default function AdminProjetos() {
         return;
       }
 
-      setActionError(
+      window.alert(
         error instanceof Error
           ? error.message
           : "Não foi possível salvar o projeto."
       );
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -303,7 +302,7 @@ export default function AdminProjetos() {
       <ProjectForm
         project={editingProject}
         onSubmit={handleSubmit}
-        loading={loading}
+        loading={saving}
         fieldErrors={fieldErrors}
       />
 
