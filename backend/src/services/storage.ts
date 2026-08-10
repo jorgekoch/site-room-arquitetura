@@ -1,6 +1,7 @@
 import { AppError } from "../utils/AppError";
 import {
   DeleteObjectCommand,
+  GetObjectCommand,
   HeadObjectCommand,
   ListObjectsV2Command,
   PutObjectCommand,
@@ -24,6 +25,11 @@ export interface SignedUploadResult {
   uploadUrl: string;
   storageKey: string;
   fileUrl: string;
+}
+
+export interface PrivateSignedUploadResult {
+  uploadUrl: string;
+  storageKey: string;
 }
 
 export interface UploadedFileResult {
@@ -138,6 +144,32 @@ export class StorageService {
     };
   }
 
+  /** Gera uma URL de upload para o bucket privado de documentos de clientes. */
+  async generatePrivateSignedUploadUrl({
+    folder,
+    fileName,
+    fileType,
+  }: SignedUploadOptions): Promise<PrivateSignedUploadResult> {
+    const safeFileName = fileName
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/[^a-zA-Z0-9._-]/g, "");
+
+    const extension = path.extname(safeFileName);
+    const storageKey = `${folder}/${randomUUID()}${extension}`;
+    const command = new PutObjectCommand({
+      Bucket: env.r2PrivateBucket,
+      Key: storageKey,
+      ContentType: fileType,
+    });
+
+    return {
+      uploadUrl: await getSignedUrl(r2, command, { expiresIn: 600 }),
+      storageKey,
+    };
+  }
+
   async validateObject(
     storageKey: string,
     options: {
@@ -203,6 +235,48 @@ export class StorageService {
         "Arquivo não encontrado no armazenamento."
       );
     }
+  }
+
+  async validatePrivateObject(
+    storageKey: string,
+    options: { maxSize: number; allowedContentTypes: string[] }
+  ) {
+    const metadata = await this.getPrivateObjectMetadata(storageKey);
+
+    if (!options.allowedContentTypes.includes(metadata.contentType ?? "")) {
+      throw new AppError("Tipo de arquivo não permitido.", 400);
+    }
+
+    if (metadata.contentLength <= 0 || metadata.contentLength > options.maxSize) {
+      throw new AppError("O arquivo excede o tamanho permitido ou está vazio.", 400);
+    }
+
+    return metadata;
+  }
+
+  async getPrivateObjectMetadata(storageKey: string) {
+    try {
+      const result = await r2.send(new HeadObjectCommand({
+        Bucket: env.r2PrivateBucket,
+        Key: storageKey,
+      }));
+
+      return {
+        contentLength: result.ContentLength ?? 0,
+        contentType: result.ContentType ?? null,
+      };
+    } catch {
+      throw new AppError("Arquivo não encontrado no armazenamento privado.", 400);
+    }
+  }
+
+  async getPrivateDownloadUrl(storageKey: string): Promise<string> {
+    const command = new GetObjectCommand({
+      Bucket: env.r2PrivateBucket,
+      Key: storageKey,
+    });
+
+    return getSignedUrl(r2, command, { expiresIn: 300 });
   }
 
   /**

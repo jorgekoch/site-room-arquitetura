@@ -96,18 +96,16 @@ export class ProposalService {
         projectDetailsJson:
           projectDetails,
 
-        referenceFilesJson:
-          data.referenceFilesJson?.length
-            ? data.referenceFilesJson
-            : Prisma.JsonNull,
+        referenceFilesJson: data.referenceFilesJson?.length
+          ? data.referenceFilesJson.map(({ url: _url, ...file }) => file)
+          : Prisma.JsonNull,
 
         pixKeySnapshot:
           data.paymentMethod === "pix"
             ? env.pixKey || null
             : null,
 
-        paymentProofUrl:
-          data.paymentProofUrl || null,
+        paymentProofUrl: null,
 
         paymentProofStorageKey:
           data.paymentProofStorageKey ||
@@ -221,7 +219,7 @@ export class ProposalService {
       | "payment-proofs"
       | "references"
   ) {
-    return storage.generateSignedUrl({
+    return storage.generatePrivateSignedUploadUrl({
       folder: `proposals/${folder}`,
 
       fileName,
@@ -244,18 +242,59 @@ export class ProposalService {
       );
     }
 
+    await storage.validatePrivateObject(storageKey, {
+      maxSize: 10 * 1024 * 1024,
+      allowedContentTypes: ["application/pdf", "image/jpeg", "image/png", "image/webp"],
+    });
+
     return this.repository.update(id, {
       paymentProofStorageKey:
         storageKey,
 
-      paymentProofUrl:
-        storage.getPublicUrl(
-          storageKey
-        ),
+      paymentProofUrl: null,
 
       paymentProofUploadedAt:
         new Date(),
     });
+  }
+
+  async validateUploadedFiles(data: CreateProposalInput) {
+    if (data.paymentProofStorageKey) {
+      await storage.validatePrivateObject(data.paymentProofStorageKey, {
+        maxSize: 10 * 1024 * 1024,
+        allowedContentTypes: ["application/pdf", "image/jpeg", "image/png", "image/webp"],
+      });
+    }
+
+    await Promise.all(data.referenceFilesJson.map((file) =>
+      storage.validatePrivateObject(file.storageKey, {
+        maxSize: 15 * 1024 * 1024,
+        allowedContentTypes: ["application/pdf", "image/jpeg", "image/png", "image/webp"],
+      })
+    ));
+  }
+
+  async getPaymentProofDownloadUrl(id: string) {
+    const proposal = await this.findById(id);
+    if (!proposal?.paymentProofStorageKey) {
+      throw new AppError("Comprovante não encontrado.", 404);
+    }
+
+    return storage.getPrivateDownloadUrl(proposal.paymentProofStorageKey);
+  }
+
+  async getReferenceFileDownloadUrl(id: string, index: number) {
+    const proposal = await this.findById(id);
+    const files = Array.isArray(proposal?.referenceFilesJson)
+      ? proposal.referenceFilesJson
+      : [];
+    const file = files[index];
+
+    if (!file || typeof file !== "object" || !("storageKey" in file) || typeof file.storageKey !== "string") {
+      throw new AppError("Arquivo de referência não encontrado.", 404);
+    }
+
+    return storage.getPrivateDownloadUrl(file.storageKey);
   }
 
   /*

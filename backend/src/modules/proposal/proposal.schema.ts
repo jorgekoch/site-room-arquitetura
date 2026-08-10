@@ -47,6 +47,7 @@ export const createProposalSchema = z.object({
   paymentMethod: z.string().min(1),
   paymentMethodOther: z.string().optional().nullable(),
 
+  // A URL recebida em versões antigas é ignorada; documentos ficam privados.
   paymentProofUrl: z.string().url().nullable().optional(),
   paymentProofStorageKey: storageKeySchema.nullable().optional(),
   referenceFilesJson: z
@@ -56,7 +57,7 @@ export const createProposalSchema = z.object({
         fileName: z.string(),
         mimeType: z.string(),
         size: z.number(),
-        url: z.string().url(),
+        url: z.string().url().optional(),
         storageKey: storageKeySchema,
       })
     )

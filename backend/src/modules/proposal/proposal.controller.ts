@@ -1,6 +1,4 @@
 import type { Request, Response } from "express";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import {
   createProposalSchema,
   uploadUrlSchema,
@@ -10,8 +8,6 @@ import {
 } from "./proposal.schema";
 import { ProposalService } from "./proposal.service";
 import { AppError } from "../../utils/AppError";
-import { r2 } from "../../config/r2";
-import { env } from "../../config/env";
 
 const proposalService = new ProposalService();
 
@@ -25,29 +21,16 @@ function parseJsonField<T>(value: unknown, fallback: T): T {
   }
 }
 
-function getPublicFileUrl(storageKey: string) {
-  return `${env.r2PublicUrl.replace(/\/$/, "")}/${storageKey}`;
-}
-
-function ensureStoredFilesBelongToR2(
+function ensureStoredFilesHavePrivateKeys(
   data: ReturnType<typeof createProposalSchema.parse>
 ) {
-  if (data.paymentProofUrl || data.paymentProofStorageKey) {
-    const isValidPaymentProof =
-      Boolean(data.paymentProofUrl) &&
-      Boolean(data.paymentProofStorageKey) &&
-      data.paymentProofStorageKey!.startsWith("proposals/payment-proofs/") &&
-      data.paymentProofUrl === getPublicFileUrl(data.paymentProofStorageKey!);
-
-    if (!isValidPaymentProof) {
+  if (data.paymentProofStorageKey && !data.paymentProofStorageKey.startsWith("proposals/payment-proofs/")) {
       throw new AppError("Comprovante de pagamento inválido.", 400);
-    }
   }
 
   const hasInvalidReference = data.referenceFilesJson.some(
     (file) =>
-      !file.storageKey.startsWith("proposals/references/") ||
-      file.url !== getPublicFileUrl(file.storageKey)
+      !file.storageKey.startsWith("proposals/references/")
   );
 
   if (hasInvalidReference) {
@@ -111,7 +94,8 @@ export class ProposalController {
     };
 
     const data = createProposalSchema.parse(body);
-    ensureStoredFilesBelongToR2(data);
+    ensureStoredFilesHavePrivateKeys(data);
+    await proposalService.validateUploadedFiles(data);
 
     const proposal = await proposalService.create(data);
 
@@ -183,7 +167,7 @@ export class ProposalController {
     });
   }
 
-async updatePaymentProof(
+  async updatePaymentProof(
   request: Request,
   response: Response
 ) {
@@ -214,6 +198,20 @@ async updatePaymentProof(
   });
 }
 
+  async getPaymentProofDownload(request: Request, response: Response) {
+    const { id } = request.params;
+    if (!id || Array.isArray(id)) throw new AppError("ID de solicitação inválido", 400);
+    return response.json({ url: await proposalService.getPaymentProofDownloadUrl(id) });
+  }
+
+  async getReferenceFileDownload(request: Request, response: Response) {
+    const { id, index } = request.params;
+    const fileIndex = Number(index);
+    if (!id || Array.isArray(id) || !Number.isSafeInteger(fileIndex) || fileIndex < 0) {
+      throw new AppError("Arquivo de referência inválido", 400);
+    }
+    return response.json({ url: await proposalService.getReferenceFileDownloadUrl(id, fileIndex) });
+  }
 
 
 }

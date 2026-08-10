@@ -1,20 +1,35 @@
 import { Router } from "express";
 import { ProposalController } from "./proposal.controller";
 import { ensureAuthenticated } from "../../middlewares/ensureAuthenticated";
+import { proposalSubmissionRateLimit, proposalUploadRateLimit } from "../../middlewares/proposalRateLimit";
 
 const proposalRoutes = Router();
 const proposalController = new ProposalController();
 
 proposalRoutes.post(
   "/upload-url",
+  proposalUploadRateLimit,
   (request, response) =>
     proposalController.getUploadUrl(request, response)
 );
 
 proposalRoutes.post(
   "/",
+  proposalSubmissionRateLimit,
   (request, response) =>
     proposalController.create(request, response)
+);
+
+proposalRoutes.get(
+  "/:id/payment-proof/download",
+  ensureAuthenticated,
+  (request, response) => proposalController.getPaymentProofDownload(request, response)
+);
+
+proposalRoutes.get(
+  "/:id/reference-files/:index/download",
+  ensureAuthenticated,
+  (request, response) => proposalController.getReferenceFileDownload(request, response)
 );
 
 proposalRoutes.get(

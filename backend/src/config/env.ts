@@ -62,6 +62,9 @@ const envSchema = z.object({
 
   r2Bucket: z.string().trim().min(1),
 
+  // Bucket sem acesso público para documentos enviados por clientes.
+  r2PrivateBucket: z.string().trim().min(1),
+
   r2Endpoint: z
     .string()
     .trim()
@@ -117,6 +120,8 @@ export const env = envSchema.parse({
   r2Endpoint: process.env.R2_ENDPOINT,
 
   r2Bucket: process.env.R2_BUCKET,
+
+  r2PrivateBucket: process.env.R2_PRIVATE_BUCKET,
 
   r2AccessKeyId: process.env.R2_ACCESS_KEY_ID,
 
