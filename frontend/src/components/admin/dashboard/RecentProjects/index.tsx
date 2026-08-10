@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Project } from "../../../../types/project";
 
 import * as S from "./styles";
+import { getProjectCategoryLabel } from "../../../../utils/projectCategory";
 
 interface RecentProjectsProps {
   projects: Project[];
@@ -56,7 +57,7 @@ export function RecentProjects({
                   </strong>
 
                   <span>
-                    {project.category}
+                    {getProjectCategoryLabel(project.category)}
                     {project.city
                       ? ` · ${project.city}`
                       : ""}

@@ -29,6 +29,31 @@ export function ProjectInfo({
   const slugRegister =
     register("slug");
 
+  const yearRegister = register("year", {
+    required: "O ano é obrigatório.",
+    setValueAs: (value) =>
+      value === "" ? undefined : Number(value),
+    validate: (value) => {
+      if (
+        value === undefined ||
+        value === null ||
+        Number.isNaN(value)
+      ) {
+        return "Informe um ano válido.";
+      }
+
+      if (
+        !Number.isInteger(value) ||
+        value < 1900 ||
+        value > 2100
+      ) {
+        return "Informe um ano válido entre 1900 e 2100.";
+      }
+
+      return true;
+    },
+  });
+
   return (
     <>
       <S.Row>
@@ -120,18 +145,39 @@ export function ProjectInfo({
         </S.Group>
 
         <S.Group>
-          <label>Ano</label>
+          <label htmlFor="project-year">
+            Ano
+          </label>
 
           <input
-            type="number"
-            {...register("year", {
-              valueAsNumber: true,
-            })}
+            id="project-year"
+            type="text"
+            inputMode="numeric"
+            maxLength={4}
+            {...yearRegister}
+            onChange={(event) => {
+              const value =
+                event.target.value.replace(
+                  /\D/g,
+                  ""
+                );
+
+              event.target.value =
+                value.slice(0, 4);
+
+              yearRegister.onChange(event);
+            }}
           />
 
           {errors.year && (
             <S.FieldError>
               {errors.year.message}
+            </S.FieldError>
+          )}
+
+          {fieldErrors.year && (
+            <S.FieldError>
+              {fieldErrors.year}
             </S.FieldError>
           )}
         </S.Group>

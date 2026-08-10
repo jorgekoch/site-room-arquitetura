@@ -16,13 +16,14 @@ import type { ProposalStatus } from "../../../types/proposal";
 import { proposalStatusOptions } from "../../../data/admin";
 
 import * as S from "./styles";
+import { getProposalProjectTypeLabel } from "../../../utils/proposalLabels";
 
 export default function AdminPropostas() {
   const [searchParams] = useSearchParams();
 
   const proposalIdFromUrl =
-      searchParams.get("proposal");
-      
+    searchParams.get("proposal");
+
   const {
     proposals,
     selectedProposal,
@@ -189,7 +190,7 @@ export default function AdminPropostas() {
       setMessage(
         "Status atualizado com sucesso."
       );
-      
+
       window.dispatchEvent(
         new Event("admin-notifications-updated")
       );
@@ -275,7 +276,9 @@ export default function AdminPropostas() {
                 key={option}
                 value={option}
               >
-                {option}
+                {getProposalProjectTypeLabel(
+                  option
+                )}
               </option>
             )
           )}
@@ -336,7 +339,9 @@ export default function AdminPropostas() {
                     </S.ItemMeta>
 
                     <S.ItemMeta>
-                      {proposal.projectType}
+                      {getProposalProjectTypeLabel(
+                        proposal.projectType
+                      )}
                       {" • "}
                       {
                         proposalStatusOptions.find(
@@ -344,7 +349,7 @@ export default function AdminPropostas() {
                             option.value ===
                             proposal.status
                         )?.label ??
-                          proposal.status
+                        proposal.status
                       }
                     </S.ItemMeta>
                   </S.ItemButton>

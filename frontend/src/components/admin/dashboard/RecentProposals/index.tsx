@@ -4,6 +4,12 @@ import { Proposal } from "../../../../types/proposal";
 
 import * as S from "./styles";
 
+import {
+  getProposalProjectTypeLabel,
+  getProposalStatusLabel,
+} from "../../../../utils/proposalLabels";
+
+
 interface RecentProposalsProps {
   proposals: Proposal[];
 }
@@ -52,13 +58,17 @@ export function RecentProposals({
                   </strong>
 
                   <span>
-                    {proposal.projectType}
+                    {getProposalProjectTypeLabel(
+                      proposal.projectType
+                    )}
                   </span>
                 </div>
               </S.ProposalInfo>
 
               <S.Status>
-                {proposal.status}
+                {getProposalStatusLabel(
+                  proposal.status
+                )}
               </S.Status>
             </S.Item>
           ))}

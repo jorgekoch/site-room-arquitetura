@@ -94,19 +94,19 @@ const SearchInput = styled.input`
 
   border-radius:
     ${({ theme }) =>
-      theme.radius.md};
+    theme.radius.md};
 
   border: 1px solid
     ${({ theme }) =>
-      theme.colors.border};
+    theme.colors.border};
 
   background:
     ${({ theme }) =>
-      theme.colors.backgroundSoft};
+    theme.colors.backgroundSoft};
 
   color:
     ${({ theme }) =>
-      theme.colors.text};
+    theme.colors.text};
 
   font-family: inherit;
 
@@ -115,18 +115,18 @@ const SearchInput = styled.input`
   &:focus {
     border-color:
       ${({ theme }) =>
-        theme.colors.primary};
+    theme.colors.primary};
 
     box-shadow:
       0 0 0 3px
       ${({ theme }) =>
-        theme.colors.primaryRing};
+    theme.colors.primaryRing};
   }
 
   &::placeholder {
     color:
       ${({ theme }) =>
-        theme.colors.textMuted};
+    theme.colors.textMuted};
   }
 `;
 
@@ -147,25 +147,25 @@ const FilterButton = styled.button<{
 
   border-radius:
     ${({ theme }) =>
-      theme.radius.pill};
+    theme.radius.pill};
 
   border: 1px solid
     ${({ theme, $active }) =>
-      $active
-        ? theme.colors.primary
-        : theme.colors.border};
+    $active
+      ? theme.colors.primary
+      : theme.colors.border};
 
   background:
     ${({ theme, $active }) =>
-      $active
-        ? theme.colors.primary
-        : "transparent"};
+    $active
+      ? theme.colors.primary
+      : "transparent"};
 
   color:
     ${({ theme, $active }) =>
-      $active
-        ? theme.colors.primaryContrast
-        : theme.colors.text};
+    $active
+      ? theme.colors.primaryContrast
+      : theme.colors.text};
 
   cursor: pointer;
 
@@ -173,7 +173,7 @@ const FilterButton = styled.button<{
 
   font-size:
     ${({ theme }) =>
-      theme.fontSizes.xs};
+    theme.fontSizes.xs};
 
   font-weight: 600;
 
@@ -185,7 +185,7 @@ const FilterButton = styled.button<{
   &:hover {
     border-color:
       ${({ theme }) =>
-        theme.colors.primary};
+    theme.colors.primary};
   }
 `;
 
@@ -258,10 +258,10 @@ const SmallButton = styled.button`
 
 const Badge = styled.span<{
   $variant:
-    | "success"
-    | "warning"
-    | "neutral"
-    | "primary";
+  | "success"
+  | "warning"
+  | "neutral"
+  | "primary";
 }>`
   display: inline-flex;
 
@@ -273,64 +273,64 @@ const Badge = styled.span<{
 
   border-radius:
     ${({ theme }) =>
-      theme.radius.pill};
+    theme.radius.pill};
 
   font-size:
     ${({ theme }) =>
-      theme.fontSizes.xs};
+    theme.fontSizes.xs};
 
   font-weight: 600;
 
   background:
     ${({ theme, $variant }) => {
-      if ($variant === "success") {
-        return theme.colors.successSoft;
-      }
+    if ($variant === "success") {
+      return theme.colors.successSoft;
+    }
 
-      if ($variant === "warning") {
-        return theme.colors.secondarySoft;
-      }
+    if ($variant === "warning") {
+      return theme.colors.secondarySoft;
+    }
 
-      if ($variant === "primary") {
-        return theme.colors.primarySoft;
-      }
+    if ($variant === "primary") {
+      return theme.colors.primarySoft;
+    }
 
-      return theme.colors.backgroundSoft;
-    }};
+    return theme.colors.backgroundSoft;
+  }};
 
   color:
     ${({ theme, $variant }) => {
-      if ($variant === "success") {
-        return theme.colors.success;
-      }
+    if ($variant === "success") {
+      return theme.colors.success;
+    }
 
-      if ($variant === "warning") {
-        return theme.colors.secondary;
-      }
+    if ($variant === "warning") {
+      return theme.colors.secondary;
+    }
 
-      if ($variant === "primary") {
-        return theme.colors.primary;
-      }
+    if ($variant === "primary") {
+      return theme.colors.primary;
+    }
 
-      return theme.colors.textSoft;
-    }};
+    return theme.colors.textSoft;
+  }};
 
   border: 1px solid
     ${({ theme, $variant }) => {
-      if ($variant === "success") {
-        return theme.colors.successBorder;
-      }
+    if ($variant === "success") {
+      return theme.colors.successBorder;
+    }
 
-      if ($variant === "warning") {
-        return theme.colors.secondaryBorder;
-      }
+    if ($variant === "warning") {
+      return theme.colors.secondaryBorder;
+    }
 
-      if ($variant === "primary") {
-        return theme.colors.primaryBorder;
-      }
+    if ($variant === "primary") {
+      return theme.colors.primaryBorder;
+    }
 
-      return theme.colors.border;
-    }};
+    return theme.colors.border;
+  }};
 `;
 
 const Message = styled.p<{ $error?: boolean }>`
@@ -477,8 +477,8 @@ export default function AdminUsuarios() {
     });
 
   const isOwner = (admin: AdminUserItem) =>
-  admin.email.toLowerCase() ===
-  "manulopes.arq@gmail.com";
+    admin.email.toLowerCase() ===
+    "manulopes.arq@gmail.com";
 
   async function handleRemoveAdmin() {
     if (!adminToRemove) {
@@ -653,11 +653,11 @@ export default function AdminUsuarios() {
                           }
                         >
                           <option value="OWNER">
-                            Owner
+                            Proprietário
                           </option>
 
                           <option value="ADMIN">
-                            Admin
+                            Administrador
                           </option>
                         </Select>
                       )}
@@ -737,7 +737,7 @@ export default function AdminUsuarios() {
                                     updateAdminRole(
                                       admin.id,
                                       roleDrafts[
-                                        admin.id
+                                      admin.id
                                       ] || admin.role
                                     ),
                                   "Papel atualizado com sucesso."

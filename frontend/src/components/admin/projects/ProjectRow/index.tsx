@@ -9,6 +9,7 @@ import { Project } from "../../../../types/project";
 import { ProjectStatusBadge } from "../ProjectStatusBadge";
 
 import * as S from "./styles";
+import { getProjectCategoryLabel } from "../../../../utils/projectCategory";
 
 interface Props {
   project: Project;
@@ -27,7 +28,7 @@ export function ProjectRow({
         </strong>
 
         <span>
-          {project.category}
+          {getProjectCategoryLabel(project.category)}
         </span>
 
         <small>

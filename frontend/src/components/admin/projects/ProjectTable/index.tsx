@@ -9,6 +9,7 @@ import {
 import { Project } from "../../../../types/project";
 
 import * as S from "./styles";
+import { getProjectCategoryLabel } from "../../../../utils/projectCategory";
 
 interface Props {
   projects: Project[];
@@ -113,7 +114,7 @@ export function ProjectTable({
 
               <S.Badge>
 
-                {project.category}
+                {getProjectCategoryLabel(project.category)}
 
               </S.Badge>
 

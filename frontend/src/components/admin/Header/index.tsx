@@ -5,6 +5,8 @@ import {
   Search,
 } from "lucide-react";
 
+import { getProjectCategoryLabel } from "../../../utils/projectCategory";
+
 import { useDashboardNotifications } from "../../../hooks/useDashboardNotifications";
 
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -304,10 +306,10 @@ export function Header() {
   }
 
   function openNotifications() {
-  setNotificationsOpen(
-    (current) => !current
-  );
-}
+    setNotificationsOpen(
+      (current) => !current
+    );
+  }
   function openNotification(
     type: "PROPOSAL" | "ADMIN_REQUEST",
     referenceId: string
@@ -330,10 +332,10 @@ export function Header() {
   function roleLabel(role?: string) {
     switch (role) {
       case "OWNER":
-        return "Owner";
+        return "Proprietário";
 
       case "ADMIN":
-        return "Admin";
+        return "Administrador";
 
       default:
         return role ?? "Usuário";
@@ -405,11 +407,13 @@ export function Header() {
 
                             <span>
                               {project.city &&
-                              project.state
+                                project.state
                                 ? `${project.city} / ${project.state}`
                                 : project.city ??
-                                  project.state ??
-                                  project.category}
+                                project.state ??
+                                getProjectCategoryLabel(
+                                  project.category
+                                )}
                             </span>
                           </S.SearchResultContent>
                         </S.SearchResult>
@@ -453,91 +457,91 @@ export function Header() {
         </S.SearchWrapper>
 
         <S.NotificationWrapper
-  ref={notificationRef}
->
-  <S.IconButton
-    type="button"
-    aria-label="Notificações"
-    aria-expanded={notificationsOpen}
-    onClick={openNotifications}
-  >
-    <Bell size={18} />
+          ref={notificationRef}
+        >
+          <S.IconButton
+            type="button"
+            aria-label="Notificações"
+            aria-expanded={notificationsOpen}
+            onClick={openNotifications}
+          >
+            <Bell size={18} />
 
-    {notifications.total > 0 && (
-      <S.NotificationBadge>
-        {notifications.total > 99
-          ? "99+"
-          : notifications.total}
-      </S.NotificationBadge>
-    )}
-  </S.IconButton>
+            {notifications.total > 0 && (
+              <S.NotificationBadge>
+                {notifications.total > 99
+                  ? "99+"
+                  : notifications.total}
+              </S.NotificationBadge>
+            )}
+          </S.IconButton>
 
-    {notificationsOpen && (
-  <S.NotificationDropdown>
-    <S.NotificationHeader>
-      <strong>
-        Notificações
-      </strong>
-
-      {notifications.total > 0 && (
-        <span>
-          {notifications.total}
-        </span>
-      )}
-    </S.NotificationHeader>
-
-    {notifications.total === 0 ? (
-      <S.EmptyNotification>
-        <Bell size={20} />
-
-        <span>
-          Nenhuma nova notificação.
-        </span>
-      </S.EmptyNotification>
-    ) : (
-      <>
-        {notifications.notifications.map(
-          (notification) => (
-            <S.NotificationItem
-              key={`${notification.type}-${notification.id}`}
-              type="button"
-              onClick={() =>
-                openNotification(
-                  notification.type,
-                  notification.referenceId
-                )
-              }
-            >
-              <S.NotificationIcon>
-                <Bell size={17} />
-              </S.NotificationIcon>
-
-              <S.NotificationContent>
+          {notificationsOpen && (
+            <S.NotificationDropdown>
+              <S.NotificationHeader>
                 <strong>
-                  {notification.title}
+                  Notificações
                 </strong>
 
-                <span>
-                  {notification.description}
-                </span>
+                {notifications.total > 0 && (
+                  <span>
+                    {notifications.total}
+                  </span>
+                )}
+              </S.NotificationHeader>
 
-                <small>
-                  {new Date(
-                    notification.createdAt
-                  ).toLocaleString("pt-BR", {
-                    dateStyle: "short",
-                    timeStyle: "short",
-                  })}
-                </small>
-              </S.NotificationContent>
-            </S.NotificationItem>
-          )
-        )}
-      </>
-    )}
-  </S.NotificationDropdown>
-)}
-  </S.NotificationWrapper>
+              {notifications.total === 0 ? (
+                <S.EmptyNotification>
+                  <Bell size={20} />
+
+                  <span>
+                    Nenhuma nova notificação.
+                  </span>
+                </S.EmptyNotification>
+              ) : (
+                <>
+                  {notifications.notifications.map(
+                    (notification) => (
+                      <S.NotificationItem
+                        key={`${notification.type}-${notification.id}`}
+                        type="button"
+                        onClick={() =>
+                          openNotification(
+                            notification.type,
+                            notification.referenceId
+                          )
+                        }
+                      >
+                        <S.NotificationIcon>
+                          <Bell size={17} />
+                        </S.NotificationIcon>
+
+                        <S.NotificationContent>
+                          <strong>
+                            {notification.title}
+                          </strong>
+
+                          <span>
+                            {notification.description}
+                          </span>
+
+                          <small>
+                            {new Date(
+                              notification.createdAt
+                            ).toLocaleString("pt-BR", {
+                              dateStyle: "short",
+                              timeStyle: "short",
+                            })}
+                          </small>
+                        </S.NotificationContent>
+                      </S.NotificationItem>
+                    )
+                  )}
+                </>
+              )}
+            </S.NotificationDropdown>
+          )}
+        </S.NotificationWrapper>
 
         <S.IconButton
           type="button"
