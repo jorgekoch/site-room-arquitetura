@@ -6,17 +6,11 @@ import {
 } from "../lib/settings";
 
 export function useSiteSettings() {
-  const [
-    settings,
-    setSettings,
-  ] = useState<SiteSettings | null>(
-    null
-  );
+  const [settings, setSettings] =
+    useState<SiteSettings | null>(null);
 
-  const [
-    loading,
-    setLoading,
-  ] = useState(true);
+  const [loading, setLoading] =
+    useState(true);
 
   useEffect(() => {
     let cancelled = false;

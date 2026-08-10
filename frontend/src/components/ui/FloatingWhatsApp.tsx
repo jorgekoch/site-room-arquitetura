@@ -1,28 +1,61 @@
 import styled from "styled-components";
-import { siteConfig } from "../../config/site";
+
+import { useSiteSettings } from "../../hooks/useSiteSettings";
 
 export function FloatingWhatsApp() {
+  const {
+    settings,
+  } = useSiteSettings();
+
+  const whatsapp =
+    settings?.whatsapp?.trim() || "";
+
+  if (!whatsapp) {
+    return null;
+  }
+
+  const whatsappNumber =
+    whatsapp.replace(/\D/g, "");
+
+  if (!whatsappNumber) {
+    return null;
+  }
+
+  const normalizedNumber =
+    whatsappNumber.startsWith("55")
+      ? whatsappNumber
+      : `55${whatsappNumber}`;
+
+  const whatsappUrl =
+    `https://wa.me/${normalizedNumber}`;
+
   return (
     <Button
-      href={siteConfig.contact.whatsapp}
+      href={whatsappUrl}
       target="_blank"
       rel="noreferrer"
       aria-label="Falar no WhatsApp"
     >
-      <Icon viewBox="0 0 32 32" aria-hidden="true">
-        <path d="M19.11 17.39c-.27-.14-1.58-.78-1.82-.87-.24-.09-.41-.14-.58.14-.17.27-.67.87-.82 1.05-.15.18-.31.2-.58.07-.27-.14-1.13-.42-2.15-1.35-.79-.7-1.33-1.57-1.48-1.84-.15-.27-.02-.42.11-.56.12-.12.27-.31.41-.47.14-.16.18-.27.27-.45.09-.18.05-.34-.02-.47-.07-.14-.58-1.4-.8-1.92-.21-.5-.42-.43-.58-.44h-.49c-.18 0-.47.07-.71.34-.24.27-.92.9-.92 2.19s.94 2.53 1.07 2.7c.14.18 1.84 2.81 4.46 3.94.62.27 1.11.43 1.49.55.63.2 1.21.17 1.66.1.51-.08 1.58-.65 1.8-1.28.22-.63.22-1.17.15-1.28-.07-.11-.24-.18-.51-.32Z" />
-        <path d="M16.03 3.2c-7.07 0-12.8 5.72-12.8 12.78 0 2.25.59 4.45 1.7 6.38L3 29l6.82-1.78a12.8 12.8 0 0 0 6.2 1.58h.01c7.06 0 12.79-5.72 12.79-12.79 0-3.42-1.33-6.63-3.75-9.04A12.7 12.7 0 0 0 16.03 3.2Zm0 23.4h-.01a10.62 10.62 0 0 1-5.41-1.48l-.39-.23-4.05 1.06 1.08-3.95-.25-.41a10.58 10.58 0 0 1-1.62-5.59c0-5.87 4.78-10.65 10.66-10.65 2.84 0 5.51 1.11 7.52 3.12a10.55 10.55 0 0 1 3.12 7.52c0 5.88-4.78 10.66-10.65 10.66Z" />
+      <Icon
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path d="M20.52 3.48A11.82 11.82 0 0 0 12.05 0C5.5 0 .18 5.32.18 11.87c0 2.09.55 4.13 1.59 5.92L.1 24l6.36-1.67a11.88 11.88 0 0 0 5.59 1.42h.01c6.54 0 11.86-5.32 11.86-11.87 0-3.17-1.24-6.15-3.4-8.4ZM12.06 21.7h-.01a9.84 9.84 0 0 1-5.02-1.37l-.36-.21-3.77.99 1.01-3.68-.23-.38a9.82 9.82 0 0 1-1.51-5.18C2.17 6.44 6.6 2.02 12.05 2.02c2.65 0 5.14 1.03 7.01 2.9a9.86 9.86 0 0 1 2.91 7.02c0 5.44-4.43 9.86-9.91 9.86Zm5.41-7.38c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.2 5.08 4.49.71.31 1.27.5 1.7.64.71.23 1.36.2 1.87.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35Z" />
       </Icon>
 
-      <Label>WhatsApp</Label>
+      <Label>
+        WhatsApp
+      </Label>
     </Button>
   );
 }
 
 const Button = styled.a`
   position: fixed;
+
   right: 1.25rem;
   bottom: 1.25rem;
+
   z-index: 1000;
 
   display: inline-flex;
@@ -30,33 +63,67 @@ const Button = styled.a`
   gap: 0.7rem;
 
   padding: 0.9rem 1rem;
-  border-radius: ${({ theme }) => theme.radius.pill};
+
+  border-radius:
+    ${({ theme }) =>
+      theme.radius.pill};
 
   background: #25d366;
   color: #ffffff;
+
   text-decoration: none;
   font-weight: 700;
-  font-size: ${({ theme }) => theme.fontSizes.sm};
 
-  box-shadow: 0 12px 30px rgba(37, 211, 102, 0.28);
+  font-size:
+    ${({ theme }) =>
+      theme.fontSizes.sm};
+
+  box-shadow:
+    0 12px 30px
+    rgba(
+      37,
+      211,
+      102,
+      0.28
+    );
+
   transition:
-    transform ${({ theme }) => theme.transitions.default},
-    box-shadow ${({ theme }) => theme.transitions.default},
-    filter ${({ theme }) => theme.transitions.default};
+    transform
+      ${({ theme }) =>
+        theme.transitions.default},
+    box-shadow
+      ${({ theme }) =>
+        theme.transitions.default},
+    filter
+      ${({ theme }) =>
+        theme.transitions.default};
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 36px rgba(37, 211, 102, 0.34);
-    filter: brightness(1.03);
+    transform:
+      translateY(-2px);
+
+    box-shadow:
+      0 16px 36px
+      rgba(
+        37,
+        211,
+        102,
+        0.34
+      );
+
+    filter:
+      brightness(1.03);
   }
 
   &:active {
-    transform: translateY(0);
+    transform:
+      translateY(0);
   }
 
   @media (max-width: 640px) {
     right: 1rem;
     bottom: 1rem;
+
     padding: 0.85rem;
   }
 `;
@@ -64,7 +131,9 @@ const Button = styled.a`
 const Icon = styled.svg`
   width: 22px;
   height: 22px;
+
   fill: currentColor;
+
   flex-shrink: 0;
 `;
 
