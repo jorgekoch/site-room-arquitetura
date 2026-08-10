@@ -468,4 +468,14 @@ export class ProjectController {
 
     return response.json(result);
   }
+
+  async cleanupOrphanedStorageObjects(
+    _request: Request,
+    response: Response
+  ) {
+    const result =
+      await service.cleanupOrphanedStorageObjects();
+
+    return response.json(result);
+  }
 }

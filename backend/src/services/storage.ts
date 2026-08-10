@@ -280,23 +280,50 @@ export class StorageService {
   async listObjects(
     prefix: string
   ) {
-    const result =
-      await r2.send(
-        new ListObjectsV2Command({
-          Bucket: env.r2Bucket,
-          Prefix: prefix,
-        })
-      );
+    const objects: {
+      key: string;
+      size: number;
+      lastModified: Date | null;
+    }[] = [];
 
-    return (
-      result.Contents ?? []
-    ).map((object) => ({
-      key: object.Key ?? "",
-      size: object.Size ?? 0,
-      lastModified:
-        object.LastModified ?? null,
-    }));
+    let continuationToken:
+      | string
+      | undefined;
+
+    do {
+      const result =
+        await r2.send(
+          new ListObjectsV2Command({
+            Bucket: env.r2Bucket,
+            Prefix: prefix,
+            ContinuationToken:
+              continuationToken,
+          })
+        );
+
+      for (const object of
+        result.Contents ?? []) {
+        if (!object.Key) {
+          continue;
+        }
+
+        objects.push({
+          key: object.Key,
+          size: object.Size ?? 0,
+          lastModified:
+            object.LastModified ?? null,
+        });
+      }
+
+      continuationToken =
+        result.IsTruncated
+          ? result.NextContinuationToken
+          : undefined;
+    } while (continuationToken);
+
+    return objects;
   }
+
   getPublicUrl(
     storageKey: string
   ): string {

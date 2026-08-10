@@ -93,6 +93,16 @@ projectRoutes.get(
     )
 );
 
+projectRoutes.post(
+  "/storage/orphans/cleanup",
+  ensureOwner,
+  (request, response) =>
+    controller.cleanupOrphanedStorageObjects(
+      request,
+      response
+    )
+);
+
 projectRoutes.get(
   "/:id",
   (request, response) =>

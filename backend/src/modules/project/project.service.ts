@@ -850,4 +850,111 @@ export class ProjectService {
       orphanedObjects,
     };
   }
+
+  async cleanupOrphanedStorageObjects() {
+    const orphanReport =
+      await this.findOrphanedStorageObjects();
+
+    const now = Date.now();
+
+    const MINIMUM_AGE_MS =
+      24 * 60 * 60 * 1000;
+
+    const safeToDelete =
+      orphanReport.orphanedObjects.filter(
+        (object) => {
+          if (!object.lastModified) {
+            return false;
+          }
+
+          const age =
+            now -
+            object.lastModified.getTime();
+
+          return (
+            age >= MINIMUM_AGE_MS
+          );
+        }
+      );
+
+    const skippedRecent =
+      orphanReport.orphanedObjects.filter(
+        (object) => {
+          if (!object.lastModified) {
+            return true;
+          }
+
+          const age =
+            now -
+            object.lastModified.getTime();
+
+          return (
+            age < MINIMUM_AGE_MS
+          );
+        }
+      );
+
+    const keysToDelete =
+      safeToDelete
+        .map(
+          (object) => object.key
+        )
+        .filter(
+          (key) =>
+            key.startsWith(
+              "projects/"
+            )
+        );
+
+    if (!keysToDelete.length) {
+      return {
+        totalObjects:
+          orphanReport.totalObjects,
+
+        totalUsed:
+          orphanReport.totalUsed,
+
+        totalOrphaned:
+          orphanReport.totalOrphaned,
+
+        totalSkippedRecent:
+          skippedRecent.length,
+
+        totalDeleted: 0,
+
+        deletedObjects: [],
+
+        skippedObjects:
+          skippedRecent,
+      };
+    }
+
+    await this.deleteStorageKeys(
+      keysToDelete,
+      "limpeza de arquivos órfãos"
+    );
+
+    return {
+      totalObjects:
+        orphanReport.totalObjects,
+
+      totalUsed:
+        orphanReport.totalUsed,
+
+      totalOrphaned:
+        orphanReport.totalOrphaned,
+
+      totalSkippedRecent:
+        skippedRecent.length,
+
+      totalDeleted:
+        keysToDelete.length,
+
+      deletedObjects:
+        keysToDelete,
+
+      skippedObjects:
+        skippedRecent,
+    };
+  }
 }
