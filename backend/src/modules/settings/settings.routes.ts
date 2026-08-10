@@ -5,11 +5,9 @@ import { ensureOwner } from "../../middlewares/ensureOwner";
 
 import { SettingsController } from "./settings.controller";
 
-const settingsRoutes =
-  Router();
+const settingsRoutes = Router();
 
-const controller =
-  new SettingsController();
+const controller = new SettingsController();
 
 settingsRoutes.get(
   "/",
