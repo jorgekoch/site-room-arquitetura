@@ -10,52 +10,48 @@ export interface UpdateSettingsInput {
 }
 
 export class SettingsService {
-  private readonly repository =
-    new SettingsRepository();
+  private readonly repository = new SettingsRepository();
 
   async get() {
-    let settings =
-      await this.repository.find();
+    let settings = await this.repository.find();
 
     if (!settings) {
-      settings =
-        await this.repository.createDefault();
+      settings = await this.repository.createDefault();
     }
 
     return settings;
   }
 
-  async update(
-    data: UpdateSettingsInput
-  ) {
-    const settings =
-      await this.get();
+  async update(data: UpdateSettingsInput) {
+    const settings = await this.get();
 
-    if (
-      data.maxProjectImages !==
-        undefined &&
-      data.maxProjectImages < 1
-    ) {
+    if (data.maxProjectImages !== undefined && data.maxProjectImages < 1) {
       throw new AppError(
         "O número máximo de imagens deve ser pelo menos 1.",
-        400
+        400,
       );
     }
 
     if (
-      data.maxProjectImageSizeMb !==
-        undefined &&
+      data.maxProjectImageSizeMb !== undefined &&
       data.maxProjectImageSizeMb <= 0
     ) {
       throw new AppError(
         "O tamanho máximo da imagem deve ser maior que zero.",
-        400
+        400,
       );
     }
 
-    return this.repository.update(
-      settings.id,
-      data
-    );
+    return this.repository.update(settings.id, data);
+  }
+
+  async getProjectLimits() {
+    const settings = await this.get();
+
+    return {
+      maxProjectImages: settings.maxProjectImages,
+
+      maxProjectImageSizeMb: settings.maxProjectImageSizeMb,
+    };
   }
 }
