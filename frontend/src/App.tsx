@@ -1,8 +1,4 @@
-import {
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import { PageShell } from "./components/layout/PageShell";
 import { ScrollToTop } from "./components/utils/ScrollToTop";
@@ -21,6 +17,8 @@ import PropostaEnviada from "./pages/public/PropostaEnviada";
 
 // Administração
 import AdminLogin from "./pages/admin/AdminLogin";
+import AdminForgotPassword from "./pages/admin/AdminForgotPassword";
+import AdminResetPassword from "./pages/admin/AdminResetPassword";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminPropostas from "./pages/admin/AdminPropostas/index";
 import AdminRequestAccess from "./pages/admin/AdminRequestAccess";
@@ -56,15 +54,7 @@ function App() {
           }
         />
 
-        <Route
-          path="/contato"
-          element={
-            <Navigate
-              to="/orcamento"
-              replace
-            />
-          }
-        />
+        <Route path="/contato" element={<Navigate to="/orcamento" replace />} />
 
         <Route
           path="/proposta-enviada"
@@ -97,16 +87,15 @@ function App() {
         {/* AUTENTICAÇÃO ADMIN */}
         {/* ========================= */}
 
-        <Route
-          path="/admin/login"
-          element={<AdminLogin />}
-        />
+        <Route path="/admin/login" element={<AdminLogin />} />
+
+        <Route path="/admin/esqueci-senha" element={<AdminForgotPassword />} />
+
+        <Route path="/admin/redefinir-senha" element={<AdminResetPassword />} />
 
         <Route
           path="/admin/solicitar-acesso"
-          element={
-            <AdminRequestAccess />
-          }
+          element={<AdminRequestAccess />}
         />
 
         {/* ========================= */}
@@ -122,49 +111,25 @@ function App() {
           }
         >
           {/* Dashboard */}
-          <Route
-            index
-            element={<AdminDashboard />}
-          />
+          <Route index element={<AdminDashboard />} />
 
           {/* Projetos */}
-          <Route
-            path="projetos"
-            element={<AdminProjetos />}
-          />
+          <Route path="projetos" element={<AdminProjetos />} />
 
           {/* Propostas */}
-          <Route
-            path="propostas"
-            element={<AdminPropostas />}
-          />
+          <Route path="propostas" element={<AdminPropostas />} />
 
           {/* Usuários */}
-          <Route
-            path="usuarios"
-            element={<AdminUsuarios />}
-          />
+          <Route path="usuarios" element={<AdminUsuarios />} />
 
-          <Route
-            path="configuracoes"
-            element={<AdminConfiguracoes />}
-          />
-          
+          <Route path="configuracoes" element={<AdminConfiguracoes />} />
         </Route>
 
         {/* ========================= */}
         {/* FALLBACK */}
         {/* ========================= */}
 
-        <Route
-          path="*"
-          element={
-            <Navigate
-              to="/"
-              replace
-            />
-          }
-        />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );
