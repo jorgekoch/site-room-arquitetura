@@ -81,18 +81,71 @@ export class ProjectService {
     storageKeys: string[],
     context: string
   ) {
-    if (!storageKeys.length) {
+    const uniqueStorageKeys = [
+      ...new Set(
+        storageKeys.filter(
+          (key) => Boolean(key?.trim())
+        )
+      ),
+    ];
+
+    if (!uniqueStorageKeys.length) {
+      return;
+    }
+
+    const keysToDelete: string[] = [];
+    const protectedKeys: string[] = [];
+
+    for (const storageKey of uniqueStorageKeys) {
+      const isInUse =
+        await this.repository.isStorageKeyInUse(
+          storageKey
+        );
+
+      if (isInUse) {
+        protectedKeys.push(
+          storageKey
+        );
+        continue;
+      }
+
+      keysToDelete.push(storageKey);
+    }
+
+    if (protectedKeys.length) {
+      console.warn(
+        `[ProjectService] Arquivos protegidos e não removidos do R2 (${context}):`,
+        {
+          keys: protectedKeys,
+          total: protectedKeys.length,
+        }
+      );
+    }
+
+    if (!keysToDelete.length) {
       return;
     }
 
     try {
       await storage.deleteMany(
-        storageKeys
+        keysToDelete
+      );
+
+      console.info(
+        `[ProjectService] Arquivos removidos do R2 (${context}):`,
+        {
+          keys: keysToDelete,
+          total: keysToDelete.length,
+        }
       );
     } catch (error) {
       console.error(
-        `[ProjectService] Erro ao remover arquivos do R2 (${context}):`,
-        error
+        `[ProjectService] Falha ao remover arquivos do R2 (${context}). Possíveis arquivos órfãos:`,
+        {
+          keys: keysToDelete,
+          total: keysToDelete.length,
+          error,
+        }
       );
     }
   }
@@ -766,5 +819,35 @@ export class ProjectService {
         fileName.trim(),
       fileType,
     });
+  }
+
+  async findOrphanedStorageObjects() {
+    const [objects, usedStorageKeys] =
+      await Promise.all([
+        storage.listObjects("projects/"),
+        this.repository.getUsedStorageKeys(),
+      ]);
+
+    const usedKeys =
+      new Set(usedStorageKeys);
+
+    const orphanedObjects =
+      objects.filter(
+        (object) =>
+          object.key &&
+          !usedKeys.has(object.key)
+      );
+
+    return {
+      totalObjects: objects.length,
+      totalUsed: objects.filter(
+        (object) =>
+          object.key &&
+          usedKeys.has(object.key)
+      ).length,
+      totalOrphaned:
+        orphanedObjects.length,
+      orphanedObjects,
+    };
   }
 }

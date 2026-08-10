@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import { ensureAuthenticated } from "../../middlewares/ensureAuthenticated";
+import { ensureOwner } from "../../middlewares/ensureOwner";
 import { ProjectController } from "./project.controller";
 
 const projectRoutes = Router();
@@ -77,6 +78,16 @@ projectRoutes.post(
   "/",
   (request, response) =>
     controller.create(
+      request,
+      response
+    )
+);
+
+projectRoutes.get(
+  "/storage/orphans",
+  ensureOwner,
+  (request, response) =>
+    controller.findOrphanedStorageObjects(
       request,
       response
     )

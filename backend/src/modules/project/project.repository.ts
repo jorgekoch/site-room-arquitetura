@@ -441,6 +441,77 @@ export class ProjectRepository {
     });
   }
 
+  async isStorageKeyInUse(
+    storageKey: string
+  ): Promise<boolean> {
+    const [featuredProject, galleryImage] =
+      await Promise.all([
+        prisma.project.findFirst({
+          where: {
+            featuredImageStorageKey:
+              storageKey,
+          },
+          select: {
+            id: true,
+          },
+        }),
 
+        prisma.projectImage.findFirst({
+          where: {
+            storageKey,
+          },
+          select: {
+            id: true,
+          },
+        }),
+      ]);
+
+    return Boolean(
+      featuredProject ||
+      galleryImage
+    );
+  }
+
+  async getUsedStorageKeys(): Promise<string[]> {
+    const [projects, images] =
+      await Promise.all([
+        prisma.project.findMany({
+          where: {
+            featuredImageStorageKey: {
+              not: null,
+            },
+          },
+          select: {
+            featuredImageStorageKey: true,
+          },
+        }),
+
+        prisma.projectImage.findMany({
+          select: {
+            storageKey: true,
+          },
+        }),
+      ]);
+
+    return [
+      ...projects
+        .map(
+          (project) =>
+            project.featuredImageStorageKey
+        )
+        .filter(
+          (key): key is string =>
+            Boolean(key)
+        ),
+
+      ...images
+        .map(
+          (image) => image.storageKey
+        )
+        .filter(
+          (key) => Boolean(key)
+        ),
+    ];
+  }
 }
 

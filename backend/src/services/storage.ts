@@ -2,6 +2,7 @@ import { AppError } from "../utils/AppError";
 import {
   DeleteObjectCommand,
   HeadObjectCommand,
+  ListObjectsV2Command,
   PutObjectCommand,
 } from "@aws-sdk/client-s3";
 
@@ -276,10 +277,26 @@ export class StorageService {
     }
   }
 
-  /**
-   * Retorna a URL pública
-   * de um arquivo armazenado.
-   */
+  async listObjects(
+    prefix: string
+  ) {
+    const result =
+      await r2.send(
+        new ListObjectsV2Command({
+          Bucket: env.r2Bucket,
+          Prefix: prefix,
+        })
+      );
+
+    return (
+      result.Contents ?? []
+    ).map((object) => ({
+      key: object.Key ?? "",
+      size: object.Size ?? 0,
+      lastModified:
+        object.LastModified ?? null,
+    }));
+  }
   getPublicUrl(
     storageKey: string
   ): string {

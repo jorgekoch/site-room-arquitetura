@@ -458,4 +458,14 @@ export class ProjectController {
       .status(204)
       .send();
   }
+
+  async findOrphanedStorageObjects(
+    _request: Request,
+    response: Response
+  ) {
+    const result =
+      await service.findOrphanedStorageObjects();
+
+    return response.json(result);
+  }
 }
