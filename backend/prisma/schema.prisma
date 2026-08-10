@@ -52,6 +52,9 @@ model AdminUser {
   isActive               Boolean   @default(false)
   approvalToken          String?   @unique
   approvalTokenExpiresAt DateTime?
+  passwordResetTokenHash      String?
+  passwordResetTokenExpiresAt DateTime?
+  tokenVersion Int @default(0)
 
   @@map("admin_users")
 }
