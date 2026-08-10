@@ -1,5 +1,9 @@
 import styled from "styled-components";
 import type { ProposalRequestAdmin } from "../../types/proposal";
+import {
+  getProposalPaymentProofDownloadUrl,
+  getProposalReferenceFileDownloadUrl,
+} from "../../lib/proposals";
 import { CopyButton } from "./CopyButton";
 
 const Wrapper = styled.div`
@@ -232,9 +236,22 @@ export function ProposalDetails({ proposal }: { proposal: ProposalRequestAdmin }
   const referenceFiles = Array.isArray(proposal.referenceFilesJson)
     ? (proposal.referenceFilesJson as Array<{
         originalName: string;
-        url: string;
+        storageKey: string;
       }>)
     : [];
+
+  async function openPrivateFile(kind: "payment-proof" | "reference", index?: number) {
+    try {
+      const result = kind === "payment-proof"
+        ? await getProposalPaymentProofDownloadUrl(proposal.id)
+        : await getProposalReferenceFileDownloadUrl(proposal.id, index ?? 0);
+
+      window.open(result.url, "_blank", "noopener,noreferrer");
+    } catch (error) {
+      console.error(error);
+      window.alert("Não foi possível abrir o arquivo. Tente novamente.");
+    }
+  }
 
   return (
     <Wrapper>
@@ -354,8 +371,8 @@ export function ProposalDetails({ proposal }: { proposal: ProposalRequestAdmin }
           <Row>
             <Label>Comprovante</Label>
             <Value>
-              {proposal.paymentProofUrl ? (
-                <LinkView href={proposal.paymentProofUrl} target="_blank" rel="noreferrer">
+              {proposal.paymentProofStorageKey ? (
+                <LinkView href="#" onClick={(event) => { event.preventDefault(); void openPrivateFile("payment-proof"); }}>
                   Ver comprovante
                 </LinkView>
               ) : (
@@ -370,12 +387,14 @@ export function ProposalDetails({ proposal }: { proposal: ProposalRequestAdmin }
               <Value>
                 {referenceFiles.length ? (
                   <LinksList>
-                    {referenceFiles.map((file) => (
+                    {referenceFiles.map((file, index) => (
                       <LinkView
-                        key={`${file.url}-${file.originalName}`}
-                        href={file.url}
-                        target="_blank"
-                        rel="noreferrer"
+                        key={`${file.storageKey}-${file.originalName}`}
+                        href="#"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          void openPrivateFile("reference", index);
+                        }}
                       >
                         {file.originalName}
                       </LinkView>

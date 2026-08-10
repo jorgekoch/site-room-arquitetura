@@ -51,16 +51,6 @@ const Button = styled.button`
   }
 `;
 
-const LinkView = styled.a`
-  color:
-    ${({ theme }) =>
-      theme.colors.primary};
-
-  text-decoration: none;
-
-  font-weight: 600;
-`;
-
 const Message = styled.p<{
   $error?: boolean;
 }>`
@@ -83,14 +73,14 @@ const Hint = styled.span`
 interface Props {
   proposalId: string;
 
-  currentUrl?: string | null;
+  hasCurrentProof?: boolean;
 
   onUploaded?: () => void;
 }
 
 export function ProposalPaymentProof({
   proposalId,
-  currentUrl,
+  hasCurrentProof,
   onUploaded,
 }: Props) {
   const [file, setFile] =
@@ -191,14 +181,10 @@ export function ProposalPaymentProof({
         Comprovante de pagamento
       </Title>
 
-      {currentUrl ? (
-        <LinkView
-          href={currentUrl}
-          target="_blank"
-          rel="noreferrer"
-        >
-          Ver comprovante atual
-        </LinkView>
+      {hasCurrentProof ? (
+        <Hint>
+          Comprovante já enviado. Use o link na seção de detalhes para abri-lo.
+        </Hint>
       ) : (
         <Hint>
           Nenhum comprovante enviado

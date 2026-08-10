@@ -178,7 +178,6 @@ export interface ProposalRequestAdmin {
 
   internalNotes?: string | null;
 
-  paymentProofUrl?: string | null;
   paymentProofStorageKey?: string | null;
   paymentProofUploadedAt?: string | null;
 
@@ -222,7 +221,6 @@ export interface ProposalRequestAdmin {
 
   internalNotes?: string | null;
 
-  paymentProofUrl?: string | null;
   paymentProofStorageKey?: string | null;
   paymentProofUploadedAt?: string | null;
 

@@ -431,9 +431,9 @@ export default function AdminPropostas() {
                       proposalId={
                         selectedProposal.id
                       }
-                      currentUrl={
-                        selectedProposal.paymentProofUrl
-                      }
+                      hasCurrentProof={Boolean(
+                        selectedProposal.paymentProofStorageKey
+                      )}
                       onUploaded={() =>
                         loadProposal(
                           selectedProposal.id

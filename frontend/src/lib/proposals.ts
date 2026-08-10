@@ -71,7 +71,6 @@ export function getProposalUploadUrl(data: {
   return apiPost<{
     uploadUrl: string;
     storageKey: string;
-    imageUrl?: string;
   }>(
     "/proposal-requests/upload-url",
     data
@@ -90,5 +89,20 @@ export function saveProposalPaymentProof(
     {
       storageKey,
     }
+  );
+}
+
+export function getProposalPaymentProofDownloadUrl(id: string) {
+  return apiGet<{ url: string }>(
+    `/proposal-requests/${id}/payment-proof/download`
+  );
+}
+
+export function getProposalReferenceFileDownloadUrl(
+  id: string,
+  index: number
+) {
+  return apiGet<{ url: string }>(
+    `/proposal-requests/${id}/reference-files/${index}/download`
   );
 }

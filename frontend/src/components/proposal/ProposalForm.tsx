@@ -133,7 +133,6 @@ type UploadedReferenceFile = {
   fileName: string;
   mimeType: string;
   size: number;
-  url: string;
   storageKey: string;
 };
 
@@ -196,9 +195,7 @@ export function ProposalForm() {
 
     const {
       uploadUrl,
-      fileUrl,
       storageKey,
-      fileName,
     } = await createUploadResponse.json();
 
     const uploadResponse = await fetch(uploadUrl, {
@@ -221,10 +218,9 @@ export function ProposalForm() {
 
     return {
       originalName: file.name,
-      fileName,
+      fileName: file.name,
       mimeType: file.type,
       size: file.size,
-      url: fileUrl,
       storageKey,
     };
   }
@@ -420,9 +416,6 @@ export function ProposalForm() {
 
         paymentMethodOther:
           values.paymentMethodOther || "",
-
-        paymentProofUrl:
-          uploadedPaymentProof?.url ?? null,
 
         paymentProofStorageKey:
           uploadedPaymentProof?.storageKey ?? null,
