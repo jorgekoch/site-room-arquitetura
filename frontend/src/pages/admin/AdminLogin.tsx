@@ -8,6 +8,7 @@ import { Container } from "../../components/ui/Container";
 import { Button } from "../../components/ui/Button";
 import { setAdminToken } from "../../lib/auth";
 import { publicApiFetch } from "../../lib/publicApi";
+import { useAdmin } from "../../contexts/AdminContext";
 
 const Section = styled.section`
   padding: 3rem 0 5rem;
@@ -120,6 +121,8 @@ const LinkButton = styled.button`
 `;
 
 export default function AdminLogin() {
+  const { setUser } = useAdmin();
+
   const navigate = useNavigate();
 
   const [searchParams] =
@@ -181,6 +184,8 @@ export default function AdminLogin() {
       }
 
       setAdminToken(data.token);
+
+      setUser(data.user);
 
       navigate("/admin/propostas");
     } catch (error) {
