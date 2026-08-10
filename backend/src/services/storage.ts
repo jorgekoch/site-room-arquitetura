@@ -225,11 +225,55 @@ export class StorageService {
   async deleteMany(
     storageKeys: string[]
   ): Promise<void> {
-    await Promise.all(
-      storageKeys.map((key) =>
-        this.delete(key)
-      )
-    );
+    const uniqueStorageKeys = [
+      ...new Set(
+        storageKeys.filter(
+          (key) => Boolean(key?.trim())
+        )
+      ),
+    ];
+
+    if (!uniqueStorageKeys.length) {
+      return;
+    }
+
+    const results =
+      await Promise.allSettled(
+        uniqueStorageKeys.map(
+          (key) => this.delete(key)
+        )
+      );
+
+    const failedKeys =
+      results
+        .map((result, index) => ({
+          result,
+          key: uniqueStorageKeys[index],
+        }))
+        .filter(
+          ({ result }) =>
+            result.status === "rejected"
+        )
+        .map(
+          ({ key }) => key
+        );
+
+    if (failedKeys.length > 0) {
+      console.error(
+        "[StorageService] Falha ao remover arquivos do R2:",
+        {
+          failedKeys,
+          total: uniqueStorageKeys.length,
+          successful:
+            uniqueStorageKeys.length -
+            failedKeys.length,
+        }
+      );
+
+      throw new Error(
+        `Falha ao remover ${failedKeys.length} arquivo(s) do armazenamento.`
+      );
+    }
   }
 
   /**

@@ -59,14 +59,13 @@ export const createProjectSchema =
       .optional()
       .nullable(),
 
-    year: z
-      .coerce
-      .number()
-      .int()
-      .min(1900)
-      .max(2100)
-      .optional()
-      .nullable(),
+    year: z.coerce
+      .number({
+        error: "Informe um ano válido.",
+      })
+      .int("Informe um ano válido.")
+      .min(1900, "Informe um ano válido.")
+      .max(2100, "Informe um ano válido."),
 
     area: z
       .string()
