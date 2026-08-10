@@ -64,9 +64,51 @@ export default function AdminProjetos() {
       setActionError("");
 
       if (editingProject) {
+        const {
+          images,
+          ...projectData
+        } = data;
+
+        const featuredImageChanged =
+          projectData.featuredImage !==
+          editingProject.featuredImage;
+
+        const coverWasRemoved =
+          projectData.featuredImage === null;
+
+        const coverWasChanged =
+          featuredImageChanged &&
+          !coverWasRemoved;
+
+        const normalizedProjectData = {
+          ...projectData,
+          ...(coverWasChanged
+            ? {
+              featuredImage:
+                projectData.featuredImage,
+              featuredImageStorageKey:
+                projectData.featuredImageStorageKey,
+            }
+            : coverWasRemoved
+              ? {
+                featuredImage: null,
+                featuredImageStorageKey:
+                  null,
+              }
+              : {
+                featuredImage:
+                  undefined,
+                featuredImageStorageKey:
+                  undefined,
+              }),
+        };
+
         await update(
           editingProject.id,
-          data
+          {
+            ...normalizedProjectData,
+            images,
+          }
         );
 
         setEditingProject(
@@ -104,10 +146,10 @@ export default function AdminProjetos() {
                 field,
                 messages,
               ]) => [
-                field,
-                messages?.[0] ||
+                  field,
+                  messages?.[0] ||
                   "Campo inválido.",
-              ]
+                ]
             )
           );
 
@@ -239,13 +281,13 @@ export default function AdminProjetos() {
   }
 
   if (error) {
-  return (
-    <EmptyState
-      title="Não foi possível carregar os projetos."
-      description={error}
-    />
-  );
-}
+    return (
+      <EmptyState
+        title="Não foi possível carregar os projetos."
+        description={error}
+      />
+    );
+  }
 
   return (
     <>
