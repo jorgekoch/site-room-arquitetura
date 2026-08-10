@@ -56,6 +56,20 @@ model AdminUser {
   @@map("admin_users")
 }
 
+model SiteSettings {
+  id                    String   @id @default(cuid())
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  whatsapp              String?
+  instagram             String?
+
+  maxProjectImages      Int      @default(20)
+  maxProjectImageSizeMb Int      @default(10)
+
+  @@map("site_settings")
+}
+
 model Project {
   id                      String          @id @default(cuid())
   createdAt               DateTime        @default(now())
