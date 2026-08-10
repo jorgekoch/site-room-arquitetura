@@ -8,10 +8,23 @@ import {
   EyeOff,
 } from "lucide-react";
 
-import { useCurrentAdmin } from "../../../hooks/useCurrentAdmin";
-import { useThemeMode } from "../../../contexts/ThemeModeContext";
+import {
+  useCurrentAdmin,
+} from "../../../hooks/useCurrentAdmin";
 
-import { changeAdminPassword, updateAdminProfile } from "../../../lib/auth";
+import {
+  useThemeMode,
+} from "../../../contexts/ThemeModeContext";
+
+import {
+  changeAdminPassword,
+  updateAdminProfile,
+} from "../../../lib/auth";
+
+import {
+  getSiteSettings,
+  updateSiteSettings,
+} from "../../../lib/settings";
 
 import * as S from "./styles";
 
@@ -26,21 +39,37 @@ export default function AdminConfiguracoes() {
     setMode,
   } = useThemeMode();
 
-  const [name, setName] =
-    useState("");
+  /*
+   * Dados da conta
+   */
+  const [
+    name,
+    setName,
+  ] = useState("");
 
-  const [email, setEmail] =
-    useState("");
+  const [
+    email,
+    setEmail,
+  ] = useState("");
 
-  const [saving, setSaving] =
-    useState(false);
+  const [
+    saving,
+    setSaving,
+  ] = useState(false);
 
-  const [message, setMessage] =
-    useState("");
+  const [
+    message,
+    setMessage,
+  ] = useState("");
 
-  const [error, setError] =
-    useState("");
+  const [
+    error,
+    setError,
+  ] = useState("");
 
+  /*
+   * Alteração de senha
+   */
   const [
     currentPassword,
     setCurrentPassword,
@@ -54,45 +83,87 @@ export default function AdminConfiguracoes() {
   const [
     confirmPassword,
     setConfirmPassword,
-  ] =
-    useState("");
+  ] = useState("");
 
   const [
     changingPassword,
     setChangingPassword,
-  ] =
-    useState(false);
+  ] = useState(false);
 
   const [
     passwordMessage,
     setPasswordMessage,
-  ] =
-    useState("");
+  ] = useState("");
 
   const [
     passwordError,
     setPasswordError,
-  ] =
-    useState("");
+  ] = useState("");
 
   const [
     showCurrentPassword,
     setShowCurrentPassword,
-  ] =
-    useState(false);
+  ] = useState(false);
 
   const [
     showNewPassword,
     setShowNewPassword,
-  ] =
-    useState(false);
+  ] = useState(false);
 
   const [
     showConfirmPassword,
     setShowConfirmPassword,
-  ] =
-    useState(false);
+  ] = useState(false);
 
+  /*
+   * Configurações do site
+   *
+   * Disponíveis somente para OWNER.
+   */
+  const [
+    whatsapp,
+    setWhatsapp,
+  ] = useState("");
+
+  const [
+    instagram,
+    setInstagram,
+  ] = useState("");
+
+  const [
+    maxProjectImages,
+    setMaxProjectImages,
+  ] = useState("20");
+
+  const [
+    maxProjectImageSizeMb,
+    setMaxProjectImageSizeMb,
+  ] = useState("10");
+
+  const [
+    loadingSettings,
+    setLoadingSettings,
+  ] = useState(false);
+
+  const [
+    savingSettings,
+    setSavingSettings,
+  ] = useState(false);
+
+  const [
+    settingsMessage,
+    setSettingsMessage,
+  ] = useState("");
+
+  const [
+    settingsError,
+    setSettingsError,
+  ] = useState("");
+
+  /*
+   * Preenche os dados da conta
+   * com o usuário autenticado.
+   */
   useEffect(() => {
     if (!user) {
       return;
@@ -102,6 +173,83 @@ export default function AdminConfiguracoes() {
     setEmail(user.email);
   }, [user]);
 
+  /*
+   * Carrega as configurações
+   * do site somente para OWNER.
+   */
+  useEffect(() => {
+    if (
+      !user ||
+      user.role !== "OWNER"
+    ) {
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadSettings() {
+      setLoadingSettings(true);
+      setSettingsError("");
+
+      try {
+        const settings =
+          await getSiteSettings();
+
+        if (cancelled) {
+          return;
+        }
+
+        setWhatsapp(
+          settings.whatsapp ?? ""
+        );
+
+        setInstagram(
+          settings.instagram ?? ""
+        );
+
+        setMaxProjectImages(
+          String(
+            settings.maxProjectImages
+          )
+        );
+
+        setMaxProjectImageSizeMb(
+          String(
+            settings.maxProjectImageSizeMb
+          )
+        );
+      } catch (error) {
+        if (cancelled) {
+          return;
+        }
+
+        console.error(
+          "Erro ao carregar configurações do site:",
+          error
+        );
+
+        setSettingsError(
+          error instanceof Error
+            ? error.message
+            : "Não foi possível carregar as configurações do site."
+        );
+      } finally {
+        if (!cancelled) {
+          setLoadingSettings(false);
+        }
+      }
+    }
+
+    loadSettings();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  /*
+   * Salva nome e e-mail.
+   */
   async function handleSave() {
     setSaving(true);
     setMessage("");
@@ -114,14 +262,21 @@ export default function AdminConfiguracoes() {
           email,
         });
 
-      setName(response.user.name);
-        setEmail(response.user.email);
+      setName(
+        response.user.name
+      );
 
-        setUser(response.user);
+      setEmail(
+        response.user.email
+      );
 
-        setMessage(
-          "Dados atualizados com sucesso."
-);
+      setUser(
+        response.user
+      );
+
+      setMessage(
+        "Dados atualizados com sucesso."
+      );
     } catch (error) {
       console.error(
         "Erro ao atualizar dados do administrador:",
@@ -138,6 +293,9 @@ export default function AdminConfiguracoes() {
     }
   }
 
+  /*
+   * Altera a senha.
+   */
   async function handleChangePassword() {
     setChangingPassword(true);
 
@@ -175,18 +333,125 @@ export default function AdminConfiguracoes() {
     }
   }
 
+  /*
+   * Salva as configurações
+   * exclusivas do OWNER.
+   */
+  async function handleSaveSettings() {
+    setSavingSettings(true);
+
+    setSettingsMessage("");
+    setSettingsError("");
+
+    const parsedMaxImages =
+      Number(
+        maxProjectImages
+      );
+
+    const parsedMaxSizeMb =
+      Number(
+        maxProjectImageSizeMb
+      );
+
+    if (
+      !Number.isInteger(
+        parsedMaxImages
+      ) ||
+      parsedMaxImages < 1
+    ) {
+      setSettingsError(
+        "O máximo de imagens deve ser um número inteiro maior que zero."
+      );
+
+      setSavingSettings(false);
+
+      return;
+    }
+
+    if (
+      !Number.isFinite(
+        parsedMaxSizeMb
+      ) ||
+      parsedMaxSizeMb <= 0
+    ) {
+      setSettingsError(
+        "O tamanho máximo por imagem deve ser maior que zero."
+      );
+
+      setSavingSettings(false);
+
+      return;
+    }
+
+    try {
+      const settings =
+        await updateSiteSettings({
+          whatsapp:
+            whatsapp.trim(),
+
+          instagram:
+            instagram.trim(),
+
+          maxProjectImages:
+            parsedMaxImages,
+
+          maxProjectImageSizeMb:
+            parsedMaxSizeMb,
+        });
+
+      setWhatsapp(
+        settings.whatsapp ?? ""
+      );
+
+      setInstagram(
+        settings.instagram ?? ""
+      );
+
+      setMaxProjectImages(
+        String(
+          settings.maxProjectImages
+        )
+      );
+
+      setMaxProjectImageSizeMb(
+        String(
+          settings.maxProjectImageSizeMb
+        )
+      );
+
+      setSettingsMessage(
+        "Configurações do site atualizadas com sucesso."
+      );
+    } catch (error) {
+      console.error(
+        "Erro ao atualizar configurações do site:",
+        error
+      );
+
+      setSettingsError(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível salvar as configurações do site."
+      );
+    } finally {
+      setSavingSettings(false);
+    }
+  }
+
   return (
     <>
       <div
         style={{
-          marginBottom: "24px",
+          marginBottom:
+            "24px",
         }}
       >
         <h1
           style={{
             margin: 0,
             color: "inherit",
-            fontSize: "1.5rem",
+            fontSize:
+              "1.5rem",
           }}
         >
           Configurações
@@ -194,16 +459,21 @@ export default function AdminConfiguracoes() {
 
         <p
           style={{
-            marginTop: "6px",
+            marginTop:
+              "6px",
             opacity: 0.7,
           }}
         >
-          Gerencie sua conta e as
-          preferências do painel.
+          Gerencie sua conta,
+          aparência e
+          configurações do site.
         </p>
       </div>
 
       <S.Grid>
+        {/* =========================
+            CONTA
+        ========================== */}
         <S.Card>
           <S.CardHeader>
             <div>
@@ -212,7 +482,8 @@ export default function AdminConfiguracoes() {
               </h2>
 
               <p>
-                Dados do administrador
+                Dados do
+                administrador
               </p>
             </div>
           </S.CardHeader>
@@ -227,9 +498,12 @@ export default function AdminConfiguracoes() {
                 id="admin-name"
                 type="text"
                 value={name}
-                onChange={(event) =>
+                onChange={(
+                  event
+                ) =>
                   setName(
-                    event.target.value
+                    event.target
+                      .value
                   )
                 }
                 required
@@ -246,9 +520,12 @@ export default function AdminConfiguracoes() {
                 id="admin-email"
                 type="email"
                 value={email}
-                onChange={(event) =>
+                onChange={(
+                  event
+                ) =>
                   setEmail(
-                    event.target.value
+                    event.target
+                      .value
                   )
                 }
                 required
@@ -270,8 +547,12 @@ export default function AdminConfiguracoes() {
             <S.Actions>
               <S.PrimaryButton
                 type="button"
-                onClick={handleSave}
-                disabled={saving}
+                onClick={
+                  handleSave
+                }
+                disabled={
+                  saving
+                }
               >
                 {saving
                   ? "Salvando..."
@@ -281,6 +562,9 @@ export default function AdminConfiguracoes() {
           </S.Form>
         </S.Card>
 
+        {/* =========================
+            APARÊNCIA
+        ========================== */}
         <S.Card>
           <S.CardHeader>
             <div>
@@ -289,7 +573,8 @@ export default function AdminConfiguracoes() {
               </h2>
 
               <p>
-                Escolha o tema do painel.
+                Escolha o tema
+                do painel.
               </p>
             </div>
           </S.CardHeader>
@@ -298,10 +583,13 @@ export default function AdminConfiguracoes() {
             <S.Option
               type="button"
               $active={
-                mode === "light"
+                mode ===
+                "light"
               }
               onClick={() =>
-                setMode("light")
+                setMode(
+                  "light"
+                )
               }
             >
               <S.OptionContent>
@@ -316,7 +604,8 @@ export default function AdminConfiguracoes() {
 
               <S.Radio
                 $active={
-                  mode === "light"
+                  mode ===
+                  "light"
                 }
               />
             </S.Option>
@@ -324,10 +613,13 @@ export default function AdminConfiguracoes() {
             <S.Option
               type="button"
               $active={
-                mode === "dark"
+                mode ===
+                "dark"
               }
               onClick={() =>
-                setMode("dark")
+                setMode(
+                  "dark"
+                )
               }
             >
               <S.OptionContent>
@@ -342,13 +634,17 @@ export default function AdminConfiguracoes() {
 
               <S.Radio
                 $active={
-                  mode === "dark"
+                  mode ===
+                  "dark"
                 }
               />
             </S.Option>
           </S.Options>
         </S.Card>
 
+        {/* =========================
+            SEGURANÇA
+        ========================== */}
         <S.Card>
           <S.CardHeader>
             <div>
@@ -357,8 +653,10 @@ export default function AdminConfiguracoes() {
               </h2>
 
               <p>
-                Altere a senha de acesso
-                ao painel administrativo.
+                Altere a senha
+                de acesso ao
+                painel
+                administrativo.
               </p>
             </div>
           </S.CardHeader>
@@ -377,10 +675,15 @@ export default function AdminConfiguracoes() {
                       ? "text"
                       : "password"
                   }
-                  value={currentPassword}
-                  onChange={(event) =>
+                  value={
+                    currentPassword
+                  }
+                  onChange={(
+                    event
+                  ) =>
                     setCurrentPassword(
-                      event.target.value
+                      event.target
+                        .value
                     )
                   }
                   autoComplete="current-password"
@@ -390,7 +693,10 @@ export default function AdminConfiguracoes() {
                   type="button"
                   onClick={() =>
                     setShowCurrentPassword(
-                      (current) => !current
+                      (
+                        current
+                      ) =>
+                        !current
                     )
                   }
                   aria-label={
@@ -400,9 +706,13 @@ export default function AdminConfiguracoes() {
                   }
                 >
                   {showCurrentPassword ? (
-                    <EyeOff size={18} />
+                    <EyeOff
+                      size={18}
+                    />
                   ) : (
-                    <Eye size={18} />
+                    <Eye
+                      size={18}
+                    />
                   )}
                 </S.PasswordToggle>
               </S.PasswordInputWrapper>
@@ -421,10 +731,15 @@ export default function AdminConfiguracoes() {
                       ? "text"
                       : "password"
                   }
-                  value={newPassword}
-                  onChange={(event) =>
+                  value={
+                    newPassword
+                  }
+                  onChange={(
+                    event
+                  ) =>
                     setNewPassword(
-                      event.target.value
+                      event.target
+                        .value
                     )
                   }
                   autoComplete="new-password"
@@ -434,7 +749,10 @@ export default function AdminConfiguracoes() {
                   type="button"
                   onClick={() =>
                     setShowNewPassword(
-                      (current) => !current
+                      (
+                        current
+                      ) =>
+                        !current
                     )
                   }
                   aria-label={
@@ -444,9 +762,13 @@ export default function AdminConfiguracoes() {
                   }
                 >
                   {showNewPassword ? (
-                    <EyeOff size={18} />
+                    <EyeOff
+                      size={18}
+                    />
                   ) : (
-                    <Eye size={18} />
+                    <Eye
+                      size={18}
+                    />
                   )}
                 </S.PasswordToggle>
               </S.PasswordInputWrapper>
@@ -454,7 +776,8 @@ export default function AdminConfiguracoes() {
 
             <S.Field>
               <label htmlFor="confirm-password">
-                Confirmar nova senha
+                Confirmar nova
+                senha
               </label>
 
               <S.PasswordInputWrapper>
@@ -465,10 +788,15 @@ export default function AdminConfiguracoes() {
                       ? "text"
                       : "password"
                   }
-                  value={confirmPassword}
-                  onChange={(event) =>
+                  value={
+                    confirmPassword
+                  }
+                  onChange={(
+                    event
+                  ) =>
                     setConfirmPassword(
-                      event.target.value
+                      event.target
+                        .value
                     )
                   }
                   autoComplete="new-password"
@@ -478,7 +806,10 @@ export default function AdminConfiguracoes() {
                   type="button"
                   onClick={() =>
                     setShowConfirmPassword(
-                      (current) => !current
+                      (
+                        current
+                      ) =>
+                        !current
                     )
                   }
                   aria-label={
@@ -488,9 +819,13 @@ export default function AdminConfiguracoes() {
                   }
                 >
                   {showConfirmPassword ? (
-                    <EyeOff size={18} />
+                    <EyeOff
+                      size={18}
+                    />
                   ) : (
-                    <Eye size={18} />
+                    <Eye
+                      size={18}
+                    />
                   )}
                 </S.PasswordToggle>
               </S.PasswordInputWrapper>
@@ -498,13 +833,17 @@ export default function AdminConfiguracoes() {
 
             {passwordError && (
               <S.ErrorMessage>
-                {passwordError}
+                {
+                  passwordError
+                }
               </S.ErrorMessage>
             )}
 
             {passwordMessage && (
               <S.SuccessMessage>
-                {passwordMessage}
+                {
+                  passwordMessage
+                }
               </S.SuccessMessage>
             )}
 
@@ -525,6 +864,169 @@ export default function AdminConfiguracoes() {
             </S.Actions>
           </S.Form>
         </S.Card>
+
+        {/* =========================
+            CONFIGURAÇÕES DO SITE
+            SOMENTE OWNER
+        ========================== */}
+        {user?.role ===
+          "OWNER" && (
+          <S.Card>
+            <S.CardHeader>
+              <div>
+                <h2>
+                  Configurações
+                  do site
+                </h2>
+
+                <p>
+                  Informações exibidas
+                  no site e limites
+                  dos projetos.
+                </p>
+              </div>
+            </S.CardHeader>
+
+            {loadingSettings ? (
+              <S.Info>
+                <span>
+                  Carregando
+                  configurações...
+                </span>
+              </S.Info>
+            ) : (
+              <S.Form>
+                <S.Field>
+                  <label htmlFor="site-whatsapp">
+                    WhatsApp
+                  </label>
+
+                  <input
+                    id="site-whatsapp"
+                    type="text"
+                    value={
+                      whatsapp
+                    }
+                    onChange={(
+                      event
+                    ) =>
+                      setWhatsapp(
+                        event.target
+                          .value
+                      )
+                    }
+                    placeholder="(41) 99999-9999"
+                  />
+                </S.Field>
+
+                <S.Field>
+                  <label htmlFor="site-instagram">
+                    Instagram
+                  </label>
+
+                  <input
+                    id="site-instagram"
+                    type="text"
+                    value={
+                      instagram
+                    }
+                    onChange={(
+                      event
+                    ) =>
+                      setInstagram(
+                        event.target
+                          .value
+                      )
+                    }
+                    placeholder="@roomarquitetura"
+                  />
+                </S.Field>
+
+                <S.Field>
+                  <label htmlFor="max-project-images">
+                    Máximo de imagens
+                    por projeto
+                  </label>
+
+                  <input
+                    id="max-project-images"
+                    type="number"
+                    min={1}
+                    step={1}
+                    value={
+                      maxProjectImages
+                    }
+                    onChange={(
+                      event
+                    ) =>
+                      setMaxProjectImages(
+                        event.target
+                          .value
+                      )
+                    }
+                  />
+                </S.Field>
+
+                <S.Field>
+                  <label htmlFor="max-project-image-size">
+                    Tamanho máximo
+                    por imagem
+                  </label>
+
+                  <input
+                    id="max-project-image-size"
+                    type="number"
+                    min={0.1}
+                    step={0.1}
+                    value={
+                      maxProjectImageSizeMb
+                    }
+                    onChange={(
+                      event
+                    ) =>
+                      setMaxProjectImageSizeMb(
+                        event.target
+                          .value
+                      )
+                    }
+                  />
+                </S.Field>
+
+                {settingsError && (
+                  <S.ErrorMessage>
+                    {
+                      settingsError
+                    }
+                  </S.ErrorMessage>
+                )}
+
+                {settingsMessage && (
+                  <S.SuccessMessage>
+                    {
+                      settingsMessage
+                    }
+                  </S.SuccessMessage>
+                )}
+
+                <S.Actions>
+                  <S.PrimaryButton
+                    type="button"
+                    onClick={
+                      handleSaveSettings
+                    }
+                    disabled={
+                      savingSettings
+                    }
+                  >
+                    {savingSettings
+                      ? "Salvando..."
+                      : "Salvar configurações"}
+                  </S.PrimaryButton>
+                </S.Actions>
+              </S.Form>
+            )}
+          </S.Card>
+        )}
       </S.Grid>
     </>
   );
