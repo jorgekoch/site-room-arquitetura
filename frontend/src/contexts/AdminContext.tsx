@@ -7,67 +7,61 @@ import {
   type ReactNode,
 } from "react";
 
-import {
-  type AdminUser,
-  getCurrentAdmin,
-} from "../lib/auth";
+import { type AdminUser, getCurrentAdmin, isAuthenticated } from "../lib/auth";
 
 type AdminContextData = {
   user: AdminUser | null;
   loading: boolean;
   error: string;
   reload: () => Promise<void>;
-  setUser: React.Dispatch<
-    React.SetStateAction<AdminUser | null>
-  >;
+  setUser: React.Dispatch<React.SetStateAction<AdminUser | null>>;
 };
 
-const AdminContext =
-  createContext<AdminContextData | undefined>(
-    undefined
-  );
+const AdminContext = createContext<AdminContextData | undefined>(undefined);
 
-export function AdminProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  const [user, setUser] =
-    useState<AdminUser | null>(null);
+export function AdminProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<AdminUser | null>(null);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
 
-  const loadUser = useCallback(
-    async () => {
-      try {
-        setLoading(true);
+  const loadUser = useCallback(async () => {
+    /**
+     * Não existe sessão administrativa.
+     *
+     * O AdminProvider é global e também é
+     * montado nas páginas públicas. Portanto,
+     * não devemos chamar /admin-auth/me para
+     * visitantes sem token.
+     */
+    if (!isAuthenticated()) {
+      setUser(null);
+      setError("");
+      setLoading(false);
+      return;
+    }
 
-        const response =
-          await getCurrentAdmin();
+    try {
+      setLoading(true);
 
-        setUser(response.user);
-        setError("");
-      } catch (error) {
-        console.error(error);
+      const response = await getCurrentAdmin();
 
-        setUser(null);
+      setUser(response.user);
+      setError("");
+    } catch (error) {
+      console.error(error);
 
-        setError(
-          "Não foi possível carregar o usuário."
-        );
-      } finally {
-        setLoading(false);
-      }
-    },
-    []
-  );
+      setUser(null);
+
+      setError("Não foi possível carregar o usuário.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    loadUser();
+    void loadUser();
   }, [loadUser]);
 
   const value = {
@@ -79,20 +73,15 @@ export function AdminProvider({
   };
 
   return (
-    <AdminContext.Provider value={value}>
-      {children}
-    </AdminContext.Provider>
+    <AdminContext.Provider value={value}>{children}</AdminContext.Provider>
   );
 }
 
 export function useAdmin() {
-  const context =
-    useContext(AdminContext);
+  const context = useContext(AdminContext);
 
   if (!context) {
-    throw new Error(
-      "useAdmin must be used within AdminProvider"
-    );
+    throw new Error("useAdmin must be used within AdminProvider");
   }
 
   return context;
