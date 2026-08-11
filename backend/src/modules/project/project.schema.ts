@@ -99,13 +99,20 @@ export const createProjectSchema =
       .optional()
       .nullable(),
 
-    videoUrl: z
-      .string()
-      .url(
-        "Informe uma URL válida do YouTube."
-      )
-      .optional()
-      .nullable(),
+    videoUrl: z.preprocess(
+      (value) =>
+        typeof value === "string" &&
+        !value.trim()
+          ? null
+          : value,
+      z
+        .string()
+        .url(
+          "Informe uma URL válida do YouTube."
+        )
+        .optional()
+        .nullable()
+    ),
 
     published: z
       .boolean()
