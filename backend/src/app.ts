@@ -6,8 +6,17 @@ import { env } from "./config/env";
 import { router } from "./routes";
 import { errorHandler } from "./middlewares/errorHandler";
 import { dashboardRoutes } from "./modules/dashboard/dashboard.routes";
+import { AppError } from "./utils/AppError";
 
 const app = express();
+
+/**
+ * Em produção a API fica atrás de um proxy reverso. Isso permite que
+ * req.ip use o IP do visitante (X-Forwarded-For) nos rate limits.
+ */
+if (env.nodeEnv === "production") {
+  app.set("trust proxy", 1);
+}
 
 const allowedOrigins = [
   env.frontendUrl,
@@ -41,11 +50,7 @@ const corsOptions: cors.CorsOptions = {
       `CORS bloqueou a origem: ${origin}`
     );
 
-    callback(
-      new Error(
-        "Origem não permitida pelo CORS."
-      )
-    );
+    callback(new AppError("Origem não permitida pelo CORS.", 403));
   },
 
   credentials: true,
