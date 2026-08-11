@@ -10,6 +10,9 @@ import {
 
 import { NavLink } from "react-router-dom";
 
+import { useDashboardNotifications } from "../../../hooks/useDashboardNotifications";
+import { useCurrentAdmin } from "../../../hooks/useCurrentAdmin";
+
 import * as S from "./styles";
 
 const menuItems = [
@@ -27,11 +30,13 @@ const menuItems = [
     label: "Propostas",
     icon: FileText,
     to: "/admin/propostas",
+    notificationKey: "newProposals",
   },
   {
     label: "Usuários",
     icon: Users,
     to: "/admin/usuarios",
+    notificationKey: "pendingAdminRequests",
   },
   {
     label: "Configurações",
@@ -41,6 +46,9 @@ const menuItems = [
 ];
 
 export function Sidebar() {
+  const { notifications } = useDashboardNotifications();
+  const { user } = useCurrentAdmin();
+
   function logout() {
     localStorage.removeItem("room.token");
     window.location.href = "/admin/login";
@@ -55,22 +63,42 @@ export function Sidebar() {
       </S.Logo>
 
       <S.Menu>
-        {menuItems.map((item) => {
-          const Icon = item.icon;
+        {menuItems
+          .filter(
+            (item) =>
+              item.to !== "/admin/usuarios" ||
+              user?.role === "OWNER",
+          )
+          .map((item) => {
+            const Icon = item.icon;
+            const notificationCount =
+              item.notificationKey === "newProposals"
+                ? notifications.newProposals
+                : item.notificationKey === "pendingAdminRequests"
+                  ? notifications.pendingAdminRequests
+                  : 0;
 
-          return (
-            <S.MenuItem
-              key={item.to}
-              as={NavLink}
-              to={item.to}
-              end={item.to === "/admin"}
-            >
-              <Icon size={18} />
+            return (
+              <S.MenuItem
+                key={item.to}
+                as={NavLink}
+                to={item.to}
+                end={item.to === "/admin"}
+              >
+                <Icon size={18} />
 
-              <span>{item.label}</span>
-            </S.MenuItem>
-          );
-        })}
+                <span>{item.label}</span>
+
+                {notificationCount > 0 && (
+                  <S.NotificationBadge>
+                    {notificationCount > 99
+                      ? "99+"
+                      : notificationCount}
+                  </S.NotificationBadge>
+                )}
+              </S.MenuItem>
+            );
+          })}
       </S.Menu>
 
       <S.Footer>

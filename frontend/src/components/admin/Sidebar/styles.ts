@@ -96,6 +96,32 @@ export const MenuItem = styled(NavLink)`
   }
 `;
 
+export const NotificationBadge = styled.span`
+  min-width: 24px;
+  height: 24px;
+
+  margin-left: auto;
+  padding: 0 7px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: ${({ theme }) => theme.radius.pill};
+
+  background: ${({ theme }) => theme.colors.secondarySoft};
+  color: ${({ theme }) => theme.colors.secondary};
+
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+
+  .active & {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+`;
+
 export const Footer = styled.div`
   padding: 20px 16px 24px;
 

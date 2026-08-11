@@ -4,6 +4,7 @@ import { PageShell } from "./components/layout/PageShell";
 import { ScrollToTop } from "./components/utils/ScrollToTop";
 
 import { AdminRoute } from "./components/auth/AdminRoute";
+import { OwnerRoute } from "./components/auth/OwnerRoute";
 import { ProtectedSuccessRoute } from "./components/auth/ProtectedSuccessRoute";
 
 import { AdminLayout } from "./components/admin/AdminLayout";
@@ -120,7 +121,14 @@ function App() {
           <Route path="propostas" element={<AdminPropostas />} />
 
           {/* Usuários */}
-          <Route path="usuarios" element={<AdminUsuarios />} />
+          <Route
+            path="usuarios"
+            element={
+              <OwnerRoute>
+                <AdminUsuarios />
+              </OwnerRoute>
+            }
+          />
 
           <Route path="configuracoes" element={<AdminConfiguracoes />} />
         </Route>
