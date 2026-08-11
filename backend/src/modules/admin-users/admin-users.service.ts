@@ -95,6 +95,9 @@ export class AdminUsersService {
       where: { id },
       data: {
         isActive: false,
+        tokenVersion: {
+          increment: 1,
+        },
       },
       select: {
         id: true,
@@ -126,6 +129,9 @@ export class AdminUsersService {
       where: { id },
       data: {
         role: data.role,
+        tokenVersion: {
+          increment: 1,
+        },
       },
       select: {
         id: true,
