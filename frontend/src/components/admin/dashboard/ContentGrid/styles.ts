@@ -8,9 +8,9 @@ export const Container = styled.div`
     minmax(380px, 1fr)
   );
 
-  gap: 24px;
+  gap: 20px;
 
-  margin-top: 32px;
+  margin-top: 20px;
 
   align-items: start;
 `;

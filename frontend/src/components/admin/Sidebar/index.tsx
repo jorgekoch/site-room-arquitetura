@@ -63,6 +63,7 @@ export function Sidebar() {
               key={item.to}
               as={NavLink}
               to={item.to}
+              end={item.to === "/admin"}
             >
               <Icon size={18} />
 

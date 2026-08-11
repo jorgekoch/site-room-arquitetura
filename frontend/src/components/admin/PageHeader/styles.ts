@@ -7,7 +7,7 @@ export const Container = styled.div`
 
   justify-content: space-between;
 
-  margin-bottom: 32px;
+  margin-bottom: 36px;
 
   gap: 24px;
 
@@ -23,9 +23,10 @@ export const Content = styled.div`
 `;
 
 export const Title = styled.h1`
-  font-size: 2rem;
+  font-size: clamp(2rem, 3vw, 2.5rem);
 
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.04em;
 
   color: ${({ theme }) => theme.colors.text};
 

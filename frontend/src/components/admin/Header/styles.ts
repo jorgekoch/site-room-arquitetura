@@ -1,7 +1,11 @@
 import styled from "styled-components";
 
 export const Container = styled.header`
-  height: 82px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+
+  min-height: 82px;
 
   background: ${({ theme }) => theme.colors.surface};
 
@@ -13,7 +17,13 @@ export const Container = styled.header`
 
   justify-content: space-between;
 
-  padding: 0 32px;
+  padding: 0 40px;
+
+  box-shadow: 0 8px 28px rgba(31, 27, 20, 0.035);
+
+  @media (max-width: 900px) {
+    padding: 0 28px;
+  }
 `;
 
 export const Left = styled.div`
@@ -23,9 +33,10 @@ export const Left = styled.div`
 `;
 
 export const Title = styled.h1`
-  font-size: 1.5rem;
+  font-size: 1.2rem;
 
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 
   color: ${({ theme }) => theme.colors.text};
 `;
@@ -35,7 +46,7 @@ export const Right = styled.div`
 
   align-items: center;
 
-  gap: 18px;
+  gap: 12px;
 `;
 
 export const Search = styled.div`
@@ -43,7 +54,8 @@ export const Search = styled.div`
 
   height: 44px;
 
-  border-radius: 12px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 14px;
 
   background: ${({ theme }) => theme.colors.background};
 
@@ -51,9 +63,16 @@ export const Search = styled.div`
 
   align-items: center;
 
-  padding: 0 16px;
+  padding: 0 14px;
 
   gap: 12px;
+
+  transition: ${({ theme }) => theme.transitions.default};
+
+  &:focus-within {
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 4px ${({ theme }) => theme.colors.primaryRing};
+  }
 
   input {
 
@@ -215,7 +234,7 @@ export const IconButton = styled.button`
   height: 42px;
 
   border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 12px;
+  border-radius: 14px;
 
   background: ${({ theme }) => theme.colors.surface};
 
@@ -275,7 +294,7 @@ export const Avatar = styled.div`
 
   border-radius: 50%;
 
-  background: ${({ theme }) => theme.colors.primary};
+  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary}, ${({ theme }) => theme.colors.secondary});
 
   color: white;
 
@@ -285,7 +304,8 @@ export const Avatar = styled.div`
 
   justify-content: center;
 
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.82rem;
 `;
 
 export const UserInfo = styled.div`

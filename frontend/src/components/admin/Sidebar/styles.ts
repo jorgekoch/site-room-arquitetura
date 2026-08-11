@@ -18,18 +18,21 @@ export const Container = styled.aside`
   background: ${({ theme }) => theme.colors.surface};
 
   border-right: 1px solid ${({ theme }) => theme.colors.border};
+
+  box-shadow: 12px 0 32px rgba(31, 27, 20, 0.04);
 `;
 
 export const Logo = styled.div`
-  padding: 32px 24px;
+  padding: 34px 24px 30px;
 
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
 
   h2 {
     margin: 0;
 
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
 
     color: ${({ theme }) => theme.colors.primary};
   }
@@ -37,7 +40,7 @@ export const Logo = styled.div`
   span {
     display: block;
 
-    margin-top: 6px;
+    margin-top: 8px;
 
     font-size: .875rem;
 
@@ -51,9 +54,9 @@ export const Menu = styled.nav`
   display: flex;
   flex-direction: column;
 
-  gap: 6px;
+  gap: 8px;
 
-  padding: 24px 16px;
+  padding: 28px 16px;
 `;
 
 export const MenuItem = styled(NavLink)`
@@ -62,24 +65,30 @@ export const MenuItem = styled(NavLink)`
 
   gap: 12px;
 
-  padding: 14px 16px;
+  padding: 13px 16px;
 
-  border-radius: 12px;
+  border-radius: 14px;
 
   color: ${({ theme }) => theme.colors.text};
 
   text-decoration: none;
 
-  transition: .2s;
+  font-size: 0.94rem;
+  font-weight: 500;
+
+  transition: ${({ theme }) => theme.transitions.default};
 
   &:hover {
-    background: ${({ theme }) => theme.colors.background};
+    background: ${({ theme }) => theme.colors.surfaceHover};
+    color: ${({ theme }) => theme.colors.primary};
   }
 
   &.active {
     background: ${({ theme }) => theme.colors.primary};
 
     color: #fff;
+
+    box-shadow: 0 9px 18px ${({ theme }) => theme.colors.primaryRing};
   }
 
   svg {
@@ -88,7 +97,7 @@ export const MenuItem = styled(NavLink)`
 `;
 
 export const Footer = styled.div`
-  padding: 24px 16px;
+  padding: 20px 16px 24px;
 
   border-top: 1px solid ${({ theme }) => theme.colors.border};
 
@@ -106,16 +115,20 @@ export const SiteButton = styled.a`
 
   padding: 14px 16px;
 
-  border-radius: 12px;
+  border-radius: 14px;
 
   text-decoration: none;
 
   color: ${({ theme }) => theme.colors.text};
 
-  transition: .2s;
+  font-size: 0.92rem;
+  font-weight: 500;
+
+  transition: ${({ theme }) => theme.transitions.default};
 
   &:hover {
-    background: ${({ theme }) => theme.colors.background};
+    background: ${({ theme }) => theme.colors.surfaceHover};
+    color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
@@ -129,7 +142,7 @@ export const LogoutButton = styled.button`
 
   border: none;
 
-  border-radius: 12px;
+  border-radius: 14px;
 
   background: transparent;
 
@@ -137,9 +150,12 @@ export const LogoutButton = styled.button`
 
   color: ${({ theme }) => theme.colors.danger};
 
-  transition: .2s;
+  font-size: 0.92rem;
+  font-weight: 600;
+
+  transition: ${({ theme }) => theme.transitions.default};
 
   &:hover {
-    background: ${({ theme }) => theme.colors.background};
+    background: ${({ theme }) => theme.colors.dangerSoft};
   }
 `;

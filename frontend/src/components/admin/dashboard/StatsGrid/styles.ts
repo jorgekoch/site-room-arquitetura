@@ -8,7 +8,7 @@ export const Container = styled.section`
     minmax(250px, 1fr)
   );
 
-  gap: 24px;
+  gap: 20px;
 
-  margin-bottom: 40px;
+  margin-bottom: 32px;
 `;

@@ -15,7 +15,7 @@ export const Container = styled.div<ContainerProps>`
   border: 1px solid
     ${({ theme }) => theme.colors.border};
 
-  border-radius: 18px;
+  border-radius: 20px;
 
   padding: 24px;
 
@@ -23,7 +23,7 @@ export const Container = styled.div<ContainerProps>`
 
   flex-direction: column;
 
-  gap: 24px;
+  gap: 20px;
 
   transition: 0.25s;
 
@@ -38,7 +38,7 @@ export const Container = styled.div<ContainerProps>`
 
     box-shadow: ${({ $clickable }) =>
       $clickable
-        ? "0 12px 30px rgba(0, 0, 0, 0.08)"
+        ? "0 18px 34px rgba(31, 27, 20, 0.10)"
         : "none"};
 
     border-color: ${({ $clickable, theme }) =>
@@ -77,7 +77,7 @@ export const IconContainer = styled.div<IconProps>`
 
   height: 52px;
 
-  border-radius: 14px;
+  border-radius: 16px;
 
   display: flex;
 
@@ -89,10 +89,13 @@ export const IconContainer = styled.div<IconProps>`
 
   background: ${({ theme, $color }) =>
     $color ?? theme.colors.primary};
+
+  box-shadow: 0 8px 16px ${({ theme }) => theme.colors.primaryRing};
 `;
 
 export const Value = styled.h2`
-  font-size: 2rem;
+  font-size: 2.2rem;
+  letter-spacing: -0.04em;
 
   font-weight: 700;
 
