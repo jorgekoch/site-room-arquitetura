@@ -24,32 +24,22 @@ export const Input = styled.input`
 
   padding: 12px 14px;
 
-  border-radius: ${({ theme }) =>
-    theme.radius.md};
+  border-radius: ${({ theme }) => theme.radius.md};
 
-  border: 1px solid
-    ${({ theme }) =>
-      theme.colors.border};
+  border: 1px solid ${({ theme }) => theme.colors.border};
 
-  background: ${({ theme }) =>
-    theme.colors.background};
+  background: ${({ theme }) => theme.colors.background};
 
-  color: ${({ theme }) =>
-    theme.colors.text};
+  color: ${({ theme }) => theme.colors.text};
 
   font-size: 0.95rem;
 
   &:focus {
     outline: none;
 
-    border-color:
-      ${({ theme }) =>
-        theme.colors.primary};
+    border-color: ${({ theme }) => theme.colors.primary};
 
-    box-shadow:
-      0 0 0 3px
-      ${({ theme }) =>
-        theme.colors.primaryRing};
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.primaryRing};
   }
 `;
 
@@ -60,32 +50,22 @@ export const Select = styled.select`
 
   padding: 12px 14px;
 
-  border-radius: ${({ theme }) =>
-    theme.radius.md};
+  border-radius: ${({ theme }) => theme.radius.md};
 
-  border: 1px solid
-    ${({ theme }) =>
-      theme.colors.border};
+  border: 1px solid ${({ theme }) => theme.colors.border};
 
-  background: ${({ theme }) =>
-    theme.colors.background};
+  background: ${({ theme }) => theme.colors.background};
 
-  color: ${({ theme }) =>
-    theme.colors.text};
+  color: ${({ theme }) => theme.colors.text};
 
   font-size: 0.95rem;
 
   &:focus {
     outline: none;
 
-    border-color:
-      ${({ theme }) =>
-        theme.colors.primary};
+    border-color: ${({ theme }) => theme.colors.primary};
 
-    box-shadow:
-      0 0 0 3px
-      ${({ theme }) =>
-        theme.colors.primaryRing};
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.primaryRing};
   }
 `;
 
@@ -104,16 +84,11 @@ export const Grid = styled.div`
 `;
 
 export const Panel = styled.div`
-  background: ${({ theme }) =>
-    theme.colors.surface};
+  background: ${({ theme }) => theme.colors.surface};
 
-  border: 1px solid
-    ${({ theme }) =>
-      theme.colors.border};
+  border: 1px solid ${({ theme }) => theme.colors.border};
 
-  border-radius:
-    ${({ theme }) =>
-      theme.radius.md};
+  border-radius: ${({ theme }) => theme.radius.md};
 
   overflow: hidden;
 `;
@@ -133,30 +108,21 @@ export const ItemButton = styled.button<{
 
   border: 0;
 
-  border-bottom: 1px solid
-    ${({ theme }) =>
-      theme.colors.border};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
 
   text-align: left;
 
   background: ${({ theme, $active }) =>
-    $active
-      ? theme.colors.surfaceHover
-      : "transparent"};
+    $active ? theme.colors.surfaceHover : "transparent"};
 
-  color: ${({ theme }) =>
-    theme.colors.text};
+  color: ${({ theme }) => theme.colors.text};
 
   cursor: pointer;
 
-  transition:
-    ${({ theme }) =>
-      theme.transitions.default};
+  transition: ${({ theme }) => theme.transitions.default};
 
   &:hover {
-    background:
-      ${({ theme }) =>
-        theme.colors.surfaceHover};
+    background: ${({ theme }) => theme.colors.surfaceHover};
   }
 
   &:last-child {
@@ -177,8 +143,7 @@ export const ItemMeta = styled.span`
 
   margin-top: 3px;
 
-  color: ${({ theme }) =>
-    theme.colors.textSoft};
+  color: ${({ theme }) => theme.colors.textSoft};
 
   font-size: 0.82rem;
 `;
@@ -198,8 +163,7 @@ export const DetailTitle = styled.h2`
 
   font-size: 1.35rem;
 
-  color: ${({ theme }) =>
-    theme.colors.text};
+  color: ${({ theme }) => theme.colors.text};
 `;
 
 export const Actions = styled.div`
@@ -219,27 +183,18 @@ export const StatusSelect = styled.select`
 
   padding: 10px 14px;
 
-  border-radius:
-    ${({ theme }) =>
-      theme.radius.md};
+  border-radius: ${({ theme }) => theme.radius.md};
 
-  border: 1px solid
-    ${({ theme }) =>
-      theme.colors.border};
+  border: 1px solid ${({ theme }) => theme.colors.border};
 
-  background:
-    ${({ theme }) =>
-      theme.colors.background};
+  background: ${({ theme }) => theme.colors.background};
 
-  color: ${({ theme }) =>
-    theme.colors.text};
+  color: ${({ theme }) => theme.colors.text};
 
   &:focus {
     outline: none;
 
-    border-color:
-      ${({ theme }) =>
-        theme.colors.primary};
+    border-color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
@@ -250,30 +205,20 @@ export const SaveButton = styled.button`
 
   border: 0;
 
-  border-radius:
-    ${({ theme }) =>
-      theme.radius.pill};
+  border-radius: ${({ theme }) => theme.radius.pill};
 
-  background:
-    ${({ theme }) =>
-      theme.colors.primary};
+  background: ${({ theme }) => theme.colors.primary};
 
-  color:
-    ${({ theme }) =>
-      theme.colors.primaryContrast};
+  color: ${({ theme }) => theme.colors.primaryContrast};
 
   font-weight: 600;
 
   cursor: pointer;
 
-  transition:
-    ${({ theme }) =>
-      theme.transitions.default};
+  transition: ${({ theme }) => theme.transitions.default};
 
   &:hover {
-    background:
-      ${({ theme }) =>
-        theme.colors.primaryHover};
+    background: ${({ theme }) => theme.colors.primaryHover};
   }
 `;
 
@@ -283,9 +228,7 @@ export const Message = styled.p<{
   margin: 0 0 16px;
 
   color: ${({ theme, $error }) =>
-    $error
-      ? theme.colors.danger
-      : theme.colors.success};
+    $error ? theme.colors.danger : theme.colors.success};
 
   line-height: 1.5;
 `;
@@ -299,9 +242,7 @@ export const AdminBlocks = styled.div`
 export const Block = styled.div`
   padding-top: 20px;
 
-  border-top: 1px solid
-    ${({ theme }) =>
-      theme.colors.border};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 export const Empty = styled.div`
@@ -309,17 +250,14 @@ export const Empty = styled.div`
 
   text-align: center;
 
-  color: ${({ theme }) =>
-    theme.colors.textSoft};
+  color: ${({ theme }) => theme.colors.textSoft};
 `;
 
 export const DeleteButton = styled(SaveButton)`
-  background: ${({ theme }) =>
-    theme.colors.danger};
+  background: ${({ theme }) => theme.colors.danger};
 
   &:hover {
-    background: ${({ theme }) =>
-      theme.colors.danger};
+    background: ${({ theme }) => theme.colors.danger};
 
     opacity: 0.9;
   }
@@ -332,9 +270,7 @@ export const DangerZone = styled.div`
 
   padding-top: 20px;
 
-  border-top: 1px solid
-    ${({ theme }) =>
-      theme.colors.border};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 export const ExportSection = styled.div`
@@ -346,8 +282,7 @@ export const ExportSection = styled.div`
   margin-top: 32px;
   padding-top: 24px;
 
-  border-top: 1px solid
-    ${({ theme }) => theme.colors.border};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 export const ExportButton = styled.button`
@@ -395,7 +330,7 @@ export const ExportDescription = styled.p`
   font-size: 12px;
   line-height: 1.5;
 
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: ${({ theme }) => theme.textSoft};
 
   text-align: center;
 `;
