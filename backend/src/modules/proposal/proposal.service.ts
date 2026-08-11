@@ -23,6 +23,7 @@ import {
 } from "./proposal.schema";
 
 import { ProposalRepository } from "./proposal.repository";
+import { createProposalsWorkbook } from "./proposal.export";
 
 export function decryptProposal(proposal: ProposalRequest): ProposalRequest {
   return {
@@ -46,107 +47,77 @@ export class ProposalService {
     const projectDetails =
       data.projectType === "new-construction"
         ? {
-            newConstruction:
-              data.newConstruction ?? null,
+            newConstruction: data.newConstruction ?? null,
           }
         : data.projectType === "interiors"
-        ? {
-            interiors:
-              data.interiors ?? null,
-          }
-        : data.projectType === "renovation"
-        ? {
-            renovation:
-              data.renovation ?? null,
-          }
-        : {
-            consulting:
-              data.consulting ?? null,
-          };
+          ? {
+              interiors: data.interiors ?? null,
+            }
+          : data.projectType === "renovation"
+            ? {
+                renovation: data.renovation ?? null,
+              }
+            : {
+                consulting: data.consulting ?? null,
+              };
 
-    const storedProposal =
-      await this.repository.create({
-        email: encryptPersonalData(data.email),
+    const storedProposal = await this.repository.create({
+      email: encryptPersonalData(data.email),
 
-        fullName: encryptPersonalData(data.fullName),
+      fullName: encryptPersonalData(data.fullName),
 
-        cpf: encryptPersonalData(data.cpf),
+      cpf: encryptPersonalData(data.cpf),
 
-        address: encryptPersonalData(data.address),
+      address: encryptPersonalData(data.address),
 
-        birthDate: encryptPersonalData(data.birthDate),
+      birthDate: encryptPersonalData(data.birthDate),
 
-        phone: encryptPersonalData(data.phone),
+      phone: encryptPersonalData(data.phone),
 
-        socialProfile:
-          data.socialProfile
-            ? encryptPersonalData(data.socialProfile)
-            : null,
+      socialProfile: data.socialProfile
+        ? encryptPersonalData(data.socialProfile)
+        : null,
 
-        preferredContactMethod:
-          data.preferredContactMethod,
+      preferredContactMethod: data.preferredContactMethod,
 
-        preferredContactMethodOther:
-          data.preferredContactMethodOther ||
-          null,
+      preferredContactMethodOther: data.preferredContactMethodOther || null,
 
-        referralSource:
-          data.referralSource,
+      referralSource: data.referralSource,
 
-        referralSourceOther:
-          data.referralSourceOther || null,
+      referralSourceOther: data.referralSourceOther || null,
 
-        desiredWorkStart:
-          data.desiredWorkStart,
+      desiredWorkStart: data.desiredWorkStart,
 
-        projectType:
-          data.projectType,
+      projectType: data.projectType,
 
-        projectTypeOther:
-          data.projectTypeOther || null,
+      projectTypeOther: data.projectTypeOther || null,
 
-        taxAgreement:
-          data.taxAgreement,
+      taxAgreement: data.taxAgreement,
 
-        paymentMethod:
-          data.paymentMethod,
+      paymentMethod: data.paymentMethod,
 
-        paymentMethodOther:
-          data.paymentMethodOther || null,
+      paymentMethodOther: data.paymentMethodOther || null,
 
-        projectDetailsJson:
-          projectDetails,
+      projectDetailsJson: projectDetails,
 
-        referenceFilesJson: data.referenceFilesJson?.length
-          ? data.referenceFilesJson.map(({ url: _url, ...file }) => file)
-          : Prisma.JsonNull,
+      referenceFilesJson: data.referenceFilesJson?.length
+        ? data.referenceFilesJson.map(({ url: _url, ...file }) => file)
+        : Prisma.JsonNull,
 
-        pixKeySnapshot:
-          data.paymentMethod === "pix"
-            ? env.pixKey || null
-            : null,
+      pixKeySnapshot: data.paymentMethod === "pix" ? env.pixKey || null : null,
 
-        paymentProofUrl: null,
+      paymentProofUrl: null,
 
-        paymentProofStorageKey:
-          data.paymentProofStorageKey ||
-          null,
+      paymentProofStorageKey: data.paymentProofStorageKey || null,
 
-        paymentProofUploadedAt:
-          data.paymentProofUrl
-            ? new Date()
-          : null,
-      });
+      paymentProofUploadedAt: data.paymentProofUrl ? new Date() : null,
+    });
 
     const proposal = decryptProposal(storedProposal);
 
-    void sendProposalNotificationEmail(
-      proposal
-    ).catch(console.error);
+    void sendProposalNotificationEmail(proposal).catch(console.error);
 
-    void sendProposalConfirmationEmail(
-      proposal
-    ).catch(console.error);
+    void sendProposalConfirmationEmail(proposal).catch(console.error);
 
     return proposal;
   }
@@ -164,21 +135,32 @@ export class ProposalService {
       }),
 
       ...(filters?.projectType && {
-        projectType:
-          filters.projectType,
+        projectType: filters.projectType,
       }),
-
     };
 
-    const proposals = (await this.repository.findAll(where)).map(decryptProposal);
+    const proposals = (await this.repository.findAll(where)).map(
+      decryptProposal,
+    );
     const search = filters?.search?.trim().toLocaleLowerCase();
 
     if (!search) return proposals;
 
     return proposals.filter((proposal) =>
-      [proposal.fullName, proposal.email, proposal.phone]
-        .some((value) => value.toLocaleLowerCase().includes(search))
+      [proposal.fullName, proposal.email, proposal.phone].some((value) =>
+        value.toLocaleLowerCase().includes(search),
+      ),
     );
+  }
+
+  async export(filters?: {
+    status?: string;
+    projectType?: string;
+    search?: string;
+  }) {
+    const proposals = await this.list(filters);
+
+    return createProposalsWorkbook(proposals);
   }
 
   async findById(id: string) {
@@ -186,20 +168,14 @@ export class ProposalService {
     return proposal ? decryptProposal(proposal) : null;
   }
 
-  async updateStatus(
-    id: string,
-    data: UpdateProposalStatusInput
-  ) {
-    const storedProposal =
-      await this.repository.update(id, {
-        status: data.status,
-      });
+  async updateStatus(id: string, data: UpdateProposalStatusInput) {
+    const storedProposal = await this.repository.update(id, {
+      status: data.status,
+    });
     const proposal = decryptProposal(storedProposal);
 
     try {
-      await sendProposalStatusChangedEmail(
-        proposal
-      );
+      await sendProposalStatusChangedEmail(proposal);
     } catch (error) {
       console.error(error);
     }
@@ -207,13 +183,9 @@ export class ProposalService {
     return proposal;
   }
 
-  async updateNotes(
-    id: string,
-    data: UpdateProposalNotesInput
-  ) {
+  async updateNotes(id: string, data: UpdateProposalNotesInput) {
     const proposal = await this.repository.update(id, {
-      internalNotes:
-        data.internalNotes || "",
+      internalNotes: data.internalNotes || "",
     });
     return decryptProposal(proposal);
   }
@@ -232,7 +204,7 @@ export class ProposalService {
           "storageKey" in file &&
           typeof file.storageKey === "string"
             ? [file.storageKey]
-            : []
+            : [],
         )
       : [];
 
@@ -248,7 +220,7 @@ export class ProposalService {
     } catch (error) {
       console.error(
         "[ProposalService] Falha ao remover arquivos da proposta. Possíveis arquivos órfãos:",
-        { id, storageKeys, error }
+        { id, storageKeys, error },
       );
     }
   }
@@ -256,9 +228,7 @@ export class ProposalService {
   async generateUploadUrl(
     fileName: string,
     fileType: string,
-    folder:
-      | "payment-proofs"
-      | "references"
+    folder: "payment-proofs" | "references",
   ) {
     return storage.generatePrivateSignedUploadUrl({
       folder: `proposals/${folder}`,
@@ -269,33 +239,29 @@ export class ProposalService {
     });
   }
 
-  async updatePaymentProof(
-    id: string,
-    storageKey: string
-  ) {
-    const proposal =
-      await this.repository.findById(id);
+  async updatePaymentProof(id: string, storageKey: string) {
+    const proposal = await this.repository.findById(id);
 
     if (!proposal) {
-      throw new AppError(
-        "Solicitação não encontrada.",
-        404
-      );
+      throw new AppError("Solicitação não encontrada.", 404);
     }
 
     await storage.validatePrivateObject(storageKey, {
       maxSize: 10 * 1024 * 1024,
-      allowedContentTypes: ["application/pdf", "image/jpeg", "image/png", "image/webp"],
+      allowedContentTypes: [
+        "application/pdf",
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+      ],
     });
 
     const updatedProposal = await this.repository.update(id, {
-      paymentProofStorageKey:
-        storageKey,
+      paymentProofStorageKey: storageKey,
 
       paymentProofUrl: null,
 
-      paymentProofUploadedAt:
-        new Date(),
+      paymentProofUploadedAt: new Date(),
     });
     return decryptProposal(updatedProposal);
   }
@@ -304,16 +270,28 @@ export class ProposalService {
     if (data.paymentProofStorageKey) {
       await storage.validatePrivateObject(data.paymentProofStorageKey, {
         maxSize: 10 * 1024 * 1024,
-        allowedContentTypes: ["application/pdf", "image/jpeg", "image/png", "image/webp"],
+        allowedContentTypes: [
+          "application/pdf",
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+        ],
       });
     }
 
-    await Promise.all(data.referenceFilesJson.map((file) =>
-      storage.validatePrivateObject(file.storageKey, {
-        maxSize: 15 * 1024 * 1024,
-        allowedContentTypes: ["application/pdf", "image/jpeg", "image/png", "image/webp"],
-      })
-    ));
+    await Promise.all(
+      data.referenceFilesJson.map((file) =>
+        storage.validatePrivateObject(file.storageKey, {
+          maxSize: 15 * 1024 * 1024,
+          allowedContentTypes: [
+            "application/pdf",
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+          ],
+        }),
+      ),
+    );
   }
 
   async getPaymentProofDownloadUrl(id: string) {
@@ -332,7 +310,12 @@ export class ProposalService {
       : [];
     const file = files[index];
 
-    if (!file || typeof file !== "object" || !("storageKey" in file) || typeof file.storageKey !== "string") {
+    if (
+      !file ||
+      typeof file !== "object" ||
+      !("storageKey" in file) ||
+      typeof file.storageKey !== "string"
+    ) {
       throw new AppError("Arquivo de referência não encontrado.", 404);
     }
 
@@ -350,9 +333,7 @@ export class ProposalService {
   }
 
   async countNew() {
-    return this.repository.countByStatus(
-      "NEW"
-    );
+    return this.repository.countByStatus("NEW");
   }
 
   async latest(limit = 5) {

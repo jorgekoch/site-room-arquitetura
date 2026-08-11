@@ -23,15 +23,17 @@ function parseJsonField<T>(value: unknown, fallback: T): T {
 }
 
 function ensureStoredFilesHavePrivateKeys(
-  data: ReturnType<typeof createProposalSchema.parse>
+  data: ReturnType<typeof createProposalSchema.parse>,
 ) {
-  if (data.paymentProofStorageKey && !data.paymentProofStorageKey.startsWith("proposals/payment-proofs/")) {
-      throw new AppError("Comprovante de pagamento inválido.", 400);
+  if (
+    data.paymentProofStorageKey &&
+    !data.paymentProofStorageKey.startsWith("proposals/payment-proofs/")
+  ) {
+    throw new AppError("Comprovante de pagamento inválido.", 400);
   }
 
   const hasInvalidReference = data.referenceFilesJson.some(
-    (file) =>
-      !file.storageKey.startsWith("proposals/references/")
+    (file) => !file.storageKey.startsWith("proposals/references/"),
   );
 
   if (hasInvalidReference) {
@@ -40,27 +42,16 @@ function ensureStoredFilesHavePrivateKeys(
 }
 
 export class ProposalController {
-  async getUploadUrl(
-    request: Request,
-    response: Response
-  ) {
-    const {
+  async getUploadUrl(request: Request, response: Response) {
+    const { fileName, fileType, kind } = uploadUrlSchema.parse(request.body);
+
+    const folder = kind === "payment-proof" ? "payment-proofs" : "references";
+
+    const upload = await proposalService.generateUploadUrl(
       fileName,
       fileType,
-      kind,
-    } = uploadUrlSchema.parse(request.body);
-
-    const folder =
-      kind === "payment-proof"
-        ? "payment-proofs"
-        : "references";
-
-    const upload =
-      await proposalService.generateUploadUrl(
-        fileName,
-        fileType,
-        folder
-      );
+      folder,
+    );
 
     return response.json(upload);
   }
@@ -68,30 +59,32 @@ export class ProposalController {
   async create(request: Request, response: Response) {
     const body = {
       ...request.body,
-      taxAgreement: request.body.taxAgreement === true || request.body.taxAgreement === "true",
+      taxAgreement:
+        request.body.taxAgreement === true ||
+        request.body.taxAgreement === "true",
       reviewConfirmed:
         request.body.reviewConfirmed === true ||
         request.body.reviewConfirmed === "true",
       newConstruction:
         typeof request.body.newConstruction === "string"
           ? parseJsonField(request.body.newConstruction, {})
-          : request.body.newConstruction ?? {},
+          : (request.body.newConstruction ?? {}),
       interiors:
         typeof request.body.interiors === "string"
           ? parseJsonField(request.body.interiors, { includedItems: [] })
-          : request.body.interiors ?? { includedItems: [] },
+          : (request.body.interiors ?? { includedItems: [] }),
       renovation:
         typeof request.body.renovation === "string"
           ? parseJsonField(request.body.renovation, {})
-          : request.body.renovation ?? {},
+          : (request.body.renovation ?? {}),
       consulting:
         typeof request.body.consulting === "string"
           ? parseJsonField(request.body.consulting, {})
-          : request.body.consulting ?? {},
+          : (request.body.consulting ?? {}),
       referenceFilesJson:
         typeof request.body.referenceFilesJson === "string"
           ? parseJsonField(request.body.referenceFilesJson, [])
-          : request.body.referenceFilesJson ?? [],
+          : (request.body.referenceFilesJson ?? []),
     };
 
     const data = createProposalSchema.parse(body);
@@ -168,36 +161,25 @@ export class ProposalController {
     });
   }
 
-  async updatePaymentProof(
-  request: Request,
-  response: Response
-) {
-  const { id } = request.params;
+  async updatePaymentProof(request: Request, response: Response) {
+    const { id } = request.params;
 
-  if (!id || Array.isArray(id)) {
-    throw new AppError(
-      "ID de solicitação inválido",
-      400
-    );
-  }
+    if (!id || Array.isArray(id)) {
+      throw new AppError("ID de solicitação inválido", 400);
+    }
 
-  const data =
-    updatePaymentProofSchema.parse(
-      request.body
-    );
+    const data = updatePaymentProofSchema.parse(request.body);
 
-  const proposal =
-    await proposalService.updatePaymentProof(
+    const proposal = await proposalService.updatePaymentProof(
       id,
-      data.storageKey
+      data.storageKey,
     );
 
-  return response.json({
-    message:
-      "Comprovante atualizado com sucesso",
-    proposal,
-  });
-}
+    return response.json({
+      message: "Comprovante atualizado com sucesso",
+      proposal,
+    });
+  }
 
   async remove(request: Request, response: Response) {
     const { id } = request.params;
@@ -214,18 +196,52 @@ export class ProposalController {
 
   async getPaymentProofDownload(request: Request, response: Response) {
     const { id } = request.params;
-    if (!id || Array.isArray(id)) throw new AppError("ID de solicitação inválido", 400);
-    return response.json({ url: await proposalService.getPaymentProofDownloadUrl(id) });
+    if (!id || Array.isArray(id))
+      throw new AppError("ID de solicitação inválido", 400);
+    return response.json({
+      url: await proposalService.getPaymentProofDownloadUrl(id),
+    });
   }
 
   async getReferenceFileDownload(request: Request, response: Response) {
     const { id, index } = request.params;
     const fileIndex = Number(index);
-    if (!id || Array.isArray(id) || !Number.isSafeInteger(fileIndex) || fileIndex < 0) {
+    if (
+      !id ||
+      Array.isArray(id) ||
+      !Number.isSafeInteger(fileIndex) ||
+      fileIndex < 0
+    ) {
       throw new AppError("Arquivo de referência inválido", 400);
     }
-    return response.json({ url: await proposalService.getReferenceFileDownloadUrl(id, fileIndex) });
+    return response.json({
+      url: await proposalService.getReferenceFileDownloadUrl(id, fileIndex),
+    });
   }
 
+  async export(request: Request, response: Response) {
+    const { status, projectType, search } = request.query;
 
+    const file = await proposalService.export({
+      status: typeof status === "string" ? status : undefined,
+
+      projectType: typeof projectType === "string" ? projectType : undefined,
+
+      search: typeof search === "string" ? search : undefined,
+    });
+
+    const fileName = `propostas-${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+    response.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    );
+
+    response.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${fileName}"`,
+    );
+
+    return response.send(file);
+  }
 }
