@@ -40,6 +40,14 @@ export class ProposalRepository {
     });
   }
 
+  async delete(id: string) {
+    return prisma.proposalRequest.delete({
+      where: {
+        id,
+      },
+    });
+  }
+
   async count() {
     return prisma.proposalRequest.count();
   }

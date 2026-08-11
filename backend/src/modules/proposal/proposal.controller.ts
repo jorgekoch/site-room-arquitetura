@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import {
   createProposalSchema,
+  deleteProposalSchema,
   uploadUrlSchema,
   updateProposalNotesSchema,
   updateProposalStatusSchema,
@@ -197,6 +198,19 @@ export class ProposalController {
     proposal,
   });
 }
+
+  async remove(request: Request, response: Response) {
+    const { id } = request.params;
+
+    if (!id || Array.isArray(id)) {
+      throw new AppError("ID de solicitação inválido", 400);
+    }
+
+    deleteProposalSchema.parse(request.body);
+    await proposalService.remove(id);
+
+    return response.status(204).send();
+  }
 
   async getPaymentProofDownload(request: Request, response: Response) {
     const { id } = request.params;

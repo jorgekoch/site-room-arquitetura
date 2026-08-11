@@ -81,6 +81,12 @@ export const updateProposalNotesSchema = z.object({
   internalNotes: z.string().optional().default(""),
 });
 
+export const deleteProposalSchema = z.object({
+  confirmation: z.literal("excluir", {
+    error: 'Digite "excluir" para confirmar a exclusão da proposta.',
+  }),
+});
+
 export type CreateProposalInput = z.infer<typeof createProposalSchema>;
 export type UpdateProposalStatusInput = z.infer<typeof updateProposalStatusSchema>;
 export type UpdateProposalNotesInput = z.infer<typeof updateProposalNotesSchema>;

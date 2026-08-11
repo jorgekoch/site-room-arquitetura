@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { ProposalController } from "./proposal.controller";
 import { ensureAuthenticated } from "../../middlewares/ensureAuthenticated";
+import { ensureOwner } from "../../middlewares/ensureOwner";
 import { proposalSubmissionRateLimit, proposalUploadRateLimit } from "../../middlewares/proposalRateLimit";
 
 const proposalRoutes = Router();
@@ -68,6 +69,14 @@ proposalRoutes.patch(
       request,
       response
     )
+);
+
+proposalRoutes.delete(
+  "/:id",
+  ensureAuthenticated,
+  ensureOwner,
+  (request, response) =>
+    proposalController.remove(request, response)
 );
 
 export { proposalRoutes };

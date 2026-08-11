@@ -218,6 +218,41 @@ export class ProposalService {
     return decryptProposal(proposal);
   }
 
+  async remove(id: string) {
+    const proposal = await this.repository.findById(id);
+
+    if (!proposal) {
+      throw new AppError("Solicitação não encontrada.", 404);
+    }
+
+    const referenceStorageKeys = Array.isArray(proposal.referenceFilesJson)
+      ? proposal.referenceFilesJson.flatMap((file) =>
+          file &&
+          typeof file === "object" &&
+          "storageKey" in file &&
+          typeof file.storageKey === "string"
+            ? [file.storageKey]
+            : []
+        )
+      : [];
+
+    const storageKeys = [
+      proposal.paymentProofStorageKey,
+      ...referenceStorageKeys,
+    ].filter((key): key is string => Boolean(key?.trim()));
+
+    await this.repository.delete(id);
+
+    try {
+      await storage.deleteMany(storageKeys);
+    } catch (error) {
+      console.error(
+        "[ProposalService] Falha ao remover arquivos da proposta. Possíveis arquivos órfãos:",
+        { id, storageKeys, error }
+      );
+    }
+  }
+
   async generateUploadUrl(
     fileName: string,
     fileType: string,
