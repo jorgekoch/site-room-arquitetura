@@ -330,7 +330,7 @@ export const ExportDescription = styled.p`
   font-size: 12px;
   line-height: 1.5;
 
-  color: ${({ theme }) => theme.textSoft};
+  color: ${({ theme }) => theme.colors.textSoft};
 
   text-align: center;
 `;
