@@ -2,6 +2,7 @@ import { prisma } from "../../database/prisma";
 
 import { ProjectRepository } from "../project/project.repository";
 import { ProposalRepository } from "../proposal/proposal.repository";
+import { decryptPersonalData } from "../../utils/dataEncryption";
 
 export class DashboardService {
   private projectRepository =
@@ -121,7 +122,7 @@ export class DashboardService {
           type: "PROPOSAL" as const,
           title: "Nova proposta",
           description:
-            `${proposal.fullName} enviou uma solicitação.`,
+            `${decryptPersonalData(proposal.fullName)} enviou uma solicitação.`,
           referenceId: proposal.id,
           createdAt: proposal.createdAt,
         })
