@@ -1,4 +1,4 @@
-import { apiGet, apiPatch, apiPost } from "./api";
+import { apiDelete, apiGet, apiPatch, apiPost } from "./api";
 
 import type {
   ProposalRequestAdmin,
@@ -56,6 +56,13 @@ export function updateProposalNotes(
   return apiPatch<ProposalRequestAdmin>(
     `/proposal-requests/${id}/notes`,
     { internalNotes }
+  );
+}
+
+export function deleteProposal(id: string) {
+  return apiDelete(
+    `/proposal-requests/${id}`,
+    { confirmation: "excluir" }
   );
 }
 

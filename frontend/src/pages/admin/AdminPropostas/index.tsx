@@ -4,12 +4,14 @@ import { useSearchParams } from "react-router-dom";
 import { PageHeader } from "../../../components/admin/PageHeader";
 import { Loading } from "../../../components/admin/common/Loading";
 import { EmptyState } from "../../../components/admin/common/EmptyState";
+import { ConfirmModal } from "../../../components/admin/common/ConfirmModal";
 
 import { ProposalDetails } from "../../../components/admin/ProposalDetails";
 import { ProposalNotes } from "../../../components/admin/ProposalNotes";
 import { ProposalPaymentProof } from "../../../components/admin/ProposalPaymentProof";
 
 import { useProposals } from "../../../hooks/useProposals";
+import { useAdmin } from "../../../contexts/AdminContext";
 
 import type { ProposalStatus } from "../../../types/proposal";
 
@@ -34,7 +36,10 @@ export default function AdminPropostas() {
     loadProposal,
     changeStatus,
     saveNotes,
+    removeProposal,
   } = useProposals();
+
+  const { user } = useAdmin();
 
   const [selectedId, setSelectedId] =
     useState("");
@@ -53,6 +58,14 @@ export default function AdminPropostas() {
 
   const [message, setMessage] =
     useState("");
+
+  const [deleteModalOpen, setDeleteModalOpen] =
+    useState(false);
+
+  const [deleteConfirmation, setDeleteConfirmation] =
+    useState("");
+
+  const [deleting, setDeleting] = useState(false);
 
   const [
     errorMessage,
@@ -215,6 +228,37 @@ export default function AdminPropostas() {
           ? error.message
           : "Não foi possível atualizar o status."
       );
+    }
+  }
+
+  async function handleDeleteProposal() {
+    if (!selectedProposal || deleteConfirmation !== "excluir") {
+      return;
+    }
+
+    try {
+      setDeleting(true);
+      setErrorMessage("");
+      setMessage("");
+
+      await removeProposal(selectedProposal.id);
+
+      setDeleteModalOpen(false);
+      setDeleteConfirmation("");
+      setMessage("Proposta excluída com sucesso.");
+
+      window.dispatchEvent(
+        new Event("admin-notifications-updated")
+      );
+    } catch (error) {
+      console.error(error);
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível excluir a proposta."
+      );
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -400,6 +444,7 @@ export default function AdminPropostas() {
                   >
                     Salvar status
                   </S.SaveButton>
+
                 </S.Actions>
 
                 <ProposalDetails
@@ -442,6 +487,20 @@ export default function AdminPropostas() {
                     />
                   </S.Block>
                 </S.AdminBlocks>
+
+                {user?.role === "OWNER" && (
+                  <S.DangerZone>
+                    <S.DeleteButton
+                      type="button"
+                      onClick={() => {
+                        setDeleteConfirmation("");
+                        setDeleteModalOpen(true);
+                      }}
+                    >
+                      Excluir proposta
+                    </S.DeleteButton>
+                  </S.DangerZone>
+                )}
               </S.Details>
             ) : (
               <S.Empty>
@@ -452,6 +511,25 @@ export default function AdminPropostas() {
           </S.Panel>
         </S.Grid>
       )}
+
+      <ConfirmModal
+        open={deleteModalOpen}
+        title="Excluir proposta"
+        message={
+          <>Esta ação é permanente. Digite "excluir" para confirmar.</>
+        }
+        confirmLabel="Excluir proposta"
+        loading={deleting}
+        confirmation={{
+          value: deleteConfirmation,
+          onChange: setDeleteConfirmation,
+        }}
+        onConfirm={handleDeleteProposal}
+        onCancel={() => {
+          setDeleteModalOpen(false);
+          setDeleteConfirmation("");
+        }}
+      />
     </>
   );
 }

@@ -312,3 +312,27 @@ export const Empty = styled.div`
   color: ${({ theme }) =>
     theme.colors.textSoft};
 `;
+
+export const DeleteButton = styled(SaveButton)`
+  background: ${({ theme }) =>
+    theme.colors.danger};
+
+  &:hover {
+    background: ${({ theme }) =>
+      theme.colors.danger};
+
+    opacity: 0.9;
+  }
+`;
+
+export const DangerZone = styled.div`
+  display: flex;
+
+  justify-content: flex-end;
+
+  padding-top: 20px;
+
+  border-top: 1px solid
+    ${({ theme }) =>
+      theme.colors.border};
+`;

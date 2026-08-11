@@ -9,6 +9,11 @@ type ConfirmModalProps = {
   confirmLabel?: string;
   cancelLabel?: string;
   loading?: boolean;
+  confirmation?: {
+    value: string;
+    onChange: (value: string) => void;
+    phrase?: string;
+  };
   onConfirm: () => void;
   onCancel: () => void;
 };
@@ -20,6 +25,7 @@ export function ConfirmModal({
   confirmLabel = "Confirmar",
   cancelLabel = "Cancelar",
   loading = false,
+  confirmation,
   onConfirm,
   onCancel,
 }: ConfirmModalProps) {
@@ -52,11 +58,28 @@ export function ConfirmModal({
           {message}
         </S.Message>
 
+        {confirmation && (
+          <S.ConfirmationInput
+            autoFocus
+            value={confirmation.value}
+            onChange={(event) =>
+              confirmation.onChange(event.target.value)
+            }
+            placeholder={`Digite \"${confirmation.phrase ?? "excluir"}\"`}
+            disabled={loading}
+          />
+        )}
+
         <S.Actions>
           <S.CancelButton
             type="button"
             onClick={onCancel}
-            disabled={loading}
+            disabled={
+              loading ||
+              (confirmation &&
+                confirmation.value !==
+                  (confirmation.phrase ?? "excluir"))
+            }
           >
             {cancelLabel}
           </S.CancelButton>

@@ -154,3 +154,38 @@ export const ConfirmButton = styled.button`
     cursor: not-allowed;
   }
 `;
+
+export const ConfirmationInput = styled.input`
+  width: 100%;
+
+  min-height: 42px;
+
+  margin-top: 16px;
+  padding: 10px 12px;
+
+  border: 1px solid
+    ${({ theme }) =>
+      theme.colors.border};
+
+  border-radius:
+    ${({ theme }) =>
+      theme.radius.md};
+
+  background:
+    ${({ theme }) =>
+      theme.colors.background};
+
+  color:
+    ${({ theme }) =>
+      theme.colors.text};
+
+  font: inherit;
+
+  &:focus {
+    outline: none;
+
+    border-color:
+      ${({ theme }) =>
+        theme.colors.danger};
+  }
+`;

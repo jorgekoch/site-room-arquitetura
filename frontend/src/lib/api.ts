@@ -107,9 +107,13 @@ export async function apiPatch<T>(path: string, body?: unknown): Promise<T> {
   return parseResponse<T>(response, path);
 }
 
-export async function apiDelete<T = void>(path: string): Promise<T> {
+export async function apiDelete<T = void>(
+  path: string,
+  body?: unknown
+): Promise<T> {
   const response = await request(path, {
     method: "DELETE",
+    body: body === undefined ? undefined : JSON.stringify(body),
   });
 
   return parseResponse<T>(response, path);

@@ -9,6 +9,7 @@ import {
   getProposalById,
   updateProposalStatus,
   updateProposalNotes,
+  deleteProposal,
 } from "../lib/proposals";
 
 import type {
@@ -150,6 +151,21 @@ export function useProposals() {
     []
   );
 
+  const removeProposal = useCallback(
+    async (id: string) => {
+      await deleteProposal(id);
+
+      setProposals((current) =>
+        current.filter((proposal) => proposal.id !== id)
+      );
+
+      setSelectedProposal((current) =>
+        current?.id === id ? null : current
+      );
+    },
+    []
+  );
+
   useEffect(() => {
     loadProposals();
   }, [loadProposals]);
@@ -167,6 +183,7 @@ export function useProposals() {
 
     changeStatus,
     saveNotes,
+    removeProposal,
 
     setSelectedProposal,
   };
