@@ -11,10 +11,11 @@ import { AppError } from "./utils/AppError";
 const app = express();
 
 /**
- * Em produção a API fica atrás de um proxy reverso. Isso permite que
- * req.ip use o IP do visitante (X-Forwarded-For) nos rate limits.
+ * Render encaminha as requisições por proxy reverso. Confiar em apenas um
+ * salto permite que req.ip use o IP do visitante nos rate limits, sem confiar
+ * em uma cadeia arbitrária de proxies.
  */
-if (env.nodeEnv === "production") {
+if (env.nodeEnv === "production" || process.env.RENDER) {
   app.set("trust proxy", 1);
 }
 
