@@ -67,42 +67,12 @@ function formatValueForHtml(value: unknown): string {
 }
 
 function buildProposalPayload(proposal: ProposalRequest) {
-  const details =
-    proposal.projectDetailsJson && typeof proposal.projectDetailsJson === "object"
-      ? (proposal.projectDetailsJson as Record<string, unknown>)
-      : {};
-
   return {
     id: proposal.id,
     createdAt: proposal.createdAt.toISOString(),
     status: proposal.status,
-
-    email: proposal.email,
-    fullName: proposal.fullName,
-    cpf: proposal.cpf,
-    address: proposal.address,
-    birthDate: proposal.birthDate,
-    phone: proposal.phone,
-    socialProfile: proposal.socialProfile || "",
-
-    preferredContactMethod: proposal.preferredContactMethod,
-    preferredContactMethodOther: proposal.preferredContactMethodOther || "",
-
-    referralSource: proposal.referralSource,
-    referralSourceOther: proposal.referralSourceOther || "",
-
-    desiredWorkStart: proposal.desiredWorkStart,
-
     projectType: proposal.projectType,
-    projectTypeOther: proposal.projectTypeOther || "",
-
-    taxAgreement: proposal.taxAgreement ? "true" : "false",
     paymentMethod: proposal.paymentMethod,
-    paymentMethodOther: proposal.paymentMethodOther || "",
-
-    projectDetails: details,
-    internalNotes: proposal.internalNotes || "",
-    paymentProofUrl: proposal.paymentProofUrl || "",
   };
 }
 

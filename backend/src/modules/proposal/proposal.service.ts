@@ -1,10 +1,14 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, ProposalRequest } from "@prisma/client";
 
 import { env } from "../../config/env";
 
 import { storage } from "../../services/storage";
 
 import { AppError } from "../../utils/AppError";
+import {
+  decryptPersonalData,
+  encryptPersonalData,
+} from "../../utils/dataEncryption";
 
 import {
   sendProposalConfirmationEmail,
@@ -19,6 +23,21 @@ import {
 } from "./proposal.schema";
 
 import { ProposalRepository } from "./proposal.repository";
+
+function decryptProposal(proposal: ProposalRequest): ProposalRequest {
+  return {
+    ...proposal,
+    email: decryptPersonalData(proposal.email),
+    fullName: decryptPersonalData(proposal.fullName),
+    cpf: decryptPersonalData(proposal.cpf),
+    address: decryptPersonalData(proposal.address),
+    birthDate: decryptPersonalData(proposal.birthDate),
+    phone: decryptPersonalData(proposal.phone),
+    socialProfile: proposal.socialProfile
+      ? decryptPersonalData(proposal.socialProfile)
+      : null,
+  };
+}
 
 export class ProposalService {
   private repository = new ProposalRepository();
@@ -45,22 +64,24 @@ export class ProposalService {
               data.consulting ?? null,
           };
 
-    const proposal =
+    const storedProposal =
       await this.repository.create({
-        email: data.email,
+        email: encryptPersonalData(data.email),
 
-        fullName: data.fullName,
+        fullName: encryptPersonalData(data.fullName),
 
-        cpf: data.cpf,
+        cpf: encryptPersonalData(data.cpf),
 
-        address: data.address,
+        address: encryptPersonalData(data.address),
 
-        birthDate: data.birthDate,
+        birthDate: encryptPersonalData(data.birthDate),
 
-        phone: data.phone,
+        phone: encryptPersonalData(data.phone),
 
         socialProfile:
-          data.socialProfile || null,
+          data.socialProfile
+            ? encryptPersonalData(data.socialProfile)
+            : null,
 
         preferredContactMethod:
           data.preferredContactMethod,
@@ -114,8 +135,10 @@ export class ProposalService {
         paymentProofUploadedAt:
           data.paymentProofUrl
             ? new Date()
-            : null,
+          : null,
       });
+
+    const proposal = decryptProposal(storedProposal);
 
     void sendProposalNotificationEmail(
       proposal
@@ -145,51 +168,33 @@ export class ProposalService {
           filters.projectType,
       }),
 
-      ...(filters?.search && {
-        OR: [
-          {
-            fullName: {
-              contains:
-                filters.search,
-              mode:
-                "insensitive" as const,
-            },
-          },
-          {
-            email: {
-              contains:
-                filters.search,
-              mode:
-                "insensitive" as const,
-            },
-          },
-          {
-            phone: {
-              contains:
-                filters.search,
-              mode:
-                "insensitive" as const,
-            },
-          },
-        ],
-      }),
     };
 
-    return this.repository.findAll(where);
+    const proposals = (await this.repository.findAll(where)).map(decryptProposal);
+    const search = filters?.search?.trim().toLocaleLowerCase();
+
+    if (!search) return proposals;
+
+    return proposals.filter((proposal) =>
+      [proposal.fullName, proposal.email, proposal.phone]
+        .some((value) => value.toLocaleLowerCase().includes(search))
+    );
   }
 
   async findById(id: string) {
-    return this.repository.findById(id);
+    const proposal = await this.repository.findById(id);
+    return proposal ? decryptProposal(proposal) : null;
   }
 
   async updateStatus(
     id: string,
     data: UpdateProposalStatusInput
   ) {
-    const proposal =
+    const storedProposal =
       await this.repository.update(id, {
         status: data.status,
       });
+    const proposal = decryptProposal(storedProposal);
 
     try {
       await sendProposalStatusChangedEmail(
@@ -206,10 +211,11 @@ export class ProposalService {
     id: string,
     data: UpdateProposalNotesInput
   ) {
-    return this.repository.update(id, {
+    const proposal = await this.repository.update(id, {
       internalNotes:
         data.internalNotes || "",
     });
+    return decryptProposal(proposal);
   }
 
   async generateUploadUrl(
@@ -247,7 +253,7 @@ export class ProposalService {
       allowedContentTypes: ["application/pdf", "image/jpeg", "image/png", "image/webp"],
     });
 
-    return this.repository.update(id, {
+    const updatedProposal = await this.repository.update(id, {
       paymentProofStorageKey:
         storageKey,
 
@@ -256,6 +262,7 @@ export class ProposalService {
       paymentProofUploadedAt:
         new Date(),
     });
+    return decryptProposal(updatedProposal);
   }
 
   async validateUploadedFiles(data: CreateProposalInput) {
@@ -314,8 +321,6 @@ export class ProposalService {
   }
 
   async latest(limit = 5) {
-    return this.repository.findLatest(
-      limit
-    );
+    return (await this.repository.findLatest(limit)).map(decryptProposal);
   }
 }

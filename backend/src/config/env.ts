@@ -47,6 +47,20 @@ const envSchema = z.object({
 
   jwtSecret: z.string(),
 
+  dataEncryptionKey: z
+    .string()
+    .trim()
+    .refine(
+      (value) => {
+        try {
+          return Buffer.from(value, "base64").length === 32;
+        } catch {
+          return false;
+        }
+      },
+      "DATA_ENCRYPTION_KEY deve ser uma chave Base64 de 32 bytes."
+    ),
+
   ownerApprovalEmail: z
     .string()
     .transform((value) => cleanString(value) ?? "")
@@ -106,6 +120,8 @@ export const env = envSchema.parse({
   mailFrom: process.env.MAIL_FROM,
 
   jwtSecret: process.env.JWT_SECRET,
+
+  dataEncryptionKey: process.env.DATA_ENCRYPTION_KEY,
 
   ownerApprovalEmail: process.env.OWNER_APPROVAL_EMAIL,
 
