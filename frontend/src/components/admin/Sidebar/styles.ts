@@ -2,11 +2,18 @@ import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 
 export const Container = styled.aside`
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 10;
+
   width: 280px;
-  min-height: 100vh;
+  height: 100vh;
 
   display: flex;
   flex-direction: column;
+
+  overflow-y: auto;
+  flex-shrink: 0;
 
   background: ${({ theme }) => theme.colors.surface};
 
