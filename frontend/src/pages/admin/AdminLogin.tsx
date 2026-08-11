@@ -133,6 +133,16 @@ export default function AdminLogin() {
       const data = await response.json().catch(() => null);
 
       if (!response.ok) {
+        if (
+          response.status === 400 ||
+          response.status === 401 ||
+          response.status === 403 ||
+          response.status === 422
+        ) {
+          throw new Error(
+            "E-mail ou senha incorretos. Verifique as informações e tente novamente.",
+          );
+        }
         throw new Error(data?.message || "Não foi possível fazer login.");
       }
 
