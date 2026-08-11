@@ -336,3 +336,66 @@ export const DangerZone = styled.div`
     ${({ theme }) =>
       theme.colors.border};
 `;
+
+export const ExportSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  margin-top: 32px;
+  padding-top: 24px;
+
+  border-top: 1px solid
+    ${({ theme }) => theme.colors.border};
+`;
+
+export const ExportButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-height: 44px;
+  padding: 0 20px;
+
+  border: 0;
+  border-radius: 10px;
+
+  background: ${({ theme }) => theme.colors.primary};
+  color: #fff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+
+  span {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+`;
+
+export const ExportDescription = styled.p`
+  margin: 0;
+
+  font-size: 12px;
+  line-height: 1.5;
+
+  color: ${({ theme }) => theme.colors.textSecondary};
+
+  text-align: center;
+`;

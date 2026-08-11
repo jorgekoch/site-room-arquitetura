@@ -19,12 +19,12 @@ import { proposalStatusOptions } from "../../../data/admin";
 
 import * as S from "./styles";
 import { getProposalProjectTypeLabel } from "../../../utils/proposalLabels";
+import { exportProposals } from "../../../lib/proposals";
 
 export default function AdminPropostas() {
   const [searchParams] = useSearchParams();
 
-  const proposalIdFromUrl =
-    searchParams.get("proposal");
+  const proposalIdFromUrl = searchParams.get("proposal");
 
   const {
     proposals,
@@ -41,36 +41,27 @@ export default function AdminPropostas() {
 
   const { user } = useAdmin();
 
-  const [selectedId, setSelectedId] =
-    useState("");
+  const [selectedId, setSelectedId] = useState("");
 
-  const [statusFilter, setStatusFilter] =
-    useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
-  const [projectTypeFilter, setProjectTypeFilter] =
-    useState("");
+  const [projectTypeFilter, setProjectTypeFilter] = useState("");
 
-  const [search, setSearch] =
-    useState("");
+  const [search, setSearch] = useState("");
 
-  const [statusDraft, setStatusDraft] =
-    useState<ProposalStatus | "">("");
+  const [statusDraft, setStatusDraft] = useState<ProposalStatus | "">("");
 
-  const [message, setMessage] =
-    useState("");
+  const [message, setMessage] = useState("");
 
-  const [deleteModalOpen, setDeleteModalOpen] =
-    useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const [deleteConfirmation, setDeleteConfirmation] =
-    useState("");
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
 
   const [deleting, setDeleting] = useState(false);
 
-  const [
-    errorMessage,
-    setErrorMessage,
-  ] = useState("");
+  const [exporting, setExporting] = useState(false);
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   /**
    * Tipos de projeto disponíveis
@@ -78,13 +69,8 @@ export default function AdminPropostas() {
   const projectTypeOptions = useMemo(() => {
     return Array.from(
       new Set(
-        proposals
-          .map(
-            (proposal) =>
-              proposal.projectType
-          )
-          .filter(Boolean)
-      )
+        proposals.map((proposal) => proposal.projectType).filter(Boolean),
+      ),
     );
   }, [proposals]);
 
@@ -95,16 +81,10 @@ export default function AdminPropostas() {
   useEffect(() => {
     loadProposals({
       status: statusFilter || undefined,
-      projectType:
-        projectTypeFilter || undefined,
+      projectType: projectTypeFilter || undefined,
       search: search || undefined,
     });
-  }, [
-    statusFilter,
-    projectTypeFilter,
-    search,
-    loadProposals,
-  ]);
+  }, [statusFilter, projectTypeFilter, search, loadProposals]);
 
   /**
    * Seleciona automaticamente
@@ -120,37 +100,25 @@ export default function AdminPropostas() {
     // da busca do Header, prioriza
     // exatamente a proposta solicitada.
     if (proposalIdFromUrl) {
-      const proposalFromUrl =
-        proposals.find(
-          (proposal) =>
-            proposal.id ===
-            proposalIdFromUrl
-        );
+      const proposalFromUrl = proposals.find(
+        (proposal) => proposal.id === proposalIdFromUrl,
+      );
 
       if (proposalFromUrl) {
-        setSelectedId(
-          proposalFromUrl.id
-        );
+        setSelectedId(proposalFromUrl.id);
 
         return;
       }
     }
 
     const stillExists = proposals.some(
-      (proposal) =>
-        proposal.id === selectedId
+      (proposal) => proposal.id === selectedId,
     );
 
     if (!selectedId || !stillExists) {
-      setSelectedId(
-        proposals[0].id
-      );
+      setSelectedId(proposals[0].id);
     }
-  }, [
-    proposals,
-    selectedId,
-    proposalIdFromUrl,
-  ]);
+  }, [proposals, selectedId, proposalIdFromUrl]);
 
   /**
    * Carrega detalhes da proposta
@@ -161,13 +129,8 @@ export default function AdminPropostas() {
       return;
     }
 
-    loadProposal(selectedId).catch(
-      console.error
-    );
-  }, [
-    selectedId,
-    loadProposal,
-  ]);
+    loadProposal(selectedId).catch(console.error);
+  }, [selectedId, loadProposal]);
 
   /**
    * Mantém o select de status
@@ -175,19 +138,14 @@ export default function AdminPropostas() {
    */
   useEffect(() => {
     if (selectedProposal) {
-      setStatusDraft(
-        selectedProposal.status
-      );
+      setStatusDraft(selectedProposal.status);
     } else {
       setStatusDraft("");
     }
   }, [selectedProposal]);
 
   async function handleSaveStatus() {
-    if (
-      !selectedProposal ||
-      !statusDraft
-    ) {
+    if (!selectedProposal || !statusDraft) {
       return;
     }
 
@@ -195,38 +153,26 @@ export default function AdminPropostas() {
       setMessage("");
       setErrorMessage("");
 
-      await changeStatus(
-        selectedProposal.id,
-        statusDraft
-      );
+      await changeStatus(selectedProposal.id, statusDraft);
 
-      setMessage(
-        "Status atualizado com sucesso."
-      );
+      setMessage("Status atualizado com sucesso.");
 
-      window.dispatchEvent(
-        new Event("admin-notifications-updated")
-      );
+      window.dispatchEvent(new Event("admin-notifications-updated"));
 
       await loadProposals({
-        status:
-          statusFilter || undefined,
-        projectType:
-          projectTypeFilter || undefined,
-        search:
-          search || undefined,
+        status: statusFilter || undefined,
+        projectType: projectTypeFilter || undefined,
+        search: search || undefined,
       });
 
-      await loadProposal(
-        selectedProposal.id
-      );
+      await loadProposal(selectedProposal.id);
     } catch (error) {
       console.error(error);
 
       setErrorMessage(
         error instanceof Error
           ? error.message
-          : "Não foi possível atualizar o status."
+          : "Não foi possível atualizar o status.",
       );
     }
   }
@@ -247,18 +193,44 @@ export default function AdminPropostas() {
       setDeleteConfirmation("");
       setMessage("Proposta excluída com sucesso.");
 
-      window.dispatchEvent(
-        new Event("admin-notifications-updated")
-      );
+      window.dispatchEvent(new Event("admin-notifications-updated"));
     } catch (error) {
       console.error(error);
       setErrorMessage(
         error instanceof Error
           ? error.message
-          : "Não foi possível excluir a proposta."
+          : "Não foi possível excluir a proposta.",
       );
     } finally {
       setDeleting(false);
+    }
+  }
+
+  async function handleExportProposals() {
+    try {
+      setExporting(true);
+      setErrorMessage("");
+      setMessage("");
+
+      await exportProposals({
+        status: statusFilter || undefined,
+
+        projectType: projectTypeFilter || undefined,
+
+        search: search || undefined,
+      });
+
+      setMessage("Propostas exportadas com sucesso.");
+    } catch (error) {
+      console.error(error);
+
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível exportar as propostas.",
+      );
+    } finally {
+      setExporting(false);
     }
   }
 
@@ -273,79 +245,41 @@ export default function AdminPropostas() {
         <S.Input
           placeholder="Buscar por nome, e-mail ou telefone"
           value={search}
-          onChange={(event) =>
-            setSearch(event.target.value)
-          }
+          onChange={(event) => setSearch(event.target.value)}
         />
 
         <S.Select
           value={statusFilter}
-          onChange={(event) =>
-            setStatusFilter(
-              event.target.value
-            )
-          }
+          onChange={(event) => setStatusFilter(event.target.value)}
         >
-          <option value="">
-            Todos os status
-          </option>
+          <option value="">Todos os status</option>
 
-          {proposalStatusOptions.map(
-            (option) => (
-              <option
-                key={option.value}
-                value={option.value}
-              >
-                {option.label}
-              </option>
-            )
-          )}
+          {proposalStatusOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
         </S.Select>
 
         <S.Select
           value={projectTypeFilter}
-          onChange={(event) =>
-            setProjectTypeFilter(
-              event.target.value
-            )
-          }
+          onChange={(event) => setProjectTypeFilter(event.target.value)}
         >
-          <option value="">
-            Todos os tipos
-          </option>
+          <option value="">Todos os tipos</option>
 
-          {projectTypeOptions.map(
-            (option) => (
-              <option
-                key={option}
-                value={option}
-              >
-                {getProposalProjectTypeLabel(
-                  option
-                )}
-              </option>
-            )
-          )}
+          {projectTypeOptions.map((option) => (
+            <option key={option} value={option}>
+              {getProposalProjectTypeLabel(option)}
+            </option>
+          ))}
         </S.Select>
       </S.Filters>
 
-      {error && (
-        <S.Message $error>
-          {error}
-        </S.Message>
-      )}
+      {error && <S.Message $error>{error}</S.Message>}
 
-      {errorMessage && (
-        <S.Message $error>
-          {errorMessage}
-        </S.Message>
-      )}
+      {errorMessage && <S.Message $error>{errorMessage}</S.Message>}
 
-      {message && (
-        <S.Message>
-          {message}
-        </S.Message>
-      )}
+      {message && <S.Message>{message}</S.Message>}
 
       {loading ? (
         <Loading />
@@ -359,46 +293,28 @@ export default function AdminPropostas() {
           {/* Lista */}
           <S.Panel>
             <S.List>
-              {proposals.map(
-                (proposal) => (
-                  <S.ItemButton
-                    key={proposal.id}
-                    type="button"
-                    $active={
-                      proposal.id ===
-                      selectedId
-                    }
-                    onClick={() =>
-                      setSelectedId(
-                        proposal.id
-                      )
-                    }
-                  >
-                    <S.ItemTitle>
-                      {proposal.fullName}
-                    </S.ItemTitle>
+              {proposals.map((proposal) => (
+                <S.ItemButton
+                  key={proposal.id}
+                  type="button"
+                  $active={proposal.id === selectedId}
+                  onClick={() => setSelectedId(proposal.id)}
+                >
+                  <S.ItemTitle>{proposal.fullName}</S.ItemTitle>
 
-                    <S.ItemMeta>
-                      {proposal.email}
-                    </S.ItemMeta>
+                  <S.ItemMeta>{proposal.email}</S.ItemMeta>
 
-                    <S.ItemMeta>
-                      {getProposalProjectTypeLabel(
-                        proposal.projectType
-                      )}
-                      {" • "}
-                      {
-                        proposalStatusOptions.find(
-                          (option) =>
-                            option.value ===
-                            proposal.status
-                        )?.label ??
-                        proposal.status
-                      }
-                    </S.ItemMeta>
-                  </S.ItemButton>
-                )
-              )}
+                  <S.ItemMeta>
+                    {getProposalProjectTypeLabel(proposal.projectType)}
+
+                    {" • "}
+
+                    {proposalStatusOptions.find(
+                      (option) => option.value === proposal.status,
+                    )?.label ?? proposal.status}
+                  </S.ItemMeta>
+                </S.ItemButton>
+              ))}
             </S.List>
           </S.Panel>
 
@@ -408,82 +324,46 @@ export default function AdminPropostas() {
               <Loading />
             ) : selectedProposal ? (
               <S.Details>
-                <S.DetailTitle>
-                  {selectedProposal.fullName}
-                </S.DetailTitle>
+                <S.DetailTitle>{selectedProposal.fullName}</S.DetailTitle>
 
                 <S.Actions>
                   <S.StatusSelect
                     value={statusDraft}
                     onChange={(event) =>
-                      setStatusDraft(
-                        event.target
-                          .value as ProposalStatus
-                      )
+                      setStatusDraft(event.target.value as ProposalStatus)
                     }
                   >
-                    {proposalStatusOptions.map(
-                      (option) => (
-                        <option
-                          key={option.value}
-                          value={
-                            option.value
-                          }
-                        >
-                          {option.label}
-                        </option>
-                      )
-                    )}
+                    {proposalStatusOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
                   </S.StatusSelect>
 
-                  <S.SaveButton
-                    type="button"
-                    onClick={
-                      handleSaveStatus
-                    }
-                  >
+                  <S.SaveButton type="button" onClick={handleSaveStatus}>
                     Salvar status
                   </S.SaveButton>
-
                 </S.Actions>
 
-                <ProposalDetails
-                  proposal={
-                    selectedProposal
-                  }
-                />
+                <ProposalDetails proposal={selectedProposal} />
 
                 <S.AdminBlocks>
                   <S.Block>
                     <ProposalNotes
-                      proposalId={
-                        selectedProposal.id
-                      }
-                      initialValue={
-                        selectedProposal.internalNotes
-                      }
+                      proposalId={selectedProposal.id}
+                      initialValue={selectedProposal.internalNotes}
                       onSave={saveNotes}
-                      onSaved={() =>
-                        loadProposal(
-                          selectedProposal.id
-                        )
-                      }
+                      onSaved={() => loadProposal(selectedProposal.id)}
                     />
                   </S.Block>
 
                   <S.Block>
                     <ProposalPaymentProof
-                      proposalId={
-                        selectedProposal.id
-                      }
+                      proposalId={selectedProposal.id}
                       hasCurrentProof={Boolean(
-                        selectedProposal.paymentProofStorageKey
+                        selectedProposal.paymentProofStorageKey,
                       )}
-                      onUploaded={() =>
-                        loadProposal(
-                          selectedProposal.id
-                        )
-                      }
+                      onUploaded={() => loadProposal(selectedProposal.id)}
                     />
                   </S.Block>
                 </S.AdminBlocks>
@@ -504,20 +384,40 @@ export default function AdminPropostas() {
               </S.Details>
             ) : (
               <S.Empty>
-                Selecione uma proposta para
-                visualizar os detalhes.
+                Selecione uma proposta para visualizar os detalhes.
               </S.Empty>
             )}
           </S.Panel>
         </S.Grid>
       )}
 
+      {/* Exportação */}
+      <S.ExportSection>
+        <S.ExportButton
+          type="button"
+          onClick={handleExportProposals}
+          disabled={exporting || proposals.length === 0}
+        >
+          {exporting ? (
+            "Exportando..."
+          ) : (
+            <>
+              <span aria-hidden="true">↓</span>
+              Exportar propostas em Excel
+            </>
+          )}
+        </S.ExportButton>
+
+        <S.ExportDescription>
+          Exporta os dados das propostas de acordo com os filtros atualmente
+          aplicados.
+        </S.ExportDescription>
+      </S.ExportSection>
+
       <ConfirmModal
         open={deleteModalOpen}
         title="Excluir proposta"
-        message={
-          <>Esta ação é permanente. Digite "excluir" para confirmar.</>
-        }
+        message={<>Esta ação é permanente. Digite "excluir" para confirmar.</>}
         confirmLabel="Excluir proposta"
         loading={deleting}
         confirmation={{
