@@ -67,7 +67,8 @@ export function Sidebar() {
           .filter(
             (item) =>
               item.to !== "/admin/usuarios" ||
-              user?.role === "OWNER",
+              user?.role === "OWNER" ||
+              user?.role === "DEV",
           )
           .map((item) => {
             const Icon = item.icon;
@@ -91,9 +92,7 @@ export function Sidebar() {
 
                 {notificationCount > 0 && (
                   <S.NotificationBadge>
-                    {notificationCount > 99
-                      ? "99+"
-                      : notificationCount}
+                    {notificationCount > 99 ? "99+" : notificationCount}
                   </S.NotificationBadge>
                 )}
               </S.MenuItem>
@@ -102,18 +101,13 @@ export function Sidebar() {
       </S.Menu>
 
       <S.Footer>
-        <S.SiteButton
-          href="/"
-          target="_blank"
-        >
+        <S.SiteButton href="/" target="_blank">
           <Globe size={18} />
 
           <span>Ver Site</span>
         </S.SiteButton>
 
-        <S.LogoutButton
-          onClick={logout}
-        >
+        <S.LogoutButton onClick={logout}>
           <LogOut size={18} />
 
           <span>Sair</span>

@@ -92,41 +92,26 @@ const SearchInput = styled.input`
 
   padding: 0 1rem;
 
-  border-radius:
-    ${({ theme }) =>
-    theme.radius.md};
+  border-radius: ${({ theme }) => theme.radius.md};
 
-  border: 1px solid
-    ${({ theme }) =>
-    theme.colors.border};
+  border: 1px solid ${({ theme }) => theme.colors.border};
 
-  background:
-    ${({ theme }) =>
-    theme.colors.backgroundSoft};
+  background: ${({ theme }) => theme.colors.backgroundSoft};
 
-  color:
-    ${({ theme }) =>
-    theme.colors.text};
+  color: ${({ theme }) => theme.colors.text};
 
   font-family: inherit;
 
   outline: none;
 
   &:focus {
-    border-color:
-      ${({ theme }) =>
-    theme.colors.primary};
+    border-color: ${({ theme }) => theme.colors.primary};
 
-    box-shadow:
-      0 0 0 3px
-      ${({ theme }) =>
-    theme.colors.primaryRing};
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.primaryRing};
   }
 
   &::placeholder {
-    color:
-      ${({ theme }) =>
-    theme.colors.textMuted};
+    color: ${({ theme }) => theme.colors.textMuted};
   }
 `;
 
@@ -145,35 +130,23 @@ const FilterButton = styled.button<{
 
   padding: 0.65rem 0.9rem;
 
-  border-radius:
-    ${({ theme }) =>
-    theme.radius.pill};
+  border-radius: ${({ theme }) => theme.radius.pill};
 
   border: 1px solid
     ${({ theme, $active }) =>
-    $active
-      ? theme.colors.primary
-      : theme.colors.border};
+      $active ? theme.colors.primary : theme.colors.border};
 
-  background:
-    ${({ theme, $active }) =>
-    $active
-      ? theme.colors.primary
-      : "transparent"};
+  background: ${({ theme, $active }) =>
+    $active ? theme.colors.primary : "transparent"};
 
-  color:
-    ${({ theme, $active }) =>
-    $active
-      ? theme.colors.primaryContrast
-      : theme.colors.text};
+  color: ${({ theme, $active }) =>
+    $active ? theme.colors.primaryContrast : theme.colors.text};
 
   cursor: pointer;
 
   font-family: inherit;
 
-  font-size:
-    ${({ theme }) =>
-    theme.fontSizes.xs};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
 
   font-weight: 600;
 
@@ -183,9 +156,7 @@ const FilterButton = styled.button<{
     color 0.2s ease;
 
   &:hover {
-    border-color:
-      ${({ theme }) =>
-    theme.colors.primary};
+    border-color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
@@ -257,11 +228,7 @@ const SmallButton = styled.button`
 `;
 
 const Badge = styled.span<{
-  $variant:
-  | "success"
-  | "warning"
-  | "neutral"
-  | "primary";
+  $variant: "success" | "warning" | "neutral" | "primary";
 }>`
   display: inline-flex;
 
@@ -271,18 +238,13 @@ const Badge = styled.span<{
 
   padding: 0.4rem 0.7rem;
 
-  border-radius:
-    ${({ theme }) =>
-    theme.radius.pill};
+  border-radius: ${({ theme }) => theme.radius.pill};
 
-  font-size:
-    ${({ theme }) =>
-    theme.fontSizes.xs};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
 
   font-weight: 600;
 
-  background:
-    ${({ theme, $variant }) => {
+  background: ${({ theme, $variant }) => {
     if ($variant === "success") {
       return theme.colors.successSoft;
     }
@@ -298,8 +260,7 @@ const Badge = styled.span<{
     return theme.colors.backgroundSoft;
   }};
 
-  color:
-    ${({ theme, $variant }) => {
+  color: ${({ theme, $variant }) => {
     if ($variant === "success") {
       return theme.colors.success;
     }
@@ -317,20 +278,20 @@ const Badge = styled.span<{
 
   border: 1px solid
     ${({ theme, $variant }) => {
-    if ($variant === "success") {
-      return theme.colors.successBorder;
-    }
+      if ($variant === "success") {
+        return theme.colors.successBorder;
+      }
 
-    if ($variant === "warning") {
-      return theme.colors.secondaryBorder;
-    }
+      if ($variant === "warning") {
+        return theme.colors.secondaryBorder;
+      }
 
-    if ($variant === "primary") {
-      return theme.colors.primaryBorder;
-    }
+      if ($variant === "primary") {
+        return theme.colors.primaryBorder;
+      }
 
-    return theme.colors.border;
-  }};
+      return theme.colors.border;
+    }};
 `;
 
 const Message = styled.p<{ $error?: boolean }>`
@@ -346,9 +307,7 @@ function statusLabel(admin: AdminUserItem) {
   return "Ativo";
 }
 
-function statusVariant(
-  admin: AdminUserItem
-) {
+function statusVariant(admin: AdminUserItem) {
   if (!admin.approved) {
     return "warning" as const;
   }
@@ -360,7 +319,6 @@ function statusVariant(
   return "success" as const;
 }
 
-
 export default function AdminUsuarios() {
   const navigate = useNavigate();
   const { user: currentAdmin } = useCurrentAdmin();
@@ -370,15 +328,14 @@ export default function AdminUsuarios() {
   const [loading, setLoading] = useState(false);
   const [roleDrafts, setRoleDrafts] = useState<Record<string, AdminRole>>({});
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] =
-    useState<
-      "ALL" | "PENDING" | "ACTIVE" | "INACTIVE"
-    >("ALL");
-  const [adminToRemove, setAdminToRemove] =
-    useState<AdminUserItem | null>(null);
+  const [statusFilter, setStatusFilter] = useState<
+    "ALL" | "PENDING" | "ACTIVE" | "INACTIVE"
+  >("ALL");
+  const [adminToRemove, setAdminToRemove] = useState<AdminUserItem | null>(
+    null,
+  );
 
-  const [removingAdmin, setRemovingAdmin] =
-    useState(false);
+  const [removingAdmin, setRemovingAdmin] = useState(false);
 
   async function loadAdmins() {
     try {
@@ -386,15 +343,11 @@ export default function AdminUsuarios() {
       setMessage("");
       setErrorMessage("");
 
-      const data =
-        await getAdminUsers();
+      const data = await getAdminUsers();
 
       setItems(data);
 
-      const drafts: Record<
-        string,
-        AdminRole
-      > = {};
+      const drafts: Record<string, AdminRole> = {};
 
       data.forEach((item) => {
         drafts[item.id] = item.role;
@@ -405,9 +358,7 @@ export default function AdminUsuarios() {
       console.error(error);
 
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "Erro ao carregar admins."
+        error instanceof Error ? error.message : "Erro ao carregar admins.",
       );
     } finally {
       setLoading(false);
@@ -416,7 +367,7 @@ export default function AdminUsuarios() {
 
   async function executeAction(
     action: () => Promise<unknown>,
-    successMessage: string
+    successMessage: string,
   ) {
     try {
       setMessage("");
@@ -424,18 +375,14 @@ export default function AdminUsuarios() {
 
       await action();
 
-      setMessage(
-        successMessage
-      );
+      setMessage(successMessage);
 
       await loadAdmins();
     } catch (error) {
       console.error(error);
 
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "Erro ao executar ação."
+        error instanceof Error ? error.message : "Erro ao executar ação.",
       );
     }
   }
@@ -445,40 +392,25 @@ export default function AdminUsuarios() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const filteredItems =
-    items.filter((admin) => {
-      const query =
-        search.trim().toLowerCase();
+  const filteredItems = items.filter((admin) => {
+    const query = search.trim().toLowerCase();
 
-      const matchesSearch =
-        !query ||
-        admin.name
-          .toLowerCase()
-          .includes(query) ||
-        admin.email
-          .toLowerCase()
-          .includes(query);
+    const matchesSearch =
+      !query ||
+      admin.name.toLowerCase().includes(query) ||
+      admin.email.toLowerCase().includes(query);
 
-      const matchesStatus =
-        statusFilter === "ALL" ||
-        (statusFilter === "PENDING" &&
-          !admin.approved) ||
-        (statusFilter === "ACTIVE" &&
-          admin.approved &&
-          admin.isActive) ||
-        (statusFilter === "INACTIVE" &&
-          admin.approved &&
-          !admin.isActive);
+    const matchesStatus =
+      statusFilter === "ALL" ||
+      (statusFilter === "PENDING" && !admin.approved) ||
+      (statusFilter === "ACTIVE" && admin.approved && admin.isActive) ||
+      (statusFilter === "INACTIVE" && admin.approved && !admin.isActive);
 
-      return (
-        matchesSearch &&
-        matchesStatus
-      );
-    });
+    return matchesSearch && matchesStatus;
+  });
 
   const isOwner = (admin: AdminUserItem) =>
-    admin.email.toLowerCase() ===
-    "manulopes.arq@gmail.com";
+    admin.email.toLowerCase() === "manulopes.arq@gmail.com";
 
   async function handleRemoveAdmin() {
     if (!adminToRemove) {
@@ -491,24 +423,18 @@ export default function AdminUsuarios() {
       setMessage("");
       setErrorMessage("");
 
-      await removeAdmin(
-        adminToRemove.id
-      );
+      await removeAdmin(adminToRemove.id);
 
       setAdminToRemove(null);
 
-      setMessage(
-        "Admin removido com sucesso."
-      );
+      setMessage("Admin removido com sucesso.");
 
       await loadAdmins();
     } catch (error) {
       console.error(error);
 
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "Erro ao remover admin."
+        error instanceof Error ? error.message : "Erro ao remover admin.",
       );
     } finally {
       setRemovingAdmin(false);
@@ -523,7 +449,10 @@ export default function AdminUsuarios() {
             <Eyebrow>Gestão de admins</Eyebrow>
 
             <Actions>
-              <GhostButton type="button" onClick={() => navigate("/admin/propostas")}>
+              <GhostButton
+                type="button"
+                onClick={() => navigate("/admin/propostas")}
+              >
                 Voltar para propostas
               </GhostButton>
 
@@ -541,64 +470,47 @@ export default function AdminUsuarios() {
 
           <Title>Usuários administradores</Title>
           <Description>
-            Aprove, desative, reative, altere função e remova acessos administrativos do sistema.
+            Aprove, desative, reative, altere função e remova acessos
+            administrativos do sistema.
           </Description>
           <Filters>
             <SearchInput
               type="search"
               placeholder="Pesquisar por nome ou e-mail..."
               value={search}
-              onChange={(event) =>
-                setSearch(event.target.value)
-              }
+              onChange={(event) => setSearch(event.target.value)}
               aria-label="Pesquisar administradores"
             />
 
             <FilterGroup>
               <FilterButton
                 type="button"
-                $active={
-                  statusFilter === "ALL"
-                }
-                onClick={() =>
-                  setStatusFilter("ALL")
-                }
+                $active={statusFilter === "ALL"}
+                onClick={() => setStatusFilter("ALL")}
               >
                 Todos
               </FilterButton>
 
               <FilterButton
                 type="button"
-                $active={
-                  statusFilter === "PENDING"
-                }
-                onClick={() =>
-                  setStatusFilter("PENDING")
-                }
+                $active={statusFilter === "PENDING"}
+                onClick={() => setStatusFilter("PENDING")}
               >
                 Pendentes
               </FilterButton>
 
               <FilterButton
                 type="button"
-                $active={
-                  statusFilter === "ACTIVE"
-                }
-                onClick={() =>
-                  setStatusFilter("ACTIVE")
-                }
+                $active={statusFilter === "ACTIVE"}
+                onClick={() => setStatusFilter("ACTIVE")}
               >
                 Ativos
               </FilterButton>
 
               <FilterButton
                 type="button"
-                $active={
-                  statusFilter === "INACTIVE"
-                }
-                onClick={() =>
-                  setStatusFilter("INACTIVE")
-                }
+                $active={statusFilter === "INACTIVE"}
+                onClick={() => setStatusFilter("INACTIVE")}
               >
                 Inativos
               </FilterButton>
@@ -634,40 +546,27 @@ export default function AdminUsuarios() {
                     <Td>{admin.email}</Td>
                     <Td>
                       {isOwner(admin) ? (
-                        <Badge $variant="primary">
-                          Owner
-                        </Badge>
+                        <Badge $variant="primary">Owner</Badge>
                       ) : (
                         <Select
-                          value={
-                            roleDrafts[admin.id] ||
-                            admin.role
-                          }
+                          value={roleDrafts[admin.id] || admin.role}
                           onChange={(event) =>
                             setRoleDrafts((prev) => ({
                               ...prev,
-                              [admin.id]:
-                                event.target
-                                  .value as AdminRole,
+                              [admin.id]: event.target.value as AdminRole,
                             }))
                           }
                         >
-                          <option value="OWNER">
-                            Proprietário
-                          </option>
+                          <option value="OWNER">Proprietário</option>
 
-                          <option value="ADMIN">
-                            Administrador
-                          </option>
+                          <option value="ADMIN">Administrador</option>
+
+                          <option value="DEV">Desenvolvedor</option>
                         </Select>
                       )}
                     </Td>
                     <Td>
-                      <Badge
-                        $variant={statusVariant(
-                          admin
-                        )}
-                      >
+                      <Badge $variant={statusVariant(admin)}>
                         {statusLabel(admin)}
                       </Badge>
                     </Td>
@@ -681,11 +580,8 @@ export default function AdminUsuarios() {
                                 type="button"
                                 onClick={() =>
                                   executeAction(
-                                    () =>
-                                      approveAdmin(
-                                        admin.id
-                                      ),
-                                    "Admin aprovado com sucesso."
+                                    () => approveAdmin(admin.id),
+                                    "Admin aprovado com sucesso.",
                                   )
                                 }
                               >
@@ -693,41 +589,33 @@ export default function AdminUsuarios() {
                               </SmallButton>
                             )}
 
-                            {admin.approved &&
-                              !admin.isActive && (
-                                <SmallButton
-                                  type="button"
-                                  onClick={() =>
-                                    executeAction(
-                                      () =>
-                                        activateAdmin(
-                                          admin.id
-                                        ),
-                                      "Admin ativado com sucesso."
-                                    )
-                                  }
-                                >
-                                  Ativar
-                                </SmallButton>
-                              )}
+                            {admin.approved && !admin.isActive && (
+                              <SmallButton
+                                type="button"
+                                onClick={() =>
+                                  executeAction(
+                                    () => activateAdmin(admin.id),
+                                    "Admin ativado com sucesso.",
+                                  )
+                                }
+                              >
+                                Ativar
+                              </SmallButton>
+                            )}
 
-                            {admin.approved &&
-                              admin.isActive && (
-                                <SmallButton
-                                  type="button"
-                                  onClick={() =>
-                                    executeAction(
-                                      () =>
-                                        deactivateAdmin(
-                                          admin.id
-                                        ),
-                                      "Admin desativado com sucesso."
-                                    )
-                                  }
-                                >
-                                  Desativar
-                                </SmallButton>
-                              )}
+                            {admin.approved && admin.isActive && (
+                              <SmallButton
+                                type="button"
+                                onClick={() =>
+                                  executeAction(
+                                    () => deactivateAdmin(admin.id),
+                                    "Admin desativado com sucesso.",
+                                  )
+                                }
+                              >
+                                Desativar
+                              </SmallButton>
+                            )}
 
                             <SmallButton
                               type="button"
@@ -736,11 +624,9 @@ export default function AdminUsuarios() {
                                   () =>
                                     updateAdminRole(
                                       admin.id,
-                                      roleDrafts[
-                                      admin.id
-                                      ] || admin.role
+                                      roleDrafts[admin.id] || admin.role,
                                     ),
-                                  "Papel atualizado com sucesso."
+                                  "Papel atualizado com sucesso.",
                                 )
                               }
                             >
@@ -749,9 +635,7 @@ export default function AdminUsuarios() {
 
                             <SmallButton
                               type="button"
-                              onClick={() =>
-                                setAdminToRemove(admin)
-                              }
+                              onClick={() => setAdminToRemove(admin)}
                             >
                               Remover
                             </SmallButton>
@@ -762,8 +646,7 @@ export default function AdminUsuarios() {
                           <span
                             style={{
                               fontSize: 12,
-                              color:
-                                "inherit",
+                              color: "inherit",
                               opacity: 0.65,
                             }}
                           >
@@ -787,12 +670,8 @@ export default function AdminUsuarios() {
           title="Remover administrador?"
           message={
             <>
-              Você está prestes a remover
-              o acesso administrativo de{" "}
-              <strong>
-                {adminToRemove?.name}
-              </strong>
-              . Essa ação não pode ser
+              Você está prestes a remover o acesso administrativo de{" "}
+              <strong>{adminToRemove?.name}</strong>. Essa ação não pode ser
               desfeita.
             </>
           }

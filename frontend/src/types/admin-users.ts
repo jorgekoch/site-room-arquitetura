@@ -1,4 +1,4 @@
-export type AdminRole = "OWNER" | "ADMIN";
+export type AdminRole = "OWNER" | "ADMIN" | "DEV";
 
 export type AdminUserItem = {
   id: string;

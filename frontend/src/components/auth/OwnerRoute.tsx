@@ -14,8 +14,10 @@ export function OwnerRoute({ children }: OwnerRouteProps) {
     return null;
   }
 
-  if (user?.role !== "OWNER") {
-    return <Navigate to="/admin/propostas" replace />;
+  const hasAccess = user?.role === "OWNER" || user?.role === "DEV";
+
+  if (!hasAccess) {
+    return <Navigate to="/admin" replace />;
   }
 
   return <>{children}</>;
