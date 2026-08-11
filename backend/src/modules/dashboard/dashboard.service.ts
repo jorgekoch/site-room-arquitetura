@@ -2,7 +2,7 @@ import { prisma } from "../../database/prisma";
 
 import { ProjectRepository } from "../project/project.repository";
 import { ProposalRepository } from "../proposal/proposal.repository";
-import { decryptPersonalData } from "../../utils/dataEncryption";
+import { decryptProposal } from "../proposal/proposal.service";
 
 export class DashboardService {
   private projectRepository =
@@ -66,7 +66,7 @@ export class DashboardService {
 
       latestProjects,
 
-      latestProposals,
+      latestProposals: latestProposals.map(decryptProposal),
     };
   }
 
@@ -122,7 +122,7 @@ export class DashboardService {
           type: "PROPOSAL" as const,
           title: "Nova proposta",
           description:
-            `${decryptPersonalData(proposal.fullName)} enviou uma solicitação.`,
+            `${decryptProposal(proposal).fullName} enviou uma solicitação.`,
           referenceId: proposal.id,
           createdAt: proposal.createdAt,
         })

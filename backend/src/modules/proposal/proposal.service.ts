@@ -24,7 +24,7 @@ import {
 
 import { ProposalRepository } from "./proposal.repository";
 
-function decryptProposal(proposal: ProposalRequest): ProposalRequest {
+export function decryptProposal(proposal: ProposalRequest): ProposalRequest {
   return {
     ...proposal,
     email: decryptPersonalData(proposal.email),
