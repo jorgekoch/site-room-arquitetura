@@ -123,6 +123,7 @@ enum ProposalStatus {
 enum AdminRole {
   OWNER
   ADMIN
+  DEV
 }
 
 enum ProjectCategory {

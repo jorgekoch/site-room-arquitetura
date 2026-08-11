@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { ProposalController } from "./proposal.controller";
 import { ensureAuthenticated } from "../../middlewares/ensureAuthenticated";
-import { ensureOwner } from "../../middlewares/ensureOwner";
+import { ensureOwnerOrDev } from "../../middlewares/ensureOwnerOrDev";
 import {
   proposalSubmissionRateLimit,
   proposalUploadRateLimit,
@@ -64,7 +64,7 @@ proposalRoutes.patch(
 proposalRoutes.delete(
   "/:id",
   ensureAuthenticated,
-  ensureOwner,
+  ensureOwnerOrDev,
   (request, response) => proposalController.remove(request, response),
 );
 

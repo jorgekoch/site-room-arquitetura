@@ -1,35 +1,35 @@
 import { Router } from "express";
 import { ensureAuthenticated } from "../../middlewares/ensureAuthenticated";
-import { ensureOwner } from "../../middlewares/ensureOwner";
+import { ensureOwnerOrDev } from "../../middlewares/ensureOwnerOrDev";
 import { AdminUsersController } from "./admin-users.controller";
 
 const adminUsersRoutes = Router();
 const adminUsersController = new AdminUsersController();
 
-adminUsersRoutes.use(ensureAuthenticated, ensureOwner);
+adminUsersRoutes.use(ensureAuthenticated, ensureOwnerOrDev);
 
 adminUsersRoutes.get("/", (request, response) =>
-  adminUsersController.list(request, response)
+  adminUsersController.list(request, response),
 );
 
 adminUsersRoutes.patch("/:id/approve", (request, response) =>
-  adminUsersController.approve(request, response)
+  adminUsersController.approve(request, response),
 );
 
 adminUsersRoutes.patch("/:id/activate", (request, response) =>
-  adminUsersController.activate(request, response)
+  adminUsersController.activate(request, response),
 );
 
 adminUsersRoutes.patch("/:id/deactivate", (request, response) =>
-  adminUsersController.deactivate(request, response)
+  adminUsersController.deactivate(request, response),
 );
 
 adminUsersRoutes.patch("/:id/role", (request, response) =>
-  adminUsersController.updateRole(request, response)
+  adminUsersController.updateRole(request, response),
 );
 
 adminUsersRoutes.delete("/:id", (request, response) =>
-  adminUsersController.remove(request, response)
+  adminUsersController.remove(request, response),
 );
 
 export { adminUsersRoutes };
