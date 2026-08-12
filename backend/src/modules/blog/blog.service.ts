@@ -3,7 +3,6 @@ import { storage } from "../../services/storage";
 import { BlogRepository } from "./blog.repository";
 import {
   getBlogReadingTime,
-  normalizeOptionalYoutubeUrl,
   sanitizeBlogContent,
   validateBlogContent,
 } from "./blog-content";
@@ -51,7 +50,6 @@ export class BlogService {
   async create(data: CreateBlogPostInput) {
     const slug = normalizeBlogSlug(data.slug);
     const contentError = validateBlogContent(data.content);
-    const normalizedYoutubeUrl = normalizeOptionalYoutubeUrl(data.youtubeUrl);
     const sanitizedContent = sanitizeBlogContent(data.content);
     const readingTime = getBlogReadingTime(sanitizedContent);
 
@@ -66,10 +64,6 @@ export class BlogService {
       throw new AppError(contentError, 400);
     }
 
-    if (data.youtubeUrl && !normalizedYoutubeUrl) {
-      throw new AppError("Informe uma URL válida do YouTube.", 400);
-    }
-
     const existing = await this.repository.findAnyBySlug(slug);
     if (existing) {
       throw new AppError("Já existe uma publicação com este slug.", 409);
@@ -81,7 +75,6 @@ export class BlogService {
       readingTime,
       slug,
       publishedAt: new Date(data.publishedAt),
-      youtubeUrl: normalizedYoutubeUrl ?? null,
     });
   }
 
@@ -127,18 +120,6 @@ export class BlogService {
 
       nextData.content = sanitizeBlogContent(nextData.content);
       nextData.readingTime = getBlogReadingTime(nextData.content);
-    }
-
-    if (nextData.youtubeUrl !== undefined) {
-      const normalizedYoutubeUrl = normalizeOptionalYoutubeUrl(
-        nextData.youtubeUrl,
-      );
-
-      if (nextData.youtubeUrl && !normalizedYoutubeUrl) {
-        throw new AppError("Informe uma URL válida do YouTube.", 400);
-      }
-
-      nextData.youtubeUrl = normalizedYoutubeUrl ?? null;
     }
 
     if (nextData.slug !== undefined) {

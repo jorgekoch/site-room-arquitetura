@@ -42,11 +42,6 @@ export const createBlogPostSchema = z.object({
 
     return value;
   }, z.enum(blogPostStatusValues).default("DRAFT")),
-
-  youtubeUrl: z.preprocess(
-    (value) => (typeof value === "string" && !value.trim() ? null : value),
-    z.string().url("Informe uma URL válida do YouTube.").nullable().optional(),
-  ),
 });
 
 export const updateBlogPostSchema = createBlogPostSchema.partial();

@@ -24,7 +24,6 @@ export class BlogRepository {
         publishedAt: new Date(data.publishedAt),
         readingTime: data.readingTime,
         status: data.status,
-        youtubeUrl: data.youtubeUrl ?? null,
       },
     });
   }
@@ -89,9 +88,6 @@ export class BlogRepository {
           readingTime: data.readingTime,
         }),
         ...(data.status !== undefined && { status: data.status }),
-        ...(data.youtubeUrl !== undefined && {
-          youtubeUrl: data.youtubeUrl ?? null,
-        }),
       },
     });
   }
