@@ -288,7 +288,7 @@ export function Footer() {
 
               <FooterText>Atendimento online em todo o Brasil</FooterText>
 
-              <FooterText>Rio do Sul/SC</FooterText>
+              <FooterText>Rio do Sul/SC e Florianópolis/SC</FooterText>
             </ContactGroup>
           </Column>
         </Grid>

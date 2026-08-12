@@ -52,7 +52,7 @@ function App() {
         <Route
           path="/orcamento"
           element={
-            <PageShell>
+            <PageShell hideTopbar hideFooter>
               <Contato />
             </PageShell>
           }
@@ -90,7 +90,7 @@ function App() {
         <Route
           path="/blog"
           element={
-            <PageShell hideTopbar>
+            <PageShell>
               <Blog />
             </PageShell>
           }
@@ -99,7 +99,7 @@ function App() {
         <Route
           path="/blog/:slug"
           element={
-            <PageShell hideTopbar>
+            <PageShell>
               <BlogPost />
             </PageShell>
           }

@@ -6,6 +6,7 @@ import { Footer } from "./Footer";
 type PageShellProps = {
   children: ReactNode;
   hideTopbar?: boolean;
+  hideFooter?: boolean;
 };
 
 const Shell = styled.div`
@@ -17,12 +18,16 @@ const Main = styled.main`
   min-height: 100vh;
 `;
 
-export function PageShell({ children, hideTopbar = false }: PageShellProps) {
+export function PageShell({
+  children,
+  hideTopbar = false,
+  hideFooter = false,
+}: PageShellProps) {
   return (
     <Shell>
       {!hideTopbar && <TopbarMobile />}
       <Main>{children}</Main>
-      <Footer />
+      {!hideFooter && <Footer />}
     </Shell>
   );
 }

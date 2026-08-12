@@ -68,11 +68,7 @@ const Overlay = styled.div`
       rgba(8, 12, 11, 0.48) 56%,
       rgba(8, 12, 11, 0.54) 100%
     ),
-    linear-gradient(
-      180deg,
-      rgba(0, 0, 0, 0.16) 0%,
-      rgba(0, 0, 0, 0.38) 100%
-    );
+    linear-gradient(180deg, rgba(0, 0, 0, 0.16) 0%, rgba(0, 0, 0, 0.38) 100%);
 
   html[data-theme="light"] & {
     background:
@@ -134,7 +130,7 @@ const Eyebrow = styled.span`
 const Title = styled.h1`
   width: 100%;
   max-width: none;
-  font-size: clamp(2.9rem, 8vw, 6.4rem);
+  font-size: clamp(2.4rem, 6.4vw, 5.1rem);
   line-height: 0.94;
   letter-spacing: -0.05em;
   text-wrap: balance;
@@ -265,7 +261,7 @@ export function HeroBase({
 }: HeroBaseProps) {
   const validSlides = useMemo(
     () => slides.filter((slide) => Boolean(slide)),
-    [slides]
+    [slides],
   );
 
   const [currentSlide, setCurrentSlide] = useState(0);
