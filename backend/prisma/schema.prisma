@@ -37,6 +37,8 @@ model ProposalRequest {
   referenceFilesJson          Json?
   paymentProofStorageKey      String?
 
+  @@index([status, createdAt])
+  @@index([projectType, createdAt])
   @@map("proposal_requests")
 }
 
@@ -52,17 +54,18 @@ model AdminUser {
   isActive               Boolean   @default(false)
   approvalToken          String?   @unique
   approvalTokenExpiresAt DateTime?
-  passwordResetTokenHash      String?
+  passwordResetTokenHash String?
   passwordResetTokenExpiresAt DateTime?
-  tokenVersion Int @default(0)
+  tokenVersion           Int       @default(0)
 
+  @@index([isActive, approved])
   @@map("admin_users")
 }
 
 model SiteSettings {
   id                    String   @id @default(cuid())
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
 
   whatsapp              String?
   instagram             String?
@@ -93,6 +96,9 @@ model Project {
   featuredImageStorageKey String?
   images                  ProjectImage[]
 
+  @@index([published, createdAt])
+  @@index([featured, published, updatedAt])
+  @@index([featuredImageStorageKey])
   @@map("projects")
 }
 
@@ -107,6 +113,7 @@ model ProjectImage {
   project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
+  @@index([storageKey])
   @@map("project_images")
 }
 
@@ -124,8 +131,8 @@ model BlogPost {
   publishedAt DateTime
   readingTime Int
   status      BlogPostStatus @default(DRAFT)
-  youtubeUrl  String?
 
+  @@index([status, publishedAt])
   @@map("blog_posts")
 }
 
