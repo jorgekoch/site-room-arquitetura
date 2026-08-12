@@ -90,7 +90,7 @@ function App() {
         <Route
           path="/blog"
           element={
-            <PageShell>
+            <PageShell hideTopbar>
               <Blog />
             </PageShell>
           }
@@ -99,7 +99,7 @@ function App() {
         <Route
           path="/blog/:slug"
           element={
-            <PageShell>
+            <PageShell hideTopbar>
               <BlogPost />
             </PageShell>
           }

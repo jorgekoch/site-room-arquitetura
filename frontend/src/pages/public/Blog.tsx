@@ -144,6 +144,7 @@ const ProjectImage = styled.img`
   height: 180px;
   object-fit: cover;
   display: block;
+  background: ${({ theme }) => theme.colors.backgroundSoft};
 `;
 
 const ProjectBody = styled.div`
@@ -178,6 +179,7 @@ const FeaturedImage = styled.img`
   height: 380px;
   object-fit: cover;
   display: block;
+  background: ${({ theme }) => theme.colors.backgroundSoft};
 
   @media ${media.tablet} {
     height: 460px;
@@ -477,19 +479,6 @@ export default function Blog() {
             </MetaList>
           </MetaCard>
         </Hero>
-
-        <FilterBar>
-          {categories.map((category) => (
-            <FilterButton
-              key={category}
-              type="button"
-              $active={selectedCategory === category}
-              onClick={() => setSelectedCategory(category)}
-            >
-              {category === "all" ? "Tudo" : category}
-            </FilterButton>
-          ))}
-        </FilterBar>
 
         <Layout>
           <Panel>

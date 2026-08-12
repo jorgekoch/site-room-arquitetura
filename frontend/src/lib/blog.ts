@@ -3,6 +3,9 @@ import { apiGet, apiPatch, apiPost, apiDelete } from "./api";
 
 export const DEFAULT_BLOG_POSTS: BlogPost[] = [];
 
+const FALLBACK_BLOG_AUTHOR = "ROOM Arquitetura";
+const FALLBACK_BLOG_CATEGORY = "Arquitetura";
+
 export function normalizeBlogSlug(value: string) {
   return value
     .toLowerCase()
@@ -23,6 +26,41 @@ export function normalizeBlogStatus(
   return normalized === "published" ? "published" : "draft";
 }
 
+function isValidDate(value: unknown): value is string | Date {
+  if (value instanceof Date) {
+    return !Number.isNaN(value.getTime());
+  }
+
+  if (typeof value === "string" || typeof value === "number") {
+    const date = new Date(value);
+    return !Number.isNaN(date.getTime());
+  }
+
+  return false;
+}
+
+function normalizeOptionalUrl(value: unknown) {
+  if (!value) {
+    return undefined;
+  }
+
+  const candidate = String(value).trim();
+  if (!candidate) {
+    return undefined;
+  }
+
+  try {
+    const parsed = new URL(candidate);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return undefined;
+    }
+  } catch {
+    return undefined;
+  }
+
+  return candidate;
+}
+
 function normalizeBlogPost(
   post: Partial<BlogPost> & { status?: string; publishedAt?: string | Date },
 ): BlogPost | null {
@@ -30,19 +68,34 @@ function normalizeBlogPost(
     return null;
   }
 
+  const author = String(post.author ?? FALLBACK_BLOG_AUTHOR).trim() || FALLBACK_BLOG_AUTHOR;
+  const category = String(post.category ?? FALLBACK_BLOG_CATEGORY).trim() || FALLBACK_BLOG_CATEGORY;
+  const slug = normalizeBlogSlug(String(post.slug));
+
+  if (!slug || slug.length < 3) {
+    return null;
+  }
+
+  const fallbackPublishedAt = new Date().toISOString();
+  const publishedAt = isValidDate(post.publishedAt)
+    ? new Date(post.publishedAt).toISOString()
+    : fallbackPublishedAt;
+
   return {
     id: String(post.id),
-    title: String(post.title),
-    slug: String(post.slug),
-    excerpt: String(post.excerpt ?? ""),
-    content: String(post.content ?? ""),
-    coverImage: post.coverImage ? String(post.coverImage) : undefined,
-    author: String(post.author ?? "ROOM Arquitetura"),
-    category: String(post.category ?? "Arquitetura"),
-    publishedAt: new Date(post.publishedAt ?? Date.now()).toISOString(),
-    readingTime: Number(post.readingTime ?? 4),
+    title: String(post.title).trim(),
+    slug,
+    excerpt: String(post.excerpt ?? "").trim(),
+    content: String(post.content ?? "").trim(),
+    coverImage: normalizeOptionalUrl(post.coverImage),
+    author,
+    category,
+    publishedAt,
+    readingTime: Number.isFinite(Number(post.readingTime))
+      ? Math.max(1, Number(post.readingTime))
+      : 4,
     status: normalizeBlogStatus(post.status),
-    youtubeUrl: post.youtubeUrl ? String(post.youtubeUrl) : undefined,
+    youtubeUrl: normalizeOptionalUrl(post.youtubeUrl),
   };
 }
 
@@ -162,13 +215,29 @@ export function getYoutubeEmbedUrl(value?: string) {
     return "";
   }
 
-  const match = trimmed.match(
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([A-Za-z0-9_-]{11})/i,
-  );
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.hostname === "youtu.be") {
+      const videoId = parsed.pathname.replace("/", "").split("/")[0];
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
+    }
 
-  if (match) {
-    return `https://www.youtube.com/embed/${match[1]}`;
+    if (parsed.hostname.includes("youtube.com")) {
+      const videoId = parsed.searchParams.get("v");
+      if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}`;
+      }
+
+      const shortId = parsed.pathname.match(/^\/shorts\/([A-Za-z0-9_-]{11})/i)?.[1];
+      if (shortId) {
+        return `https://www.youtube.com/embed/${shortId}`;
+      }
+    }
+  } catch {
+    // ignora URL inválida
   }
 
-  return trimmed;
+  return trimmed.startsWith("http://") || trimmed.startsWith("https://")
+    ? trimmed
+    : "";
 }

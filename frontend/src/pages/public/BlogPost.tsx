@@ -1,5 +1,6 @@
 import { Link, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import DOMPurify from "dompurify";
 import styled from "styled-components";
 
 import { Container } from "../../components/ui/Container";
@@ -159,6 +160,12 @@ const EmptyState = styled.div`
   color: ${({ theme }) => theme.colors.textSoft};
 `;
 
+const LoadingState = styled.div`
+  padding: 3rem 1rem;
+  text-align: center;
+  color: ${({ theme }) => theme.colors.textSoft};
+`;
+
 export default function BlogPost() {
   const { slug } = useParams();
   const [post, setPost] =
@@ -166,24 +173,35 @@ export default function BlogPost() {
   const [relatedPosts, setRelatedPosts] = useState<
     Awaited<ReturnType<typeof getPublishedBlogPosts>>
   >([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
 
     const load = async () => {
       if (!slug) {
+        setLoading(false);
         return;
       }
 
-      const nextPost = await getBlogPostBySlug(slug);
-      if (!active) return;
-      setPost(nextPost);
+      try {
+        setLoading(true);
+        const [nextPost, nextRelated] = await Promise.all([
+          getBlogPostBySlug(slug),
+          getPublishedBlogPosts(),
+        ]);
 
-      const nextRelated = await getPublishedBlogPosts();
-      if (!active) return;
-      setRelatedPosts(
-        nextRelated.filter((item) => item.slug !== slug).slice(0, 3),
-      );
+        if (!active) return;
+
+        setPost(nextPost);
+        setRelatedPosts(
+          nextRelated.filter((item) => item.slug !== slug).slice(0, 3),
+        );
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
     };
 
     void load();
@@ -192,6 +210,29 @@ export default function BlogPost() {
       active = false;
     };
   }, [slug]);
+
+  const safeHtml = useMemo(() => {
+    if (!post?.content) {
+      return "";
+    }
+
+    return DOMPurify.sanitize(post.content, {
+      USE_PROFILES: { html: true },
+      ADD_ATTR: ["target", "rel"],
+      ADD_TAGS: ["iframe"],
+    });
+  }, [post?.content]);
+
+  if (loading) {
+    return (
+      <Page>
+        <Container>
+          <BackLink to="/blog">← Voltar ao blog</BackLink>
+          <LoadingState>Carregando publicação...</LoadingState>
+        </Container>
+      </Page>
+    );
+  }
 
   if (!post) {
     return (
@@ -231,7 +272,7 @@ export default function BlogPost() {
 
           <Title>{post.title}</Title>
 
-          <Body dangerouslySetInnerHTML={{ __html: post.content }} />
+          <Body dangerouslySetInnerHTML={{ __html: safeHtml }} />
 
           {youtubeEmbedUrl && (
             <iframe

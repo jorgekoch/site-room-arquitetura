@@ -26,7 +26,6 @@ type Draft = {
   publishedAt: string;
   readingTime: number;
   status: "draft" | "published";
-  youtubeUrl: string;
 };
 
 const initialDraft: Draft = {
@@ -40,7 +39,6 @@ const initialDraft: Draft = {
   publishedAt: new Date().toISOString(),
   readingTime: 4,
   status: "published",
-  youtubeUrl: "",
 };
 
 const Container = styled.div`
@@ -266,6 +264,19 @@ export default function AdminBlog() {
     return Math.max(2, Math.ceil(words / 180));
   }
 
+  function isValidUrl(value: string) {
+    if (!value.trim()) {
+      return true;
+    }
+
+    try {
+      const parsed = new URL(value.trim());
+      return ["http:", "https:"].includes(parsed.protocol);
+    } catch {
+      return false;
+    }
+  }
+
   const sortedPosts = useMemo(
     () =>
       [...posts].sort(
@@ -338,7 +349,6 @@ export default function AdminBlog() {
       publishedAt: post.publishedAt,
       readingTime: post.readingTime,
       status: normalizeBlogStatus(post.status),
-      youtubeUrl: post.youtubeUrl || "",
     });
     setMessage("");
     setErrorMessage("");
@@ -378,6 +388,12 @@ export default function AdminBlog() {
         return;
       }
 
+      if (draft.coverImage.trim() && !isValidUrl(draft.coverImage)) {
+        setErrorMessage("A imagem de capa precisa ser uma URL válida.");
+        setMessage("");
+        return;
+      }
+
       const duplicatedSlug = posts.some(
         (post) => post.slug === slug && post.id !== editingId,
       );
@@ -408,7 +424,6 @@ export default function AdminBlog() {
         publishedAt: normalizedPublishedAt,
         readingTime: normalizedReadingTime,
         status: normalizeBlogStatus(draft.status),
-        youtubeUrl: draft.youtubeUrl.trim() || undefined,
       };
 
       const createdOrUpdated = editingId
@@ -502,29 +517,16 @@ export default function AdminBlog() {
               </Field>
             </TwoColumns>
 
-            <TwoColumns>
-              <Field>
-                Imagem de capa (URL)
-                <Input
-                  value={draft.coverImage}
-                  onChange={(event) =>
-                    handleChange("coverImage", event.target.value)
-                  }
-                  placeholder="https://..."
-                />
-              </Field>
-
-              <Field>
-                Vídeo do YouTube (URL)
-                <Input
-                  value={draft.youtubeUrl}
-                  onChange={(event) =>
-                    handleChange("youtubeUrl", event.target.value)
-                  }
-                  placeholder="https://www.youtube.com/watch?v=..."
-                />
-              </Field>
-            </TwoColumns>
+            <Field>
+              Imagem de capa (URL)
+              <Input
+                value={draft.coverImage}
+                onChange={(event) =>
+                  handleChange("coverImage", event.target.value)
+                }
+                placeholder="https://..."
+              />
+            </Field>
 
             <Field>
               Conteúdo
