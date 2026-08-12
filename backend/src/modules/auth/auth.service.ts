@@ -30,6 +30,13 @@ function hashResetToken(token: string) {
     .digest("hex");
 }
 
+function hashApprovalToken(token: string) {
+  return crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+}
+
 export class AuthService {
   async registerRequest(data: RegisterAdminRequestInput) {
     const email = data.email.trim().toLowerCase();
@@ -40,7 +47,8 @@ export class AuthService {
 
     const passwordHash = await bcrypt.hash(data.password, 10);
 
-    const approvalToken = crypto.randomBytes(32).toString("hex");
+    const rawApprovalToken = crypto.randomBytes(32).toString("hex");
+    const approvalToken = hashApprovalToken(rawApprovalToken);
 
     const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 48);
 
@@ -80,7 +88,7 @@ export class AuthService {
     }
 
     try {
-      await sendAdminApprovalRequestEmail(admin, approvalToken);
+      await sendAdminApprovalRequestEmail(admin, rawApprovalToken);
     } catch (error) {
       console.error("Erro ao enviar e-mail de aprovação admin:", error);
     }
@@ -92,8 +100,10 @@ export class AuthService {
   }
 
   async approveByToken(token: string) {
+    const hashedToken = hashApprovalToken(token);
+
     const admin = await prisma.adminUser.findFirst({
-      where: { approvalToken: token },
+      where: { approvalToken: hashedToken },
     });
 
     if (!admin) {
@@ -261,45 +271,28 @@ export class AuthService {
     );
 
     if (!passwordMatches) {
-      throw new AppError("A senha atual está incorreta.", 400);
+      throw new AppError("Senha atual inválida.", 400);
     }
 
-    if (data.currentPassword === data.newPassword) {
-      throw new AppError(
-        "A nova senha deve ser diferente da senha atual.",
-        400,
-      );
-    }
-
-    const newPasswordHash = await bcrypt.hash(data.newPassword, 10);
+    const passwordHash = await bcrypt.hash(data.newPassword, 10);
 
     await prisma.adminUser.update({
       where: { id: adminId },
       data: {
-        passwordHash: newPasswordHash,
+        passwordHash,
         tokenVersion: {
           increment: 1,
         },
       },
     });
-
-    return {
-      success: true,
-    };
   }
 
-  /**
-   * Solicita a recuperação de senha.
-   *
-   * A resposta é propositalmente genérica,
-   * independentemente de o e-mail existir.
-   */
   async forgotPassword(data: ForgotPasswordInput) {
     const email = data.email.trim().toLowerCase();
 
     const genericResponse = {
       message:
-        "Se o e-mail estiver cadastrado, você receberá um link para redefinir sua senha.",
+        "Se existir uma conta com este e-mail, enviaremos instruções para redefinir a senha.",
     };
 
     const admin = await prisma.adminUser.findUnique({
@@ -312,71 +305,53 @@ export class AuthService {
 
     const rawToken = crypto.randomBytes(32).toString("hex");
     const tokenHash = hashResetToken(rawToken);
-    const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+    const expiresAt = new Date(Date.now() + 1000 * 60 * 30);
 
     await prisma.adminUser.update({
       where: { id: admin.id },
       data: {
-        passwordResetTokenHash: tokenHash,
-        passwordResetTokenExpiresAt: expiresAt,
+        passwordResetToken: tokenHash,
+        passwordResetExpiresAt: expiresAt,
       },
     });
 
     try {
       await sendAdminPasswordResetEmail(admin, rawToken);
     } catch (error) {
-      console.error(
-        "Erro ao enviar e-mail de recuperação de senha:",
-        error,
-      );
+      console.error("Erro ao enviar e-mail de reset:", error);
     }
 
     return genericResponse;
   }
 
-  /**
-   * Redefine a senha utilizando o token
-   * enviado por e-mail.
-   */
   async resetPassword(data: ResetPasswordInput) {
     const tokenHash = hashResetToken(data.token);
 
     const admin = await prisma.adminUser.findFirst({
-      where: { passwordResetTokenHash: tokenHash },
+      where: {
+        passwordResetToken: tokenHash,
+      },
     });
 
     if (!admin) {
-      throw new AppError(
-        "Token de recuperação inválido ou expirado.",
-        400,
-      );
+      throw new AppError("Token inválido ou expirado.", 400);
     }
 
     if (
-      !admin.passwordResetTokenExpiresAt ||
-      admin.passwordResetTokenExpiresAt < new Date()
+      !admin.passwordResetExpiresAt ||
+      admin.passwordResetExpiresAt < new Date()
     ) {
-      throw new AppError(
-        "Token de recuperação inválido ou expirado.",
-        400,
-      );
+      throw new AppError("Token inválido ou expirado.", 400);
     }
 
-    if (!admin.approved || !admin.isActive) {
-      throw new AppError(
-        "Não foi possível redefinir a senha deste acesso.",
-        403,
-      );
-    }
-
-    const newPasswordHash = await bcrypt.hash(data.newPassword, 10);
+    const passwordHash = await bcrypt.hash(data.newPassword, 10);
 
     const updatedAdmin = await prisma.adminUser.update({
       where: { id: admin.id },
       data: {
-        passwordHash: newPasswordHash,
-        passwordResetTokenHash: null,
-        passwordResetTokenExpiresAt: null,
+        passwordHash,
+        passwordResetToken: null,
+        passwordResetExpiresAt: null,
         tokenVersion: {
           increment: 1,
         },
@@ -387,14 +362,14 @@ export class AuthService {
       await sendAdminPasswordResetConfirmationEmail(updatedAdmin);
     } catch (error) {
       console.error(
-        "Erro ao enviar e-mail de confirmação de alteração de senha:",
+        "Erro ao enviar confirmação de reset:",
         error,
       );
     }
 
     return {
-      success: true,
-      message: "Senha redefinida com sucesso. Faça login novamente.",
+      message:
+        "Senha redefinida com sucesso. Faça login novamente.",
     };
   }
 }
