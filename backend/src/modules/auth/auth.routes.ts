@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import { AuthController } from "./auth.controller";
 import { ensureAuthenticated } from "../../middlewares/ensureAuthenticated";
+import { adminLoginRateLimit } from "../../middlewares/adminLoginRateLimit";
 import { passwordResetRateLimit } from "../../middlewares/passwordResetRateLimit";
 
 const authRoutes = Router();
@@ -16,8 +17,10 @@ authRoutes.get("/approve", (request, response) =>
   authController.approve(request, response),
 );
 
-authRoutes.post("/login", (request, response) =>
-  authController.login(request, response),
+authRoutes.post(
+  "/login",
+  adminLoginRateLimit,
+  (request, response) => authController.login(request, response),
 );
 
 /**
