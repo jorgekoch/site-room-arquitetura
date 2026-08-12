@@ -5,6 +5,16 @@ export const DEFAULT_BLOG_POSTS: BlogPost[] = [];
 
 export type BlogPostMutationPayload = Omit<BlogPost, "id" | "readingTime">;
 
+type BlogImageUploadResponse = {
+  uploadUrl: string;
+  storageKey: string;
+  fileUrl: string;
+};
+
+type UploadBlogImageOptions = {
+  onProgress?: (progressPercent: number) => void;
+};
+
 const FALLBACK_BLOG_AUTHOR = "ROOM Arquitetura";
 const FALLBACK_BLOG_CATEGORY = "Arquitetura";
 
@@ -210,6 +220,66 @@ export async function updateBlogPost(
 
 export async function deleteBlogPost(id: string) {
   await apiDelete(`/blog/${id}`);
+}
+
+function uploadFileToSignedUrl(
+  file: File,
+  uploadUrl: string,
+  fileType: string,
+  onProgress?: (progressPercent: number) => void,
+) {
+  return new Promise<void>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+
+    xhr.upload.onprogress = (event) => {
+      if (!onProgress || !event.lengthComputable) {
+        return;
+      }
+
+      const progressPercent = Math.round((event.loaded / event.total) * 100);
+      onProgress(progressPercent);
+    };
+
+    xhr.onerror = () => {
+      reject(new Error("Não foi possível enviar a imagem de capa."));
+    };
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve();
+        return;
+      }
+
+      reject(new Error("Não foi possível enviar a imagem de capa."));
+    };
+
+    xhr.open("PUT", uploadUrl);
+    xhr.setRequestHeader("Content-Type", fileType);
+    xhr.send(file);
+  });
+}
+
+export async function uploadBlogImage(
+  file: File,
+  options?: UploadBlogImageOptions,
+) {
+  const fallbackName = `blog-cover-${Date.now()}.png`;
+  const fileName = file.name?.trim() ? file.name : fallbackName;
+  const fileType = file.type || "image/png";
+
+  const upload = await apiPost<BlogImageUploadResponse>("/blog/upload-url", {
+    fileName,
+    fileType,
+  });
+
+  await uploadFileToSignedUrl(
+    file,
+    upload.uploadUrl,
+    fileType,
+    options?.onProgress,
+  );
+
+  return upload.fileUrl;
 }
 
 export function getYoutubeEmbedUrl(value?: string) {

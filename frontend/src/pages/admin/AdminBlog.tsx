@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 
 import { PageHeader } from "../../components/admin/PageHeader";
@@ -10,6 +10,7 @@ import {
   getBlogPosts,
   normalizeBlogSlug,
   normalizeBlogStatus,
+  uploadBlogImage,
   updateBlogPost,
 } from "../../lib/blog";
 import type { BlogPost } from "../../types/blog";
@@ -158,6 +159,71 @@ const Button = styled.button<{ $secondary?: boolean }>`
   &:hover {
     transform: translateY(-1px);
   }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+`;
+
+const CoverUploadPanel = styled.div`
+  display: grid;
+  gap: 0.8rem;
+  padding: 0.9rem;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: ${({ theme }) => theme.colors.backgroundSoft};
+`;
+
+const CoverPreview = styled.img`
+  width: 100%;
+  max-width: 460px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: ${({ theme }) => theme.radius.md};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: ${({ theme }) => theme.colors.surface};
+`;
+
+const CoverPlaceholder = styled.div`
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 460px;
+  aspect-ratio: 16 / 9;
+  border-radius: ${({ theme }) => theme.radius.md};
+  border: 1px dashed ${({ theme }) => theme.colors.border};
+  background: ${({ theme }) => theme.colors.surface};
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+`;
+
+const CoverActions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+`;
+
+const CoverMeta = styled.span`
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+`;
+
+const ProgressTrack = styled.div`
+  width: 100%;
+  max-width: 460px;
+  height: 8px;
+  border-radius: ${({ theme }) => theme.radius.pill};
+  background: ${({ theme }) => theme.colors.border};
+  overflow: hidden;
+`;
+
+const ProgressFill = styled.div<{ $value: number }>`
+  height: 100%;
+  width: ${({ $value }) => `${$value}%`};
+  background: ${({ theme }) => theme.colors.primary};
+  transition: width 0.18s ease;
 `;
 
 const Message = styled.p<{ $error?: boolean }>`
@@ -212,6 +278,41 @@ const TinyButton = styled.button`
   cursor: pointer;
 `;
 
+const StatusBadge = styled.span<{ $published: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  border-radius: ${({ theme }) => theme.radius.pill};
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border: 1px solid
+    ${({ theme, $published }) =>
+      $published ? theme.colors.successBorder : theme.colors.border};
+  background: ${({ theme, $published }) =>
+    $published ? theme.colors.successSoft : theme.colors.backgroundSoft};
+  color: ${({ theme, $published }) =>
+    $published ? theme.colors.success : theme.colors.textMuted};
+`;
+
+const ViewLink = styled.a`
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: transparent;
+  color: ${({ theme }) => theme.colors.textSoft};
+  border-radius: ${({ theme }) => theme.radius.pill};
+  padding: 0.45rem 0.7rem;
+  cursor: pointer;
+  font-size: inherit;
+  font-family: inherit;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.text};
+  }
+`;
+
 const Toolbar = styled.div`
   display: grid;
   gap: 0.75rem;
@@ -243,6 +344,11 @@ export default function AdminBlog() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [coverPreviewFailed, setCoverPreviewFailed] = useState(false);
+  const [lastCoverFileName, setLastCoverFileName] = useState("");
+  const coverInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -309,6 +415,9 @@ export default function AdminBlog() {
     setDraft(initialDraft);
     setEditingId(null);
     setSlugManuallyEdited(false);
+    setLastCoverFileName("");
+    setCoverPreviewFailed(false);
+    setUploadProgress(null);
   }
 
   function handleChange(field: keyof Draft, value: string | number) {
@@ -345,9 +454,69 @@ export default function AdminBlog() {
     });
     setMessage("");
     setErrorMessage("");
+    setLastCoverFileName("");
+    setCoverPreviewFailed(false);
+    setUploadProgress(null);
+  }
+
+  function handleOpenCoverPicker() {
+    coverInputRef.current?.click();
+  }
+
+  async function handleCoverFileUpload(
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    setUploadingCover(true);
+    setUploadProgress(0);
+    setCoverPreviewFailed(false);
+    setErrorMessage("");
+
+    try {
+      const nextCoverImage = await uploadBlogImage(file, {
+        onProgress: (progressPercent) => setUploadProgress(progressPercent),
+      });
+
+      handleChange("coverImage", nextCoverImage);
+      setLastCoverFileName(file.name);
+      setMessage("Imagem de capa enviada com sucesso.");
+    } catch (error) {
+      setMessage("");
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível enviar a imagem de capa.",
+      );
+    } finally {
+      setUploadingCover(false);
+      setUploadProgress(null);
+      event.target.value = "";
+    }
+  }
+
+  function handleRemoveCoverImage() {
+    handleChange("coverImage", "");
+    setLastCoverFileName("");
+    setCoverPreviewFailed(false);
+    setUploadProgress(null);
+    setMessage("Imagem de capa removida do formulário.");
+    setErrorMessage("");
   }
 
   async function handleDelete(id: string) {
+    const confirmed = window.confirm(
+      "Tem certeza que deseja excluir esta publicação? Esta ação não pode ser desfeita.",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
     try {
       await deleteBlogPost(id);
       const nextPosts = posts.filter((post) => post.id !== id);
@@ -508,13 +677,81 @@ export default function AdminBlog() {
             </TwoColumns>
 
             <Field>
-              Imagem de capa (URL)
+              Imagem de capa
+              <CoverUploadPanel>
+                {draft.coverImage ? (
+                  coverPreviewFailed ? (
+                    <CoverPlaceholder>
+                      Não foi possível carregar a imagem de preview.
+                    </CoverPlaceholder>
+                  ) : (
+                    <CoverPreview
+                      src={draft.coverImage}
+                      alt="Preview da capa"
+                      onError={() => setCoverPreviewFailed(true)}
+                    />
+                  )
+                ) : (
+                  <CoverPlaceholder>
+                    Nenhuma imagem de capa selecionada.
+                  </CoverPlaceholder>
+                )}
+
+                <CoverActions>
+                  <Button
+                    type="button"
+                    $secondary
+                    onClick={handleOpenCoverPicker}
+                    disabled={uploadingCover}
+                  >
+                    {uploadingCover
+                      ? "Enviando capa..."
+                      : draft.coverImage
+                        ? "Alterar capa"
+                        : "Enviar capa"}
+                  </Button>
+
+                  {draft.coverImage && (
+                    <Button
+                      type="button"
+                      $secondary
+                      onClick={handleRemoveCoverImage}
+                      disabled={uploadingCover}
+                    >
+                      Remover capa
+                    </Button>
+                  )}
+                </CoverActions>
+
+                <CoverMeta>
+                  Formatos aceitos: JPG, PNG, WEBP e AVIF.
+                  {lastCoverFileName ? ` Arquivo: ${lastCoverFileName}.` : ""}
+                </CoverMeta>
+
+                {uploadingCover && uploadProgress !== null && (
+                  <>
+                    <ProgressTrack aria-label="Progresso do upload da capa">
+                      <ProgressFill $value={uploadProgress} />
+                    </ProgressTrack>
+                    <CoverMeta>Upload: {uploadProgress}%</CoverMeta>
+                  </>
+                )}
+
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/avif"
+                  hidden
+                  onChange={handleCoverFileUpload}
+                />
+              </CoverUploadPanel>
               <Input
                 value={draft.coverImage}
-                onChange={(event) =>
-                  handleChange("coverImage", event.target.value)
-                }
-                placeholder="https://..."
+                onChange={(event) => {
+                  setCoverPreviewFailed(false);
+                  handleChange("coverImage", event.target.value);
+                }}
+                placeholder="URL da capa (preenchido automaticamente após upload)"
               />
             </Field>
 
@@ -551,6 +788,20 @@ export default function AdminBlog() {
             <Actions>
               <Button type="submit">
                 {editingId ? "Salvar alterações" : "Publicar"}
+              </Button>
+              <Button
+                type="button"
+                $secondary
+                onClick={() => {
+                  setDraft((current) => ({ ...current, status: "draft" }));
+                  setTimeout(() => {
+                    document
+                      .querySelector<HTMLFormElement>("form")
+                      ?.requestSubmit();
+                  }, 0);
+                }}
+              >
+                Salvar como rascunho
               </Button>
               <Button type="button" $secondary onClick={resetForm}>
                 Limpar
@@ -608,7 +859,6 @@ export default function AdminBlog() {
                 <ListItem key={post.id}>
                   <ListTitle>{post.title}</ListTitle>
                   <ListMeta>
-                    {post.status === "published" ? "Publicada" : "Rascunho"} •{" "}
                     {post.category} •{" "}
                     {new Intl.DateTimeFormat("pt-BR", {
                       day: "2-digit",
@@ -617,9 +867,21 @@ export default function AdminBlog() {
                     }).format(new Date(post.publishedAt))}
                   </ListMeta>
                   <TinyActions>
+                    <StatusBadge $published={post.status === "published"}>
+                      {post.status === "published" ? "Publicado" : "Rascunho"}
+                    </StatusBadge>
                     <TinyButton type="button" onClick={() => handleEdit(post)}>
                       Editar
                     </TinyButton>
+                    {post.status === "published" && (
+                      <ViewLink
+                        href={`/blog/${post.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Visualizar
+                      </ViewLink>
+                    )}
                     <TinyButton
                       type="button"
                       onClick={() => handleDelete(post.id)}

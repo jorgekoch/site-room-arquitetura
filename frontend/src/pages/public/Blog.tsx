@@ -15,23 +15,6 @@ const Page = styled.div`
   }
 `;
 
-const TopBar = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 2rem;
-`;
-
-const BackLink = styled(Link)`
-  color: ${({ theme }) => theme.colors.textSoft};
-  font-weight: 600;
-
-  &:hover {
-    color: ${({ theme }) => theme.colors.text};
-  }
-`;
-
 const Hero = styled.div`
   display: grid;
   gap: 2rem;
@@ -388,10 +371,6 @@ export default function Blog() {
     return (
       <Page>
         <Container>
-          <TopBar>
-            <BackLink to="/">← Voltar ao início</BackLink>
-          </TopBar>
-
           <FilterBar>
             {categories.map((category) => (
               <FilterButton
@@ -415,10 +394,6 @@ export default function Blog() {
     return (
       <Page>
         <Container>
-          <TopBar>
-            <BackLink to="/">← Voltar ao início</BackLink>
-          </TopBar>
-
           <FilterBar>
             {categories.map((category) => (
               <FilterButton
@@ -443,10 +418,6 @@ export default function Blog() {
   return (
     <Page>
       <Container>
-        <TopBar>
-          <BackLink to="/">← Voltar ao início</BackLink>
-        </TopBar>
-
         <FilterBar>
           {categories.map((category) => (
             <FilterButton

@@ -154,16 +154,36 @@ const RelatedTitle = styled.h3`
   line-height: 1.4;
 `;
 
-const EmptyState = styled.div`
+const LoadingState = styled.div`
   padding: 3rem 1rem;
   text-align: center;
   color: ${({ theme }) => theme.colors.textSoft};
 `;
 
-const LoadingState = styled.div`
-  padding: 3rem 1rem;
+const NotFoundState = styled.div`
+  display: grid;
+  gap: 1.25rem;
+  padding: 3rem 1.5rem;
   text-align: center;
   color: ${({ theme }) => theme.colors.textSoft};
+`;
+
+const NotFoundTitle = styled.h2`
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const NotFoundLink = styled(Link)`
+  display: inline-flex;
+  align-self: center;
+  justify-self: center;
+  padding: 0.7rem 1.4rem;
+  border-radius: ${({ theme }) => theme.radius.pill};
+  background: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.primaryContrast};
+  font-weight: 700;
+  text-decoration: none;
 `;
 
 export default function BlogPost() {
@@ -211,6 +231,19 @@ export default function BlogPost() {
     };
   }, [slug]);
 
+  useEffect(() => {
+    if (post?.title) {
+      document.title = `${post.title} — ROOM Arquitetura Sustentável`;
+    } else if (!loading) {
+      document.title =
+        "Publicação não encontrada — ROOM Arquitetura Sustentável";
+    }
+
+    return () => {
+      document.title = "ROOM Arquitetura Sustentável";
+    };
+  }, [post?.title, loading]);
+
   const safeHtml = useMemo(() => {
     if (!post?.content) {
       return "";
@@ -235,7 +268,14 @@ export default function BlogPost() {
       <Page>
         <Container>
           <BackLink to="/blog">← Voltar ao blog</BackLink>
-          <EmptyState>Publicação não encontrada.</EmptyState>
+          <NotFoundState>
+            <NotFoundTitle>Publicação não encontrada</NotFoundTitle>
+            <p>
+              Esta publicação pode ter sido removida ou o endereço está
+              incorreto.
+            </p>
+            <NotFoundLink to="/blog">Ver todas as publicações</NotFoundLink>
+          </NotFoundState>
         </Container>
       </Page>
     );

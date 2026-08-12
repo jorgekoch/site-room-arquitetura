@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import { PageShell } from "./components/layout/PageShell";
+import { ScrollToHash } from "./components/ScrollToHash";
 import { ScrollToTop } from "./components/utils/ScrollToTop";
 
 import { AdminRoute } from "./components/auth/AdminRoute";
@@ -34,6 +35,7 @@ function App() {
   return (
     <>
       <ScrollToTop />
+      <ScrollToHash />
 
       <Routes>
         {/* ========================= */}

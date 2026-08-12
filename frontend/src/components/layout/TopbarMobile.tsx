@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { Container } from "../ui/Container";
 import { media } from "../../styles/breakpoints";
@@ -513,6 +514,7 @@ const DrawerMeta = styled.span`
 `;
 
 export function TopbarMobile() {
+  const location = useLocation();
   const [activeSection, setActiveSection] = useState("topo");
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -614,12 +616,19 @@ export function TopbarMobile() {
     setMenuOpen(false);
   }
 
+  function getHomeSectionHref(hash: string) {
+    return location.pathname === "/" ? hash : `/${hash}`;
+  }
+
   return (
     <>
       <Bar>
         <HeaderContainer>
           <Inner>
-            <Brand href="#topo" aria-label="ROOM Arquitetura Sustentável">
+            <Brand
+              href={getHomeSectionHref("#topo")}
+              aria-label="ROOM Arquitetura Sustentável"
+            >
               {logoRoomHorizontal ? (
                 <BrandLogo
                   src={logoRoomHorizontal}
@@ -643,7 +652,7 @@ export function TopbarMobile() {
                     return (
                       <NavLink
                         key={item.href}
-                        href={item.href}
+                        href={getHomeSectionHref(item.href)}
                         $active={itemActive}
                         aria-current={
                           activeSection === item.id ? "page" : undefined
@@ -657,7 +666,7 @@ export function TopbarMobile() {
                   return (
                     <NavGroupItem key={item.href}>
                       <NavTrigger
-                        href={item.href}
+                        href={getHomeSectionHref(item.href)}
                         $active={itemActive}
                         aria-current={
                           activeSection === item.id ? "page" : undefined
@@ -671,7 +680,7 @@ export function TopbarMobile() {
                         {item.children.map((child) => (
                           <NavDropdownLink
                             key={child.href}
-                            href={child.href}
+                            href={getHomeSectionHref(child.href)}
                             $active={activeSection === child.id}
                             aria-current={
                               activeSection === child.id ? "page" : undefined
@@ -689,12 +698,16 @@ export function TopbarMobile() {
 
             <DesktopRight>
               <ThemeToggle />
-              <TopCta href="#contato">Solicitar proposta</TopCta>
+              <TopCta href={getHomeSectionHref("#contato")}>
+                Solicitar proposta
+              </TopCta>
             </DesktopRight>
 
             <MobileActions>
               <ThemeToggle compact />
-              <MobileCta href="#contato">Proposta</MobileCta>
+              <MobileCta href={getHomeSectionHref("#contato")}>
+                Proposta
+              </MobileCta>
 
               <MenuButton
                 type="button"
@@ -733,7 +746,7 @@ export function TopbarMobile() {
           {NAV_ITEMS.map((item) => (
             <DrawerLink
               key={item.href}
-              href={item.href}
+              href={getHomeSectionHref(item.href)}
               $active={activeSection === item.id}
               aria-current={activeSection === item.id ? "page" : undefined}
               onClick={handleCloseMenu}
@@ -744,7 +757,10 @@ export function TopbarMobile() {
         </DrawerNav>
 
         <DrawerFooter>
-          <DrawerCta href="#contato" onClick={handleCloseMenu}>
+          <DrawerCta
+            href={getHomeSectionHref("#contato")}
+            onClick={handleCloseMenu}
+          >
             Solicitar proposta
           </DrawerCta>
           <DrawerMeta>Atendimento online em todo o Brasil</DrawerMeta>
