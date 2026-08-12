@@ -3,14 +3,17 @@ import { Router } from "express";
 import { AuthController } from "./auth.controller";
 import { ensureAuthenticated } from "../../middlewares/ensureAuthenticated";
 import { adminLoginRateLimit } from "../../middlewares/adminLoginRateLimit";
+import { adminRegisterRateLimit } from "../../middlewares/adminRegisterRateLimit";
 import { passwordResetRateLimit } from "../../middlewares/passwordResetRateLimit";
 
 const authRoutes = Router();
 
 const authController = new AuthController();
 
-authRoutes.post("/register-request", (request, response) =>
-  authController.registerRequest(request, response),
+authRoutes.post(
+  "/register-request",
+  adminRegisterRateLimit,
+  (request, response) => authController.registerRequest(request, response),
 );
 
 authRoutes.get("/approve", (request, response) =>
@@ -35,8 +38,10 @@ authRoutes.post(
   (request, response) => authController.forgotPassword(request, response),
 );
 
-authRoutes.post("/reset-password", (request, response) =>
-  authController.resetPassword(request, response),
+authRoutes.post(
+  "/reset-password",
+  passwordResetRateLimit,
+  (request, response) => authController.resetPassword(request, response),
 );
 
 authRoutes.get("/me", ensureAuthenticated, (request, response) =>
