@@ -131,13 +131,18 @@ export class StorageService {
   ) {
     const metadata = await this.getObjectMetadata(storageKey);
 
-    if (!options.allowedContentTypes.includes(metadata.contentType ?? "")) {
-      throw new AppError("Tipo de arquivo não permitido.", 400);
-    }
+    const invalidType = !options.allowedContentTypes.includes(
+      metadata.contentType ?? ""
+    );
+    const invalidSize =
+      metadata.contentLength <= 0 || metadata.contentLength > options.maxSize;
 
-    if (metadata.contentLength > options.maxSize) {
+    if (invalidType || invalidSize) {
+      await this.delete(storageKey);
       throw new AppError(
-        "O arquivo excede o tamanho máximo permitido.",
+        invalidType
+          ? "Tipo de arquivo não permitido."
+          : "O arquivo excede o tamanho máximo permitido ou está vazio.",
         400
       );
     }
@@ -160,7 +165,7 @@ export class StorageService {
       };
     } catch (error) {
       console.error("Erro ao consultar objeto no R2:", error);
-      throw new Error("Arquivo não encontrado no armazenamento.");
+      throw new AppError("Arquivo não encontrado no armazenamento.", 404);
     }
   }
 
@@ -170,16 +175,18 @@ export class StorageService {
   ) {
     const metadata = await this.getPrivateObjectMetadata(storageKey);
 
-    if (!options.allowedContentTypes.includes(metadata.contentType ?? "")) {
-      throw new AppError("Tipo de arquivo não permitido.", 400);
-    }
+    const invalidType = !options.allowedContentTypes.includes(
+      metadata.contentType ?? ""
+    );
+    const invalidSize =
+      metadata.contentLength <= 0 || metadata.contentLength > options.maxSize;
 
-    if (
-      metadata.contentLength <= 0 ||
-      metadata.contentLength > options.maxSize
-    ) {
+    if (invalidType || invalidSize) {
+      await this.deletePrivate(storageKey);
       throw new AppError(
-        "O arquivo excede o tamanho permitido ou está vazio.",
+        invalidType
+          ? "Tipo de arquivo não permitido."
+          : "O arquivo excede o tamanho permitido ou está vazio.",
         400
       );
     }
@@ -203,7 +210,7 @@ export class StorageService {
     } catch {
       throw new AppError(
         "Arquivo não encontrado no armazenamento privado.",
-        400
+        404
       );
     }
   }
