@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
+import { randomUUID } from "crypto";
 
 import { env } from "./config/env";
 import { router } from "./routes";
@@ -69,10 +70,28 @@ const corsOptions: cors.CorsOptions = {
   allowedHeaders: [
     "Content-Type",
     "Authorization",
+    "X-Request-ID",
   ],
 };
 
 app.use(cors(corsOptions));
+
+/**
+ * Identificador de correlação para cada requisição.
+ *
+ * O cliente pode enviar X-Request-ID; quando não envia, geramos um UUID.
+ * O mesmo identificador é devolvido na resposta e fica disponível em
+ * response.locals para os middlewares de erro e logs futuros.
+ */
+app.use((request, response, next) => {
+  const incomingRequestId = request.header("X-Request-ID")?.trim();
+  const requestId = incomingRequestId || randomUUID();
+
+  response.locals.requestId = requestId;
+  response.setHeader("X-Request-ID", requestId);
+
+  next();
+});
 
 /**
  * Headers básicos de segurança para respostas da API.
