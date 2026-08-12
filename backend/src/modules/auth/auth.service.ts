@@ -310,8 +310,8 @@ export class AuthService {
     await prisma.adminUser.update({
       where: { id: admin.id },
       data: {
-        passwordResetToken: tokenHash,
-        passwordResetExpiresAt: expiresAt,
+        passwordResetTokenHash: tokenHash,
+        passwordResetTokenExpiresAt: expiresAt,
       },
     });
 
@@ -329,7 +329,7 @@ export class AuthService {
 
     const admin = await prisma.adminUser.findFirst({
       where: {
-        passwordResetToken: tokenHash,
+        passwordResetTokenHash: tokenHash,
       },
     });
 
@@ -338,8 +338,8 @@ export class AuthService {
     }
 
     if (
-      !admin.passwordResetExpiresAt ||
-      admin.passwordResetExpiresAt < new Date()
+      !admin.passwordResetTokenExpiresAt ||
+      admin.passwordResetTokenExpiresAt < new Date()
     ) {
       throw new AppError("Token inválido ou expirado.", 400);
     }
@@ -350,8 +350,8 @@ export class AuthService {
       where: { id: admin.id },
       data: {
         passwordHash,
-        passwordResetToken: null,
-        passwordResetExpiresAt: null,
+        passwordResetTokenHash: null,
+        passwordResetTokenExpiresAt: null,
         tokenVersion: {
           increment: 1,
         },
