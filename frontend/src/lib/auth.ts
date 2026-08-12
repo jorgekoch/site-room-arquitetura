@@ -1,6 +1,5 @@
 import { apiGet, apiPatch } from "./api";
-
-const TOKEN_KEY = "room_admin_token";
+import { TOKEN_KEY, removeAdminToken } from "./api";
 
 export interface AdminUser {
   id: string;
@@ -28,9 +27,7 @@ export function getAdminToken() {
   return localStorage.getItem(TOKEN_KEY);
 }
 
-export function removeAdminToken() {
-  localStorage.removeItem(TOKEN_KEY);
-}
+export { removeAdminToken };
 
 export function isAuthenticated() {
   return Boolean(getAdminToken());
@@ -46,12 +43,6 @@ export function updateAdminProfile(data: UpdateAdminProfileInput) {
   return apiPatch<{
     user: AdminUser;
   }>("/admin-auth/me", data);
-}
-
-export interface ChangeAdminPasswordInput {
-  currentPassword: string;
-  newPassword: string;
-  confirmPassword: string;
 }
 
 export function changeAdminPassword(data: ChangeAdminPasswordInput) {
