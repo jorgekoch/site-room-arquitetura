@@ -4,11 +4,7 @@ import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
 
 import { Container } from "../../components/ui/Container";
-import {
-  getBlogPostBySlug,
-  getPublishedBlogPosts,
-  getYoutubeEmbedUrl,
-} from "../../lib/blog";
+import { getBlogPostBySlug, getPublishedBlogPosts } from "../../lib/blog";
 import { sanitizeBlogContent } from "../../lib/blogContent";
 import { media } from "../../styles/breakpoints";
 
@@ -277,7 +273,6 @@ export default function BlogPost() {
     );
   }
 
-  const youtubeEmbedUrl = getYoutubeEmbedUrl(post.youtubeUrl);
   const pageTitle = `${post.title} — ROOM Arquitetura Sustentável`;
   const pageDescription =
     post.excerpt ||
@@ -328,15 +323,6 @@ export default function BlogPost() {
           <Title>{post.title}</Title>
 
           <Body dangerouslySetInnerHTML={{ __html: safeHtml }} />
-
-          {youtubeEmbedUrl && (
-            <iframe
-              src={youtubeEmbedUrl}
-              title={post.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-            />
-          )}
         </Article>
 
         {relatedPosts.length > 0 && (

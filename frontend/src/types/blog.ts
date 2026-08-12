@@ -10,5 +10,4 @@ export type BlogPost = {
   publishedAt: string;
   readingTime: number;
   status: "draft" | "published";
-  youtubeUrl?: string;
 };

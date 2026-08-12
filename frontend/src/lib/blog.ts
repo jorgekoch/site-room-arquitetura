@@ -110,7 +110,6 @@ function normalizeBlogPost(
       ? Math.max(1, Number(post.readingTime))
       : 4,
     status: normalizeBlogStatus(post.status),
-    youtubeUrl: normalizeOptionalUrl(post.youtubeUrl),
   };
 }
 
@@ -129,7 +128,6 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
         publishedAt: string;
         readingTime: number;
         status?: string;
-        youtubeUrl?: string | null;
       }[]
     >("/blog")) as Array<Partial<BlogPost>>;
     const posts = response
@@ -160,7 +158,6 @@ export async function getPublishedBlogPosts(): Promise<BlogPost[]> {
         publishedAt: string;
         readingTime: number;
         status?: string;
-        youtubeUrl?: string | null;
       }[]
     >("/blog/published")) as Array<Partial<BlogPost>>;
     const posts = response
@@ -280,61 +277,4 @@ export async function uploadBlogImage(
   );
 
   return upload.fileUrl;
-}
-
-export function getYoutubeEmbedUrl(value?: string) {
-  if (!value) {
-    return "";
-  }
-
-  const trimmed = value.trim();
-
-  if (!trimmed) {
-    return "";
-  }
-
-  try {
-    const parsed = new URL(trimmed);
-    const hostname = parsed.hostname.toLowerCase();
-
-    if (hostname === "youtu.be") {
-      const videoId = parsed.pathname.replace("/", "").split("/")[0];
-      return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
-    }
-
-    if (
-      hostname === "www.youtube-nocookie.com" ||
-      hostname === "youtube-nocookie.com"
-    ) {
-      const embedId = parsed.pathname.match(
-        /^\/embed\/([A-Za-z0-9_-]{11})/i,
-      )?.[1];
-      return embedId ? `https://www.youtube.com/embed/${embedId}` : "";
-    }
-
-    if (hostname === "www.youtube.com" || hostname === "youtube.com") {
-      const videoId = parsed.searchParams.get("v");
-      if (videoId) {
-        return `https://www.youtube.com/embed/${videoId}`;
-      }
-
-      const embedId = parsed.pathname.match(
-        /^\/embed\/([A-Za-z0-9_-]{11})/i,
-      )?.[1];
-      if (embedId) {
-        return `https://www.youtube.com/embed/${embedId}`;
-      }
-
-      const shortId = parsed.pathname.match(
-        /^\/shorts\/([A-Za-z0-9_-]{11})/i,
-      )?.[1];
-      if (shortId) {
-        return `https://www.youtube.com/embed/${shortId}`;
-      }
-    }
-  } catch {
-    // ignora URL inválida
-  }
-
-  return "";
 }
