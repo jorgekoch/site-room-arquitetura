@@ -2,8 +2,16 @@ import { BlogPost, Prisma } from "@prisma/client";
 import { prisma } from "../../database/prisma";
 import { CreateBlogPostInput, UpdateBlogPostInput } from "./blog.schema";
 
+type CreateBlogPostRepositoryInput = CreateBlogPostInput & {
+  readingTime: number;
+};
+
+type UpdateBlogPostRepositoryInput = UpdateBlogPostInput & {
+  readingTime?: number;
+};
+
 export class BlogRepository {
-  async create(data: CreateBlogPostInput): Promise<BlogPost> {
+  async create(data: CreateBlogPostRepositoryInput): Promise<BlogPost> {
     return prisma.blogPost.create({
       data: {
         title: data.title,
@@ -61,7 +69,7 @@ export class BlogRepository {
     });
   }
 
-  async update(id: string, data: UpdateBlogPostInput) {
+  async update(id: string, data: UpdateBlogPostRepositoryInput) {
     return prisma.blogPost.update({
       where: { id },
       data: {

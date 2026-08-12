@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { ensureAuthenticated } from "../../middlewares/ensureAuthenticated";
+import { ensureOwnerOrDev } from "../../middlewares/ensureOwnerOrDev";
 import { BlogController } from "./blog.controller";
 
 const blogRoutes = Router();
@@ -13,7 +14,7 @@ blogRoutes.get("/slug/:slug", (request, response) =>
   controller.showBySlug(request, response),
 );
 
-blogRoutes.use(ensureAuthenticated);
+blogRoutes.use(ensureAuthenticated, ensureOwnerOrDev);
 
 blogRoutes.post("/upload-url", (request, response) =>
   controller.getUploadUrl(request, response),

@@ -1,6 +1,12 @@
 import { AppError } from "../../utils/AppError";
 import { storage } from "../../services/storage";
 import { BlogRepository } from "./blog.repository";
+import {
+  getBlogReadingTime,
+  normalizeOptionalYoutubeUrl,
+  sanitizeBlogContent,
+  validateBlogContent,
+} from "./blog-content";
 import { CreateBlogPostInput, UpdateBlogPostInput } from "./blog.schema";
 
 function normalizeBlogSlug(value: string) {
@@ -44,12 +50,24 @@ export class BlogService {
 
   async create(data: CreateBlogPostInput) {
     const slug = normalizeBlogSlug(data.slug);
+    const contentError = validateBlogContent(data.content);
+    const normalizedYoutubeUrl = normalizeOptionalYoutubeUrl(data.youtubeUrl);
+    const sanitizedContent = sanitizeBlogContent(data.content);
+    const readingTime = getBlogReadingTime(sanitizedContent);
 
     if (slug.length < 3) {
       throw new AppError(
         "O slug precisa resultar em pelo menos 3 caracteres válidos.",
         400,
       );
+    }
+
+    if (contentError) {
+      throw new AppError(contentError, 400);
+    }
+
+    if (data.youtubeUrl && !normalizedYoutubeUrl) {
+      throw new AppError("Informe uma URL válida do YouTube.", 400);
     }
 
     const existing = await this.repository.findAnyBySlug(slug);
@@ -59,8 +77,11 @@ export class BlogService {
 
     return this.repository.create({
       ...data,
+      content: sanitizedContent,
+      readingTime,
       slug,
       publishedAt: new Date(data.publishedAt),
+      youtubeUrl: normalizedYoutubeUrl ?? null,
     });
   }
 
@@ -93,8 +114,35 @@ export class BlogService {
   async update(id: string, data: UpdateBlogPostInput) {
     await this.findById(id);
 
-    if (data.slug !== undefined) {
-      const normalizedSlug = normalizeBlogSlug(data.slug);
+    const nextData: UpdateBlogPostInput & { readingTime?: number } = {
+      ...data,
+    };
+
+    if (nextData.content !== undefined) {
+      const contentError = validateBlogContent(nextData.content);
+
+      if (contentError) {
+        throw new AppError(contentError, 400);
+      }
+
+      nextData.content = sanitizeBlogContent(nextData.content);
+      nextData.readingTime = getBlogReadingTime(nextData.content);
+    }
+
+    if (nextData.youtubeUrl !== undefined) {
+      const normalizedYoutubeUrl = normalizeOptionalYoutubeUrl(
+        nextData.youtubeUrl,
+      );
+
+      if (nextData.youtubeUrl && !normalizedYoutubeUrl) {
+        throw new AppError("Informe uma URL válida do YouTube.", 400);
+      }
+
+      nextData.youtubeUrl = normalizedYoutubeUrl ?? null;
+    }
+
+    if (nextData.slug !== undefined) {
+      const normalizedSlug = normalizeBlogSlug(nextData.slug);
 
       if (normalizedSlug.length < 3) {
         throw new AppError(
@@ -109,10 +157,10 @@ export class BlogService {
         throw new AppError("Este slug já está sendo utilizado.", 409);
       }
 
-      data.slug = normalizedSlug;
+      nextData.slug = normalizedSlug;
     }
 
-    return this.repository.update(id, data);
+    return this.repository.update(id, nextData);
   }
 
   async remove(id: string) {

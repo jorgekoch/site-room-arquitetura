@@ -35,23 +35,13 @@ export const createBlogPostSchema = z.object({
 
   publishedAt: z.coerce.date().default(new Date()),
 
-  readingTime: z.coerce
-    .number({
-      error: "Informe o tempo de leitura em minutos.",
-    })
-    .int("O tempo de leitura deve ser um número inteiro.")
-    .min(1, "O tempo de leitura deve ser maior que zero."),
+  status: z.preprocess((value) => {
+    if (typeof value === "string") {
+      return value.toUpperCase();
+    }
 
-  status: z.preprocess(
-    (value) => {
-      if (typeof value === "string") {
-        return value.toUpperCase();
-      }
-
-      return value;
-    },
-    z.enum(blogPostStatusValues).default("DRAFT"),
-  ),
+    return value;
+  }, z.enum(blogPostStatusValues).default("DRAFT")),
 
   youtubeUrl: z.preprocess(
     (value) => (typeof value === "string" && !value.trim() ? null : value),
