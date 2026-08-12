@@ -126,6 +126,7 @@ const Related = styled.section`
 
 const RelatedList = styled.div`
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
 `;
 
@@ -136,6 +137,7 @@ const RelatedCard = styled(Link)`
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.md};
   background: ${({ theme }) => theme.colors.surface};
+  height: 100%;
 `;
 
 const RelatedImage = styled.img`
@@ -148,6 +150,7 @@ const RelatedImage = styled.img`
 
 const RelatedTitle = styled.h3`
   margin: 0;
+  line-height: 1.4;
 `;
 
 const EmptyState = styled.div`

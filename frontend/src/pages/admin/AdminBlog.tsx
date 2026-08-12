@@ -8,6 +8,7 @@ import {
   deleteBlogPost,
   getBlogPosts,
   normalizeBlogSlug,
+  normalizeBlogStatus,
   updateBlogPost,
 } from "../../lib/blog";
 import type { BlogPost } from "../../types/blog";
@@ -336,7 +337,7 @@ export default function AdminBlog() {
       category: post.category,
       publishedAt: post.publishedAt,
       readingTime: post.readingTime,
-      status: post.status,
+      status: normalizeBlogStatus(post.status),
       youtubeUrl: post.youtubeUrl || "",
     });
     setMessage("");
@@ -406,7 +407,7 @@ export default function AdminBlog() {
         category: draft.category.trim() || "Arquitetura",
         publishedAt: normalizedPublishedAt,
         readingTime: normalizedReadingTime,
-        status: draft.status,
+        status: normalizeBlogStatus(draft.status),
         youtubeUrl: draft.youtubeUrl.trim() || undefined,
       };
 

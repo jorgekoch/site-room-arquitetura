@@ -296,6 +296,19 @@ const EmptyState = styled.div`
   background: ${({ theme }) => theme.colors.surface};
 `;
 
+const LoadingState = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  padding: 2rem;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  background: ${({ theme }) => theme.colors.surface};
+  color: ${({ theme }) => theme.colors.textSoft};
+  font-weight: 600;
+`;
+
 const FilterBar = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -324,14 +337,21 @@ export default function Blog() {
     Awaited<ReturnType<typeof getPublishedBlogPosts>>
   >([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
 
     const fetchPosts = async () => {
-      const publishedPosts = await getPublishedBlogPosts();
-      if (active) {
-        setPosts(publishedPosts);
+      try {
+        const publishedPosts = await getPublishedBlogPosts();
+        if (active) {
+          setPosts(publishedPosts);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
       }
     };
 
@@ -361,6 +381,33 @@ export default function Blog() {
   const featuredPost = filteredPosts[0];
   const otherPosts = filteredPosts.slice(1);
   const highlightProjects = projects.slice(0, 3);
+
+  if (loading) {
+    return (
+      <Page>
+        <Container>
+          <TopBar>
+            <BackLink to="/">← Voltar ao início</BackLink>
+          </TopBar>
+
+          <FilterBar>
+            {categories.map((category) => (
+              <FilterButton
+                key={category}
+                type="button"
+                $active={selectedCategory === category}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category === "all" ? "Todas" : category}
+              </FilterButton>
+            ))}
+          </FilterBar>
+
+          <LoadingState>Carregando publicações...</LoadingState>
+        </Container>
+      </Page>
+    );
+  }
 
   if (!featuredPost) {
     return (

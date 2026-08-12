@@ -15,6 +15,14 @@ export function normalizeBlogSlug(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+export function normalizeBlogStatus(
+  value?: string | null,
+): BlogPost["status"] {
+  const normalized = String(value ?? "draft").trim().toLowerCase();
+
+  return normalized === "published" ? "published" : "draft";
+}
+
 function normalizeBlogPost(
   post: Partial<BlogPost> & { status?: string; publishedAt?: string | Date },
 ): BlogPost | null {
@@ -33,10 +41,7 @@ function normalizeBlogPost(
     category: String(post.category ?? "Arquitetura"),
     publishedAt: new Date(post.publishedAt ?? Date.now()).toISOString(),
     readingTime: Number(post.readingTime ?? 4),
-    status:
-      String(post.status ?? "draft").toLowerCase() === "published"
-        ? "published"
-        : "draft",
+    status: normalizeBlogStatus(post.status),
     youtubeUrl: post.youtubeUrl ? String(post.youtubeUrl) : undefined,
   };
 }
@@ -115,21 +120,31 @@ export async function getBlogPostBySlug(slug: string) {
 }
 
 export async function createBlogPost(payload: Omit<BlogPost, "id">) {
+  const normalizedStatus = normalizeBlogStatus(payload.status);
+
   const result = await apiPost<{ post: BlogPost }>("/blog", {
     ...payload,
-    status: payload.status === "published" ? "PUBLISHED" : "DRAFT",
+    status: normalizedStatus === "published" ? "PUBLISHED" : "DRAFT",
   });
 
-  return result.post;
+  return {
+    ...result.post,
+    status: normalizeBlogStatus(result.post.status),
+  };
 }
 
 export async function updateBlogPost(id: string, payload: Partial<BlogPost>) {
+  const normalizedStatus = normalizeBlogStatus(payload.status);
+
   const result = await apiPatch<{ post: BlogPost }>(`/blog/${id}`, {
     ...payload,
-    status: payload.status === "published" ? "PUBLISHED" : "DRAFT",
+    status: normalizedStatus === "published" ? "PUBLISHED" : "DRAFT",
   });
 
-  return result.post;
+  return {
+    ...result.post,
+    status: normalizeBlogStatus(result.post.status),
+  };
 }
 
 export async function deleteBlogPost(id: string) {
