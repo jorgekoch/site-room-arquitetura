@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import {
   createProposalSchema,
   deleteProposalSchema,
+  proposalStatusSchema,
   uploadUrlSchema,
   updateProposalNotesSchema,
   updateProposalStatusSchema,
@@ -39,6 +40,14 @@ function ensureStoredFilesHavePrivateKeys(
   if (hasInvalidReference) {
     throw new AppError("Arquivo de referência inválido.", 400);
   }
+}
+
+function parseStatusQuery(value: unknown) {
+  if (typeof value !== "string" || !value.trim()) {
+    return undefined;
+  }
+
+  return proposalStatusSchema.parse(value);
 }
 
 export class ProposalController {
@@ -103,7 +112,7 @@ export class ProposalController {
     const { status, projectType, search } = request.query;
 
     const proposals = await proposalService.list({
-      status: typeof status === "string" ? status : undefined,
+      status: parseStatusQuery(status),
       projectType: typeof projectType === "string" ? projectType : undefined,
       search: typeof search === "string" ? search : undefined,
     });
@@ -223,10 +232,8 @@ export class ProposalController {
     const { status, projectType, search } = request.query;
 
     const file = await proposalService.export({
-      status: typeof status === "string" ? status : undefined,
-
+      status: parseStatusQuery(status),
       projectType: typeof projectType === "string" ? projectType : undefined,
-
       search: typeof search === "string" ? search : undefined,
     });
 
