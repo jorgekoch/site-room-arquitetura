@@ -63,9 +63,6 @@ export default function AdminPropostas() {
 
   const [errorMessage, setErrorMessage] = useState("");
 
-  /**
-   * Tipos de projeto disponíveis
-   */
   const projectTypeOptions = useMemo(() => {
     return Array.from(
       new Set(
@@ -74,10 +71,6 @@ export default function AdminPropostas() {
     );
   }, [proposals]);
 
-  /**
-   * Carrega propostas quando
-   * os filtros mudarem.
-   */
   useEffect(() => {
     loadProposals({
       status: statusFilter || undefined,
@@ -86,19 +79,12 @@ export default function AdminPropostas() {
     });
   }, [statusFilter, projectTypeFilter, search, loadProposals]);
 
-  /**
-   * Seleciona automaticamente
-   * a primeira proposta.
-   */
   useEffect(() => {
     if (!proposals.length) {
       setSelectedId("");
       return;
     }
 
-    // Se a página foi aberta através
-    // da busca do Header, prioriza
-    // exatamente a proposta solicitada.
     if (proposalIdFromUrl) {
       const proposalFromUrl = proposals.find(
         (proposal) => proposal.id === proposalIdFromUrl,
@@ -106,7 +92,6 @@ export default function AdminPropostas() {
 
       if (proposalFromUrl) {
         setSelectedId(proposalFromUrl.id);
-
         return;
       }
     }
@@ -120,10 +105,6 @@ export default function AdminPropostas() {
     }
   }, [proposals, selectedId, proposalIdFromUrl]);
 
-  /**
-   * Carrega detalhes da proposta
-   * selecionada.
-   */
   useEffect(() => {
     if (!selectedId) {
       return;
@@ -132,10 +113,6 @@ export default function AdminPropostas() {
     loadProposal(selectedId).catch(console.error);
   }, [selectedId, loadProposal]);
 
-  /**
-   * Mantém o select de status
-   * sincronizado com a proposta.
-   */
   useEffect(() => {
     if (selectedProposal) {
       setStatusDraft(selectedProposal.status);
@@ -214,9 +191,7 @@ export default function AdminPropostas() {
 
       await exportProposals({
         status: statusFilter || undefined,
-
         projectType: projectTypeFilter || undefined,
-
         search: search || undefined,
       });
 
@@ -276,9 +251,7 @@ export default function AdminPropostas() {
       </S.Filters>
 
       {error && <S.Message $error>{error}</S.Message>}
-
       {errorMessage && <S.Message $error>{errorMessage}</S.Message>}
-
       {message && <S.Message>{message}</S.Message>}
 
       {loading ? (
@@ -290,7 +263,6 @@ export default function AdminPropostas() {
         />
       ) : (
         <S.Grid>
-          {/* Lista */}
           <S.Panel>
             <S.List>
               {proposals.map((proposal) => (
@@ -301,14 +273,10 @@ export default function AdminPropostas() {
                   onClick={() => setSelectedId(proposal.id)}
                 >
                   <S.ItemTitle>{proposal.fullName}</S.ItemTitle>
-
                   <S.ItemMeta>{proposal.email}</S.ItemMeta>
-
                   <S.ItemMeta>
                     {getProposalProjectTypeLabel(proposal.projectType)}
-
                     {" • "}
-
                     {proposalStatusOptions.find(
                       (option) => option.value === proposal.status,
                     )?.label ?? proposal.status}
@@ -318,7 +286,6 @@ export default function AdminPropostas() {
             </S.List>
           </S.Panel>
 
-          {/* Detalhes */}
           <S.Panel>
             {detailsLoading ? (
               <Loading />
@@ -368,7 +335,7 @@ export default function AdminPropostas() {
                   </S.Block>
                 </S.AdminBlocks>
 
-                {user?.role === "OWNER" && (
+                {(user?.role === "OWNER" || user?.role === "DEV") && (
                   <S.DangerZone>
                     <S.DeleteButton
                       type="button"
@@ -391,7 +358,6 @@ export default function AdminPropostas() {
         </S.Grid>
       )}
 
-      {/* Exportação */}
       <S.ExportSection>
         <S.ExportButton
           type="button"
