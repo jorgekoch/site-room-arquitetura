@@ -2,6 +2,40 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const TOKEN_KEY = "room_admin_token";
 
+type FlattenedIssues = {
+  formErrors?: string[];
+  fieldErrors?: Record<string, string[] | undefined>;
+};
+
+function getFirstIssueMessage(issues: unknown) {
+  if (!issues || typeof issues !== "object") {
+    return undefined;
+  }
+
+  const flattenedIssues = issues as FlattenedIssues;
+  const formError = flattenedIssues.formErrors?.find(Boolean);
+
+  if (formError) {
+    return formError;
+  }
+
+  const fieldErrors = flattenedIssues.fieldErrors;
+
+  if (!fieldErrors || typeof fieldErrors !== "object") {
+    return undefined;
+  }
+
+  for (const messages of Object.values(fieldErrors)) {
+    const firstMessage = messages?.find(Boolean);
+
+    if (firstMessage) {
+      return firstMessage;
+    }
+  }
+
+  return undefined;
+}
+
 async function request(
   path: string,
   init: RequestInit = {},
@@ -46,6 +80,12 @@ async function parseResponse<T>(response: Response, path?: string): Promise<T> {
       message = data?.message || data?.error || message;
 
       issues = data?.issues;
+
+      const issueMessage = getFirstIssueMessage(issues);
+
+      if (issueMessage) {
+        message = issueMessage;
+      }
     } catch {
       try {
         message = await response.text();
@@ -109,7 +149,7 @@ export async function apiPatch<T>(path: string, body?: unknown): Promise<T> {
 
 export async function apiDelete<T = void>(
   path: string,
-  body?: unknown
+  body?: unknown,
 ): Promise<T> {
   const response = await request(path, {
     method: "DELETE",

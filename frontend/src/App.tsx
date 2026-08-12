@@ -142,7 +142,14 @@ function App() {
           <Route path="propostas" element={<AdminPropostas />} />
 
           {/* Blog */}
-          <Route path="blog" element={<AdminBlog />} />
+          <Route
+            path="blog"
+            element={
+              <OwnerRoute>
+                <AdminBlog />
+              </OwnerRoute>
+            }
+          />
 
           {/* Usuários */}
           <Route

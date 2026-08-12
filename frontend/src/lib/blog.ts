@@ -3,6 +3,8 @@ import { apiGet, apiPatch, apiPost, apiDelete } from "./api";
 
 export const DEFAULT_BLOG_POSTS: BlogPost[] = [];
 
+export type BlogPostMutationPayload = Omit<BlogPost, "id" | "readingTime">;
+
 const FALLBACK_BLOG_AUTHOR = "ROOM Arquitetura";
 const FALLBACK_BLOG_CATEGORY = "Arquitetura";
 
@@ -18,10 +20,10 @@ export function normalizeBlogSlug(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-export function normalizeBlogStatus(
-  value?: string | null,
-): BlogPost["status"] {
-  const normalized = String(value ?? "draft").trim().toLowerCase();
+export function normalizeBlogStatus(value?: string | null): BlogPost["status"] {
+  const normalized = String(value ?? "draft")
+    .trim()
+    .toLowerCase();
 
   return normalized === "published" ? "published" : "draft";
 }
@@ -68,8 +70,11 @@ function normalizeBlogPost(
     return null;
   }
 
-  const author = String(post.author ?? FALLBACK_BLOG_AUTHOR).trim() || FALLBACK_BLOG_AUTHOR;
-  const category = String(post.category ?? FALLBACK_BLOG_CATEGORY).trim() || FALLBACK_BLOG_CATEGORY;
+  const author =
+    String(post.author ?? FALLBACK_BLOG_AUTHOR).trim() || FALLBACK_BLOG_AUTHOR;
+  const category =
+    String(post.category ?? FALLBACK_BLOG_CATEGORY).trim() ||
+    FALLBACK_BLOG_CATEGORY;
   const slug = normalizeBlogSlug(String(post.slug));
 
   if (!slug || slug.length < 3) {
@@ -172,7 +177,7 @@ export async function getBlogPostBySlug(slug: string) {
   }
 }
 
-export async function createBlogPost(payload: Omit<BlogPost, "id">) {
+export async function createBlogPost(payload: BlogPostMutationPayload) {
   const normalizedStatus = normalizeBlogStatus(payload.status);
 
   const result = await apiPost<{ post: BlogPost }>("/blog", {
@@ -186,7 +191,10 @@ export async function createBlogPost(payload: Omit<BlogPost, "id">) {
   };
 }
 
-export async function updateBlogPost(id: string, payload: Partial<BlogPost>) {
+export async function updateBlogPost(
+  id: string,
+  payload: Partial<BlogPostMutationPayload>,
+) {
   const normalizedStatus = normalizeBlogStatus(payload.status);
 
   const result = await apiPatch<{ post: BlogPost }>(`/blog/${id}`, {
@@ -217,18 +225,39 @@ export function getYoutubeEmbedUrl(value?: string) {
 
   try {
     const parsed = new URL(trimmed);
-    if (parsed.hostname === "youtu.be") {
+    const hostname = parsed.hostname.toLowerCase();
+
+    if (hostname === "youtu.be") {
       const videoId = parsed.pathname.replace("/", "").split("/")[0];
       return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
     }
 
-    if (parsed.hostname.includes("youtube.com")) {
+    if (
+      hostname === "www.youtube-nocookie.com" ||
+      hostname === "youtube-nocookie.com"
+    ) {
+      const embedId = parsed.pathname.match(
+        /^\/embed\/([A-Za-z0-9_-]{11})/i,
+      )?.[1];
+      return embedId ? `https://www.youtube.com/embed/${embedId}` : "";
+    }
+
+    if (hostname === "www.youtube.com" || hostname === "youtube.com") {
       const videoId = parsed.searchParams.get("v");
       if (videoId) {
         return `https://www.youtube.com/embed/${videoId}`;
       }
 
-      const shortId = parsed.pathname.match(/^\/shorts\/([A-Za-z0-9_-]{11})/i)?.[1];
+      const embedId = parsed.pathname.match(
+        /^\/embed\/([A-Za-z0-9_-]{11})/i,
+      )?.[1];
+      if (embedId) {
+        return `https://www.youtube.com/embed/${embedId}`;
+      }
+
+      const shortId = parsed.pathname.match(
+        /^\/shorts\/([A-Za-z0-9_-]{11})/i,
+      )?.[1];
       if (shortId) {
         return `https://www.youtube.com/embed/${shortId}`;
       }
@@ -237,7 +266,5 @@ export function getYoutubeEmbedUrl(value?: string) {
     // ignora URL inválida
   }
 
-  return trimmed.startsWith("http://") || trimmed.startsWith("https://")
-    ? trimmed
-    : "";
+  return "";
 }

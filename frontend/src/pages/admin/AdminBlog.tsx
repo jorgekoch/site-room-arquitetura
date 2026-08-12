@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { PageHeader } from "../../components/admin/PageHeader";
 import { BlogEditor } from "../../components/admin/blog/BlogEditor";
 import {
+  type BlogPostMutationPayload,
   createBlogPost,
   deleteBlogPost,
   getBlogPosts,
@@ -256,14 +257,6 @@ export default function AdminBlog() {
     void fetchPosts();
   }, []);
 
-  function getDefaultReadingTime(content: string) {
-    const words = content
-      .replace(/<[^>]*>/g, " ")
-      .split(/\s+/)
-      .filter(Boolean).length;
-    return Math.max(2, Math.ceil(words / 180));
-  }
-
   function isValidUrl(value: string) {
     if (!value.trim()) {
       return true;
@@ -411,9 +404,7 @@ export default function AdminBlog() {
           ? draft.publishedAt
           : now;
 
-      const normalizedReadingTime = getDefaultReadingTime(draft.content);
-
-      const payload: Omit<BlogPost, "id"> = {
+      const payload: BlogPostMutationPayload = {
         title: draft.title.trim(),
         slug,
         excerpt: draft.excerpt.trim(),
@@ -422,7 +413,6 @@ export default function AdminBlog() {
         author: draft.author.trim() || "ROOM Arquitetura",
         category: draft.category.trim() || "Arquitetura",
         publishedAt: normalizedPublishedAt,
-        readingTime: normalizedReadingTime,
         status: normalizeBlogStatus(draft.status),
       };
 

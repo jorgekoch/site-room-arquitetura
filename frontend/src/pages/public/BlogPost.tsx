@@ -1,6 +1,5 @@
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import DOMPurify from "dompurify";
 import styled from "styled-components";
 
 import { Container } from "../../components/ui/Container";
@@ -9,6 +8,7 @@ import {
   getPublishedBlogPosts,
   getYoutubeEmbedUrl,
 } from "../../lib/blog";
+import { sanitizeBlogContent } from "../../lib/blogContent";
 import { media } from "../../styles/breakpoints";
 
 const Page = styled.div`
@@ -216,11 +216,7 @@ export default function BlogPost() {
       return "";
     }
 
-    return DOMPurify.sanitize(post.content, {
-      USE_PROFILES: { html: true },
-      ADD_ATTR: ["target", "rel"],
-      ADD_TAGS: ["iframe"],
-    });
+    return sanitizeBlogContent(post.content);
   }, [post?.content]);
 
   if (loading) {
