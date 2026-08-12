@@ -1,4 +1,5 @@
 import { AppError } from "../../utils/AppError";
+import { env } from "../../config/env";
 import { storage } from "../../services/storage";
 import { BlogRepository } from "./blog.repository";
 import {
@@ -7,6 +8,15 @@ import {
   validateBlogContent,
 } from "./blog-content";
 import { CreateBlogPostInput, UpdateBlogPostInput } from "./blog.schema";
+
+const BLOG_ALLOWED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/avif",
+];
+
+const BLOG_MAX_IMAGE_SIZE = 10 * 1024 * 1024;
 
 function normalizeBlogSlug(value: string) {
   return value
@@ -20,6 +30,42 @@ function normalizeBlogSlug(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+function getBlogStorageKeyFromUrl(value: string | null | undefined) {
+  if (!value?.trim()) {
+    return null;
+  }
+
+  const baseUrl = env.r2PublicUrl.replace(/\/$/, "");
+
+  if (!value.startsWith(`${baseUrl}/`)) {
+    return null;
+  }
+
+  const key = value.slice(baseUrl.length + 1);
+
+  return key.startsWith("blog/") ? key : null;
+}
+
+function extractBlogStorageKeys(content: string, coverImage?: string | null) {
+  const keys = new Set<string>();
+
+  const coverKey = getBlogStorageKeyFromUrl(coverImage);
+  if (coverKey) {
+    keys.add(coverKey);
+  }
+
+  const srcPattern = /\bsrc=["']([^"']+)["']/gi;
+
+  for (const match of content.matchAll(srcPattern)) {
+    const key = getBlogStorageKeyFromUrl(match[1]);
+    if (key) {
+      keys.add(key);
+    }
+  }
+
+  return [...keys];
+}
+
 export class BlogService {
   private readonly repository = new BlogRepository();
 
@@ -28,8 +74,8 @@ export class BlogService {
       throw new AppError("Nome do arquivo não informado.", 400);
     }
 
-    if (!fileType?.trim()) {
-      throw new AppError("Formato do arquivo não informado.", 400);
+    if (!BLOG_ALLOWED_IMAGE_TYPES.includes(fileType)) {
+      throw new AppError("Formato de imagem não permitido.", 400);
     }
 
     return storage.generateSignedUrl({
@@ -37,6 +83,40 @@ export class BlogService {
       fileName: fileName.trim(),
       fileType,
     });
+  }
+
+  private async validateBlogImages(content: string, coverImage?: string | null) {
+    const storageKeys = extractBlogStorageKeys(content, coverImage);
+
+    await Promise.all(
+      storageKeys.map((storageKey) =>
+        storage.validateObject(storageKey, {
+          maxSize: BLOG_MAX_IMAGE_SIZE,
+          allowedContentTypes: BLOG_ALLOWED_IMAGE_TYPES,
+        }),
+      ),
+    );
+  }
+
+  private async deleteBlogStorageKeys(storageKeys: string[]) {
+    const uniqueKeys = [
+      ...new Set(
+        storageKeys.filter((key) => key.startsWith("blog/") && key.trim()),
+      ),
+    ];
+
+    if (!uniqueKeys.length) {
+      return;
+    }
+
+    try {
+      await storage.deleteMany(uniqueKeys);
+    } catch (error) {
+      console.error("[BlogService] Falha ao remover arquivos do R2:", {
+        keys: uniqueKeys,
+        error,
+      });
+    }
   }
 
   async list() {
@@ -64,18 +144,28 @@ export class BlogService {
       throw new AppError(contentError, 400);
     }
 
+    await this.validateBlogImages(sanitizedContent, data.coverImage);
+
     const existing = await this.repository.findAnyBySlug(slug);
     if (existing) {
       throw new AppError("Já existe uma publicação com este slug.", 409);
     }
 
-    return this.repository.create({
-      ...data,
-      content: sanitizedContent,
-      readingTime,
-      slug,
-      publishedAt: new Date(data.publishedAt),
-    });
+    try {
+      return await this.repository.create({
+        ...data,
+        content: sanitizedContent,
+        readingTime,
+        slug,
+        publishedAt: new Date(data.publishedAt),
+      });
+    } catch (error) {
+      await this.deleteBlogStorageKeys(
+        extractBlogStorageKeys(sanitizedContent, data.coverImage),
+      );
+
+      throw error;
+    }
   }
 
   async findById(id: string) {
@@ -105,7 +195,7 @@ export class BlogService {
   }
 
   async update(id: string, data: UpdateBlogPostInput) {
-    await this.findById(id);
+    const currentPost = await this.findById(id);
 
     const nextData: UpdateBlogPostInput & { readingTime?: number } = {
       ...data,
@@ -141,11 +231,74 @@ export class BlogService {
       nextData.slug = normalizedSlug;
     }
 
-    return this.repository.update(id, nextData);
+    const nextContent = nextData.content ?? currentPost.content;
+    const nextCoverImage =
+      nextData.coverImage !== undefined
+        ? nextData.coverImage
+        : currentPost.coverImage;
+
+    await this.validateBlogImages(nextContent, nextCoverImage);
+
+    let updatedPost;
+
+    try {
+      updatedPost = await this.repository.update(id, nextData);
+    } catch (error) {
+      const currentKeys = extractBlogStorageKeys(
+        currentPost.content,
+        currentPost.coverImage,
+      );
+      const nextKeys = extractBlogStorageKeys(nextContent, nextCoverImage);
+      const newKeys = nextKeys.filter((key) => !currentKeys.includes(key));
+
+      await this.deleteBlogStorageKeys(newKeys);
+      throw error;
+    }
+
+    const currentKeys = extractBlogStorageKeys(
+      currentPost.content,
+      currentPost.coverImage,
+    );
+    const nextKeys = extractBlogStorageKeys(nextContent, nextCoverImage);
+    const removedKeys = currentKeys.filter((key) => !nextKeys.includes(key));
+
+    await this.deleteBlogStorageKeys(removedKeys);
+
+    return updatedPost;
   }
 
   async remove(id: string) {
-    await this.findById(id);
+    const post = await this.findById(id);
+    const storageKeys = extractBlogStorageKeys(post.content, post.coverImage);
+
     await this.repository.delete(id);
+    await this.deleteBlogStorageKeys(storageKeys);
+  }
+
+  async cleanupOrphanedStorage() {
+    const [objects, posts] = await Promise.all([
+      storage.listObjects("blog/"),
+      this.repository.findAll(),
+    ]);
+
+    const usedStorageKeys = new Set<string>();
+
+    for (const post of posts) {
+      for (const key of extractBlogStorageKeys(post.content, post.coverImage)) {
+        usedStorageKeys.add(key);
+      }
+    }
+
+    const orphanedKeys = objects
+      .map((object) => object.key)
+      .filter((key) => !usedStorageKeys.has(key));
+
+    await this.deleteBlogStorageKeys(orphanedKeys);
+
+    return {
+      scanned: objects.length,
+      deleted: orphanedKeys.length,
+      keys: orphanedKeys,
+    };
   }
 }
