@@ -22,8 +22,11 @@ export function errorHandler(
   response: Response,
   _next: NextFunction
 ) {
+  const requestId = response.locals.requestId;
+
   if (error instanceof ZodError) {
     console.error("Erro de validação", {
+      requestId,
       method: request.method,
       path: request.originalUrl,
       issues: error.flatten(),
@@ -37,6 +40,7 @@ export function errorHandler(
 
   if (error instanceof AppError) {
     console.error("Erro da aplicação", {
+      requestId,
       method: request.method,
       path: request.originalUrl,
       status: error.statusCode,
@@ -53,6 +57,7 @@ export function errorHandler(
     Prisma.PrismaClientKnownRequestError
   ) {
     console.error("Erro conhecido do Prisma", {
+      requestId,
       method: request.method,
       path: request.originalUrl,
       code: error.code,
@@ -101,6 +106,7 @@ export function errorHandler(
     console.error(
       "Erro de validação do Prisma",
       {
+        requestId,
         method: request.method,
         path: request.originalUrl,
         message: error.message,
@@ -120,6 +126,7 @@ export function errorHandler(
     console.error(
       "Erro de inicialização do Prisma",
       {
+        requestId,
         method: request.method,
         path: request.originalUrl,
         message: error.message,
@@ -138,6 +145,7 @@ export function errorHandler(
   console.error(
     "Erro inesperado na API",
     {
+      requestId,
       method: request.method,
       path: request.originalUrl,
       name: error.name,
