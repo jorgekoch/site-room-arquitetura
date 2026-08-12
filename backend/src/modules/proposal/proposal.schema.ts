@@ -59,6 +59,16 @@ export const uploadUrlSchema = z.object({
   kind: z.enum(["payment-proof", "reference"]).default("reference"),
 });
 
+export const proposalStatusSchema = z.enum([
+  "NEW",
+  "REVIEWING",
+  "AWAITING_PAYMENT",
+  "PAID",
+  "SCHEDULED",
+  "CLOSED",
+  "CANCELED",
+]);
+
 export const createProposalSchema = z.object({
   email: z.string().email(),
   fullName: z.string().min(3),
@@ -88,7 +98,6 @@ export const createProposalSchema = z.object({
   paymentMethod: z.string().min(1),
   paymentMethodOther: z.string().optional().nullable(),
 
-  // A URL recebida em versões antigas é ignorada; documentos ficam privados.
   paymentProofUrl: z.string().url().nullable().optional(),
   paymentProofStorageKey: storageKeySchema.nullable().optional(),
   referenceFilesJson: z
@@ -107,15 +116,7 @@ export const createProposalSchema = z.object({
 });
 
 export const updateProposalStatusSchema = z.object({
-  status: z.enum([
-    "NEW",
-    "REVIEWING",
-    "AWAITING_PAYMENT",
-    "PAID",
-    "SCHEDULED",
-    "CLOSED",
-    "CANCELED",
-  ]),
+  status: proposalStatusSchema,
 });
 
 export const updateProposalNotesSchema = z.object({
@@ -131,15 +132,14 @@ export const deleteProposalSchema = z.object({
 export type CreateProposalInput = z.infer<typeof createProposalSchema>;
 export type UpdateProposalStatusInput = z.infer<typeof updateProposalStatusSchema>;
 export type UpdateProposalNotesInput = z.infer<typeof updateProposalNotesSchema>;
+export type ProposalStatusInput = z.infer<typeof proposalStatusSchema>;
+
 export const updatePaymentProofSchema = z.object({
   storageKey: storageKeySchema.refine(
     (value) =>
-      value.startsWith(
-        "proposals/payment-proofs/"
-      ),
+      value.startsWith("proposals/payment-proofs/"),
     {
-      message:
-        "A chave deve pertencer à pasta de comprovantes."
+      message: "A chave deve pertencer à pasta de comprovantes."
     }
   ),
 });
