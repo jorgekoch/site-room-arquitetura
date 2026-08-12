@@ -1,6 +1,13 @@
 import { z } from "zod";
 
-import { ProjectCategory } from "@prisma/client";
+const projectCategoryValues = [
+  "RESIDENTIAL",
+  "INTERIORS",
+  "COMMERCIAL",
+  "LANDSCAPE",
+  "CONSULTING",
+  "OTHER",
+] as const;
 
 export const projectImageSchema =
   z.object({
@@ -45,7 +52,7 @@ export const createProjectSchema =
       ),
 
     category:
-      z.nativeEnum(ProjectCategory),
+      z.enum(projectCategoryValues),
 
     city: z
       .string()

@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { BlogPostStatus } from "@prisma/client";
+
+const blogPostStatusValues = ["DRAFT", "PUBLISHED"] as const;
 
 export const createBlogPostSchema = z.object({
   title: z.string().trim().min(3, "O título deve ter pelo menos 3 caracteres."),
@@ -41,13 +42,16 @@ export const createBlogPostSchema = z.object({
     .int("O tempo de leitura deve ser um número inteiro.")
     .min(1, "O tempo de leitura deve ser maior que zero."),
 
-  status: z.preprocess((value) => {
-    if (typeof value === "string") {
-      return value.toUpperCase();
-    }
+  status: z.preprocess(
+    (value) => {
+      if (typeof value === "string") {
+        return value.toUpperCase();
+      }
 
-    return value;
-  }, z.nativeEnum(BlogPostStatus).default(BlogPostStatus.DRAFT)),
+      return value;
+    },
+    z.enum(blogPostStatusValues).default("DRAFT"),
+  ),
 
   youtubeUrl: z.preprocess(
     (value) => (typeof value === "string" && !value.trim() ? null : value),
