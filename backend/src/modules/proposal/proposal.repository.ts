@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, ProposalStatus } from "@prisma/client";
 
 import { prisma } from "../../database/prisma";
 
@@ -52,18 +52,18 @@ export class ProposalRepository {
     return prisma.proposalRequest.count();
   }
 
-  async countByStatus(status: string) {
+  async countByStatus(status: ProposalStatus) {
     return prisma.proposalRequest.count({
       where: {
-        status: status as any,
+        status,
       },
     });
   }
 
-  async findByStatus(status: string) {
+  async findByStatus(status: ProposalStatus) {
     return prisma.proposalRequest.findMany({
       where: {
-        status: status as any,
+        status,
       },
 
       orderBy: {
