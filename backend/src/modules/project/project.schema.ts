@@ -9,158 +9,94 @@ const projectCategoryValues = [
   "OTHER",
 ] as const;
 
-export const projectImageSchema =
-  z.object({
-    imageUrl: z.string().url(),
+export const projectImageSchema = z.object({
+  imageUrl: z.string().url(),
 
-    storageKey: z
-      .string()
-      .trim()
-      .min(
-        1,
-        "A chave de armazenamento é obrigatória."
-      ),
+  storageKey: z
+    .string()
+    .trim()
+    .min(1, "A chave de armazenamento é obrigatória."),
 
-    alt: z
+  alt: z.string().optional().nullable(),
+
+  sortOrder: z.number().int().min(0).default(0),
+});
+
+export const uploadProjectImageSchema = z.object({
+  fileName: z
+    .string()
+    .trim()
+    .min(1, "Nome do arquivo não informado.")
+    .max(120, "Nome do arquivo muito longo."),
+
+  fileType: z.enum([
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/avif",
+  ]),
+});
+
+export const createProjectSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(3, "O título deve ter pelo menos 3 caracteres."),
+
+  slug: z.string().trim().min(1, "O slug é obrigatório."),
+
+  category: z.enum(projectCategoryValues),
+
+  city: z.string().trim().optional().nullable(),
+
+  state: z.string().trim().optional().nullable(),
+
+  year: z.coerce
+    .number({ error: "Informe um ano válido." })
+    .int("Informe um ano válido.")
+    .min(1900, "Informe um ano válido.")
+    .max(2100, "Informe um ano válido."),
+
+  area: z.string().trim().optional().nullable(),
+
+  description: z
+    .string()
+    .trim()
+    .min(10, "A descrição deve ter pelo menos 10 caracteres."),
+
+  content: z.string().optional().nullable(),
+
+  featuredImage: z.string().url().optional().nullable(),
+
+  featuredImageStorageKey: z.string().trim().min(1).optional().nullable(),
+
+  videoUrl: z.preprocess(
+    (value) =>
+      typeof value === "string" && !value.trim() ? null : value,
+    z
       .string()
+      .url("Informe uma URL válida do YouTube.")
       .optional()
       .nullable(),
+  ),
 
-    sortOrder: z
-      .number()
-      .int()
-      .min(0)
-      .default(0),
-  });
+  published: z.boolean().default(true),
 
-export const createProjectSchema =
-  z.object({
-    title: z
-      .string()
-      .trim()
-      .min(
-        3,
-        "O título deve ter pelo menos 3 caracteres."
-      ),
+  featured: z.boolean().default(false),
 
-    slug: z
-      .string()
-      .trim()
-      .min(
-        1,
-        "O slug é obrigatório."
-      ),
+  images: z.array(projectImageSchema).default([]),
+});
 
-    category:
-      z.enum(projectCategoryValues),
+export const updateProjectSchema = createProjectSchema
+  .omit({ images: true })
+  .partial();
 
-    city: z
-      .string()
-      .trim()
-      .optional()
-      .nullable(),
+export type CreateProjectInput = z.infer<typeof createProjectSchema>;
 
-    state: z
-      .string()
-      .trim()
-      .optional()
-      .nullable(),
+export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
 
-    year: z.coerce
-      .number({
-        error: "Informe um ano válido.",
-      })
-      .int("Informe um ano válido.")
-      .min(1900, "Informe um ano válido.")
-      .max(2100, "Informe um ano válido."),
+export const updateFeaturedImageSchema = z.object({
+  featuredImage: z.string().url().nullable(),
 
-    area: z
-      .string()
-      .trim()
-      .optional()
-      .nullable(),
-
-    description: z
-      .string()
-      .trim()
-      .min(
-        10,
-        "A descrição deve ter pelo menos 10 caracteres."
-      ),
-
-    content: z
-      .string()
-      .optional()
-      .nullable(),
-
-    featuredImage: z
-      .string()
-      .url()
-      .optional()
-      .nullable(),
-
-    featuredImageStorageKey: z
-      .string()
-      .trim()
-      .min(1)
-      .optional()
-      .nullable(),
-
-    videoUrl: z.preprocess(
-      (value) =>
-        typeof value === "string" &&
-        !value.trim()
-          ? null
-          : value,
-      z
-        .string()
-        .url(
-          "Informe uma URL válida do YouTube."
-        )
-        .optional()
-        .nullable()
-    ),
-
-    published: z
-      .boolean()
-      .default(true),
-
-    featured: z
-      .boolean()
-      .default(false),
-
-    images: z
-      .array(projectImageSchema)
-      .default([]),
-  });
-
-export const updateProjectSchema =
-  createProjectSchema
-    .omit({
-      images: true,
-    })
-    .partial();
-
-export type CreateProjectInput =
-  z.infer<
-    typeof createProjectSchema
-  >;
-
-export type UpdateProjectInput =
-  z.infer<
-    typeof updateProjectSchema
-  >;
-
-export const updateFeaturedImageSchema =
-  z.object({
-    featuredImage: z
-      .string()
-      .url()
-      .nullable(),
-
-    featuredImageStorageKey: z
-      .string()
-      .trim()
-      .min(1)
-      .nullable(),
-  });
+  featuredImageStorageKey: z.string().trim().min(1).nullable(),
+});
