@@ -1,4 +1,4 @@
-import { Prisma, ProposalRequest } from "@prisma/client";
+import { Prisma, ProposalRequest, ProposalStatus } from "@prisma/client";
 
 import { env } from "../../config/env";
 import { storage } from "../../services/storage";
@@ -87,12 +87,12 @@ export class ProposalService {
   }
 
   async list(filters?: {
-    status?: string;
+    status?: ProposalStatus;
     projectType?: string;
     search?: string;
   }) {
-    const where = {
-      ...(filters?.status && { status: filters.status as any }),
+    const where: Prisma.ProposalRequestWhereInput = {
+      ...(filters?.status !== undefined && { status: filters.status }),
       ...(filters?.projectType && { projectType: filters.projectType }),
     };
 
@@ -109,7 +109,7 @@ export class ProposalService {
   }
 
   async export(filters?: {
-    status?: string;
+    status?: ProposalStatus;
     projectType?: string;
     search?: string;
   }) {
