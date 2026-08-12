@@ -110,6 +110,25 @@ model ProjectImage {
   @@map("project_images")
 }
 
+model BlogPost {
+  id          String         @id @default(cuid())
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  title       String
+  slug        String         @unique
+  excerpt     String
+  content     String
+  coverImage  String?
+  author      String
+  category    String
+  publishedAt DateTime
+  readingTime Int
+  status      BlogPostStatus @default(DRAFT)
+  youtubeUrl  String?
+
+  @@map("blog_posts")
+}
+
 enum ProposalStatus {
   NEW
   REVIEWING
@@ -133,4 +152,9 @@ enum ProjectCategory {
   LANDSCAPE
   CONSULTING
   OTHER
+}
+
+enum BlogPostStatus {
+  DRAFT
+  PUBLISHED
 }

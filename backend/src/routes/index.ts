@@ -6,6 +6,7 @@ import { adminUsersRoutes } from "../modules/admin-users/admin-users.routes";
 import { projectRoutes } from "../modules/project/project.routes";
 import { dashboardRoutes } from "../modules/dashboard/dashboard.routes";
 import { settingsRoutes } from "../modules/settings/settings.routes";
+import { blogRoutes } from "../modules/blog/blog.routes";
 
 const router = Router();
 
@@ -15,34 +16,18 @@ router.get("/health", (_request, response) => {
   });
 });
 
-router.use(
-  "/admin-auth",
-  authRoutes
-);
+router.use("/admin-auth", authRoutes);
 
-router.use(
-  "/proposal-requests",
-  proposalRoutes
-);
+router.use("/proposal-requests", proposalRoutes);
 
-router.use(
-  "/admin-users",
-  adminUsersRoutes
-);
+router.use("/admin-users", adminUsersRoutes);
 
-router.use(
-  "/projects",
-  projectRoutes
-);
+router.use("/projects", projectRoutes);
 
-router.use(
-  "/dashboard",
-  dashboardRoutes
-);
+router.use("/dashboard", dashboardRoutes);
 
-router.use(
-  "/settings",
-  settingsRoutes
-);
+router.use("/settings", settingsRoutes);
+
+router.use("/blog", blogRoutes);
 
 export { router };
