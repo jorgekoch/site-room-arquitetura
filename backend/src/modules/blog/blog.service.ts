@@ -109,11 +109,26 @@ export class BlogService {
       return;
     }
 
+    const posts = await this.repository.findAll();
+    const usedStorageKeys = new Set<string>();
+
+    for (const post of posts) {
+      for (const key of extractBlogStorageKeys(post.content, post.coverImage)) {
+        usedStorageKeys.add(key);
+      }
+    }
+
+    const keysToDelete = uniqueKeys.filter((key) => !usedStorageKeys.has(key));
+
+    if (!keysToDelete.length) {
+      return;
+    }
+
     try {
-      await storage.deleteMany(uniqueKeys);
+      await storage.deleteMany(keysToDelete);
     } catch (error) {
       console.error("[BlogService] Falha ao remover arquivos do R2:", {
-        keys: uniqueKeys,
+        keys: keysToDelete,
         error,
       });
     }
