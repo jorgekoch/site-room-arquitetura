@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
 import { Link, useParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Container } from "../../components/ui/Container";
 import { media } from "../../styles/breakpoints";
 import { usePublicProject } from "../../hooks/usePublicProjects";
@@ -154,21 +155,13 @@ const ContentSection = styled.div`
 const ContentCard = styled.div`
   padding: 1.5rem;
 
-  border-radius:
-    ${({ theme }) =>
-    theme.radius.lg};
+  border-radius: ${({ theme }) => theme.radius.lg};
 
-  border: 1px solid
-    ${({ theme }) =>
-    theme.colors.border};
+  border: 1px solid ${({ theme }) => theme.colors.border};
 
-  background:
-    ${({ theme }) =>
-    theme.colors.surface};
+  background: ${({ theme }) => theme.colors.surface};
 
-  box-shadow:
-    ${({ theme }) =>
-    theme.shadow.sm};
+  box-shadow: ${({ theme }) => theme.shadow.sm};
 
   @media ${media.tablet} {
     padding: 2rem;
@@ -178,11 +171,7 @@ const ContentCard = styled.div`
 const ContentTitle = styled.h2`
   margin: 0 0 1.25rem;
 
-  font-size: clamp(
-    1.35rem,
-    3vw,
-    2rem
-  );
+  font-size: clamp(1.35rem, 3vw, 2rem);
 
   line-height: 1.08;
 `;
@@ -191,9 +180,7 @@ const ContentText = styled.div`
   display: grid;
   gap: 1rem;
 
-  color:
-    ${({ theme }) =>
-    theme.colors.textSoft};
+  color: ${({ theme }) => theme.colors.textSoft};
 
   line-height: 1.85;
 
@@ -466,9 +453,7 @@ function getYouTubeEmbedUrl(url?: string | null) {
     if (parsedUrl.hostname === "youtu.be") {
       const videoId = parsedUrl.pathname.replace("/", "");
 
-      return videoId
-        ? `https://www.youtube.com/embed/${videoId}`
-        : null;
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
     }
 
     if (
@@ -484,17 +469,11 @@ function getYouTubeEmbedUrl(url?: string | null) {
 
       const pathParts = parsedUrl.pathname.split("/").filter(Boolean);
 
-      if (
-        pathParts[0] === "shorts" &&
-        pathParts[1]
-      ) {
+      if (pathParts[0] === "shorts" && pathParts[1]) {
         return `https://www.youtube.com/embed/${pathParts[1]}`;
       }
 
-      if (
-        pathParts[0] === "embed" &&
-        pathParts[1]
-      ) {
+      if (pathParts[0] === "embed" && pathParts[1]) {
         return `https://www.youtube.com/embed/${pathParts[1]}`;
       }
     }
@@ -506,29 +485,15 @@ function getYouTubeEmbedUrl(url?: string | null) {
 }
 
 export default function ProjetoDetalhe() {
-  const { slug } =
-    useParams<{ slug: string }>();
+  const { slug } = useParams<{ slug: string }>();
 
-  const {
-    project,
-    loading,
-    error,
-  } = usePublicProject(slug);
+  const { project, loading, error } = usePublicProject(slug);
 
-  const [
-    selectedImage,
-    setSelectedImage,
-  ] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const [
-    selectedIndex,
-    setSelectedIndex,
-  ] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const openImage = (
-    image: string,
-    index: number
-  ) => {
+  const openImage = (image: string, index: number) => {
     setSelectedImage(image);
     setSelectedIndex(index);
   };
@@ -541,13 +506,9 @@ export default function ProjetoDetalhe() {
     if (!project) return;
 
     const nextIndex =
-      selectedIndex > 0
-        ? selectedIndex - 1
-        : project.images.length - 1;
+      selectedIndex > 0 ? selectedIndex - 1 : project.images.length - 1;
 
-    setSelectedImage(
-      project.images[nextIndex].imageUrl
-    );
+    setSelectedImage(project.images[nextIndex].imageUrl);
 
     setSelectedIndex(nextIndex);
   };
@@ -556,14 +517,9 @@ export default function ProjetoDetalhe() {
     if (!project) return;
 
     const nextIndex =
-      selectedIndex <
-        project.images.length - 1
-        ? selectedIndex + 1
-        : 0;
+      selectedIndex < project.images.length - 1 ? selectedIndex + 1 : 0;
 
-    setSelectedImage(
-      project.images[nextIndex].imageUrl
-    );
+    setSelectedImage(project.images[nextIndex].imageUrl);
 
     setSelectedIndex(nextIndex);
   };
@@ -572,14 +528,10 @@ export default function ProjetoDetalhe() {
     return (
       <Section>
         <Container>
-          <BackLink to="/projetos">
-            ← Voltar para projetos
-          </BackLink>
+          <BackLink to="/projetos">← Voltar para projetos</BackLink>
 
           <DescriptionCard>
-            <DescriptionText>
-              Carregando projeto...
-            </DescriptionText>
+            <DescriptionText>Carregando projeto...</DescriptionText>
           </DescriptionCard>
         </Container>
       </Section>
@@ -590,18 +542,13 @@ export default function ProjetoDetalhe() {
     return (
       <Section>
         <Container>
-          <BackLink to="/projetos">
-            ← Voltar para projetos
-          </BackLink>
+          <BackLink to="/projetos">← Voltar para projetos</BackLink>
 
           <DescriptionCard>
-            <InfoLabel>
-              Projeto
-            </InfoLabel>
+            <InfoLabel>Projeto</InfoLabel>
 
             <DescriptionText>
-              {error ||
-                "Projeto não encontrado."}
+              {error || "Projeto não encontrado."}
             </DescriptionText>
           </DescriptionCard>
         </Container>
@@ -609,80 +556,67 @@ export default function ProjetoDetalhe() {
     );
   }
 
-  const galleryImages =
-    project.images ?? [];
+  const galleryImages = project.images ?? [];
 
-  const cover =
-    project.featuredImage ||
-    galleryImages[0]?.imageUrl;
+  const cover = project.featuredImage || galleryImages[0]?.imageUrl;
 
-  const videoEmbedUrl =
-    getYouTubeEmbedUrl(project.videoUrl);
+  const videoEmbedUrl = getYouTubeEmbedUrl(project.videoUrl);
 
   return (
     <Section>
+      <Helmet>
+        <title>{project.title} — ROOM Arquitetura Sustentável</title>
+        <meta name="description" content={project.description} />
+        <meta
+          property="og:title"
+          content={`${project.title} — ROOM Arquitetura Sustentável`}
+        />
+        <meta property="og:description" content={project.description} />
+        {cover && <meta property="og:image" content={cover} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        {cover && <meta name="twitter:image" content={cover} />}
+      </Helmet>
+
       <Container>
-        <BackLink to="/projetos">
-          ← Voltar para projetos
-        </BackLink>
+        <BackLink to="/projetos">← Voltar para projetos</BackLink>
 
         <Hero>
           <HeroContent>
-            <Eyebrow>
-              {project.category}
-            </Eyebrow>
+            <Eyebrow>{project.category}</Eyebrow>
 
-            <Title>
-              {project.title}
-            </Title>
+            <Title>{project.title}</Title>
 
             <Meta>
               <DetailsSection>
                 <InfoCard>
-                  <CardTitle>
-                    Informações do projeto
-                  </CardTitle>
+                  <CardTitle>Informações do projeto</CardTitle>
 
                   <InfoList>
                     {project.area && (
                       <InfoItem>
-                        <InfoLabel>
-                          Área
-                        </InfoLabel>
+                        <InfoLabel>Área</InfoLabel>
+
+                        <InfoValue>{project.area}</InfoValue>
+                      </InfoItem>
+                    )}
+
+                    {(project.city || project.state) && (
+                      <InfoItem>
+                        <InfoLabel>Local</InfoLabel>
 
                         <InfoValue>
-                          {project.area}
+                          {project.city}
+                          {project.city && project.state ? " / " : ""}
+                          {project.state}
                         </InfoValue>
                       </InfoItem>
                     )}
 
-                    {(project.city ||
-                      project.state) && (
-                        <InfoItem>
-                          <InfoLabel>
-                            Local
-                          </InfoLabel>
-
-                          <InfoValue>
-                            {project.city}
-                            {project.city &&
-                              project.state
-                              ? " / "
-                              : ""}
-                            {project.state}
-                          </InfoValue>
-                        </InfoItem>
-                      )}
-
                     {project.year && (
                       <InfoItem>
-                        <InfoLabel>
-                          Ano
-                        </InfoLabel>
+                        <InfoLabel>Ano</InfoLabel>
 
-                        <InfoValue>
-                          {project.year}
-                        </InfoValue>
+                        <InfoValue>{project.year}</InfoValue>
                       </InfoItem>
                     )}
                   </InfoList>
@@ -693,48 +627,30 @@ export default function ProjetoDetalhe() {
 
           <HeroImageCard>
             {cover ? (
-              <HeroImage
-                src={cover}
-                alt={project.title}
-              />
+              <HeroImage src={cover} alt={project.title} />
             ) : (
-              <HeroImage
-                src=""
-                alt=""
-              />
+              <HeroImage src="" alt="" />
             )}
           </HeroImageCard>
         </Hero>
 
         <DescriptionSection>
           <DescriptionCard>
-            <InfoLabel>
-              Descrição
-            </InfoLabel>
+            <InfoLabel>Descrição</InfoLabel>
 
-            <DescriptionText>
-              {project.description}
-            </DescriptionText>
+            <DescriptionText>{project.description}</DescriptionText>
           </DescriptionCard>
         </DescriptionSection>
 
         {project.content?.trim() && (
           <ContentSection>
             <ContentCard>
-              <ContentTitle>
-                Sobre o projeto
-              </ContentTitle>
+              <ContentTitle>Sobre o projeto</ContentTitle>
 
               <ContentText>
-                {project.content
-                  .split(/\n\s*\n/)
-                  .map(
-                    (paragraph, index) => (
-                      <p key={index}>
-                        {paragraph.trim()}
-                      </p>
-                    )
-                  )}
+                {project.content.split(/\n\s*\n/).map((paragraph, index) => (
+                  <p key={index}>{paragraph.trim()}</p>
+                ))}
               </ContentText>
             </ContentCard>
           </ContentSection>
@@ -743,76 +659,45 @@ export default function ProjetoDetalhe() {
         {galleryImages.length > 0 && (
           <GallerySection>
             <GalleryHeader>
-              <GalleryTitle>
-                Galeria do projeto
-              </GalleryTitle>
+              <GalleryTitle>Galeria do projeto</GalleryTitle>
 
               <GalleryText>
-                Um recorte visual do projeto,
-                com imagens que ajudam a
-                perceber a atmosfera,
-                materialidade e identidade
-                do espaço.
+                Um recorte visual do projeto, com imagens que ajudam a perceber
+                a atmosfera, materialidade e identidade do espaço.
               </GalleryText>
             </GalleryHeader>
 
             <Gallery>
-              {galleryImages.map(
-                (image, index) => (
-                  <GalleryImageCard
-                    key={image.id}
-                    type="button"
-                    onClick={() =>
-                      openImage(
-                        image.imageUrl,
-                        index
-                      )
-                    }
-                    aria-label={`Abrir imagem ${index + 1
-                      } de ${project.title
-                      }`}
-                  >
-                    <GalleryImage
-                      src={
-                        image.imageUrl
-                      }
-                      alt={
-                        image.alt ||
-                        `${project.title} ${index + 1
-                        }`
-                      }
-                      loading="lazy"
-                    />
-                  </GalleryImageCard>
-                )
-              )}
+              {galleryImages.map((image, index) => (
+                <GalleryImageCard
+                  key={image.id}
+                  type="button"
+                  onClick={() => openImage(image.imageUrl, index)}
+                  aria-label={`Abrir imagem ${index + 1} de ${project.title}`}
+                >
+                  <GalleryImage
+                    src={image.imageUrl}
+                    alt={image.alt || `${project.title} ${index + 1}`}
+                    loading="lazy"
+                  />
+                </GalleryImageCard>
+              ))}
             </Gallery>
           </GallerySection>
         )}
 
         {selectedImage && (
-          <ModalOverlay
-            onClick={closeImage}
-          >
-            <ModalContent
-              onClick={(event) =>
-                event.stopPropagation()
-              }
-            >
+          <ModalOverlay onClick={closeImage}>
+            <ModalContent onClick={(event) => event.stopPropagation()}>
               <ModalImageFrame>
-                <ModalImage
-                  src={selectedImage}
-                  alt={project.title}
-                />
+                <ModalImage src={selectedImage} alt={project.title} />
               </ModalImageFrame>
 
               <ModalControls>
                 <ModalButton
                   type="button"
                   onClick={goToPrevious}
-                  disabled={
-                    galleryImages.length <= 1
-                  }
+                  disabled={galleryImages.length <= 1}
                 >
                   ← Anterior
                 </ModalButton>
@@ -822,16 +707,13 @@ export default function ProjetoDetalhe() {
                     color: "#fff",
                   }}
                 >
-                  {selectedIndex + 1} /{" "}
-                  {galleryImages.length}
+                  {selectedIndex + 1} / {galleryImages.length}
                 </span>
 
                 <ModalButton
                   type="button"
                   onClick={goToNext}
-                  disabled={
-                    galleryImages.length <= 1
-                  }
+                  disabled={galleryImages.length <= 1}
                 >
                   Próxima →
                 </ModalButton>
@@ -842,9 +724,7 @@ export default function ProjetoDetalhe() {
 
         {videoEmbedUrl && (
           <VideoCard>
-            <CardTitle>
-              Vídeo do projeto
-            </CardTitle>
+            <CardTitle>Vídeo do projeto</CardTitle>
 
             <VideoFrame
               src={videoEmbedUrl}
@@ -860,34 +740,23 @@ export default function ProjetoDetalhe() {
 
         <MoreProjectsSection>
           <MoreProjectsHeader>
-            <MoreProjectsTitle>
-              Mais projetos
-            </MoreProjectsTitle>
+            <MoreProjectsTitle>Mais projetos</MoreProjectsTitle>
 
             <MoreProjectsText>
-              Continue explorando outros
-              projetos desenvolvidos pela
-              ROOM.
+              Continue explorando outros projetos desenvolvidos pela ROOM.
             </MoreProjectsText>
           </MoreProjectsHeader>
 
-          <ProjectCard
-            to="/projetos"
-          >
+          <ProjectCard to="/projetos">
             <ProjectCardContent>
-              <ProjectCardTitle>
-                Ver todos os projetos
-              </ProjectCardTitle>
+              <ProjectCardTitle>Ver todos os projetos</ProjectCardTitle>
 
               <ProjectCardDescription>
-                Conheça todos os projetos
-                publicados pela ROOM
-                Arquitetura Sustentável.
+                Conheça todos os projetos publicados pela ROOM Arquitetura
+                Sustentável.
               </ProjectCardDescription>
 
-              <ExploreText>
-                Explorar projetos →
-              </ExploreText>
+              <ExploreText>Explorar projetos →</ExploreText>
             </ProjectCardContent>
           </ProjectCard>
         </MoreProjectsSection>

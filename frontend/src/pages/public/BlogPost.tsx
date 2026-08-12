@@ -5,7 +5,6 @@ import { Helmet } from "react-helmet-async";
 
 import { Container } from "../../components/ui/Container";
 import { getBlogPostBySlug, getPublishedBlogPosts } from "../../lib/blog";
-import { sanitizeBlogContent } from "../../lib/blogContent";
 import { media } from "../../styles/breakpoints";
 
 const Page = styled.div`
@@ -241,7 +240,7 @@ export default function BlogPost() {
       return "";
     }
 
-    return sanitizeBlogContent(post.content);
+    return post.content;
   }, [post?.content]);
 
   if (loading) {

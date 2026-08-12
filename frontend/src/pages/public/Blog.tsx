@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { Helmet } from "react-helmet-async";
 
 import { Container } from "../../components/ui/Container";
 import { useFeaturedProjects } from "../../hooks/useFeaturedProjects";
@@ -417,6 +418,22 @@ export default function Blog() {
 
   return (
     <Page>
+      <Helmet>
+        <title>Blog — ROOM Arquitetura Sustentável</title>
+        <meta
+          name="description"
+          content="Artigos, novidades e reflexões sobre arquitetura sustentável, projetos e cotidiano da ROOM."
+        />
+        <meta
+          property="og:title"
+          content="Blog — ROOM Arquitetura Sustentável"
+        />
+        <meta
+          property="og:description"
+          content="Artigos, novidades e reflexões sobre arquitetura sustentável, projetos e cotidiano da ROOM."
+        />
+      </Helmet>
+
       <Container>
         <FilterBar>
           {categories.map((category) => (

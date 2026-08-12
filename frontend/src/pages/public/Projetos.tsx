@@ -1,25 +1,16 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { Helmet } from "react-helmet-async";
 
-import {
-  PortfolioSection,
-} from "../../components/sections/PortfolioSection";
+import { PortfolioSection } from "../../components/sections/PortfolioSection";
 
-import {
-  Reveal,
-} from "../../components/motion/Reveal";
+import { Reveal } from "../../components/motion/Reveal";
 
-import {
-  Container,
-} from "../../components/ui/Container";
+import { Container } from "../../components/ui/Container";
 
-import {
-  media,
-} from "../../styles/breakpoints";
+import { media } from "../../styles/breakpoints";
 
-import {
-  usePublicProjects,
-} from "../../hooks/usePublicProjects";
+import { usePublicProjects } from "../../hooks/usePublicProjects";
 
 const BackLink = styled(Link)`
   display: inline-flex;
@@ -30,21 +21,16 @@ const BackLink = styled(Link)`
 
   margin-bottom: 1.4rem;
 
-  color: ${({ theme }) =>
-    theme.colors.textSoft};
+  color: ${({ theme }) => theme.colors.textSoft};
 
   text-decoration: none;
 
   font-weight: 600;
 
-  transition:
-    color
-    ${({ theme }) =>
-      theme.transitions.default};
+  transition: color ${({ theme }) => theme.transitions.default};
 
   &:hover {
-    color: ${({ theme }) =>
-      theme.colors.text};
+    color: ${({ theme }) => theme.colors.text};
   }
 `;
 
@@ -65,21 +51,13 @@ const NoticeBanner = styled.div`
 
   padding: 1rem 1.25rem;
 
-  border: 1px solid
-    ${({ theme }) =>
-      theme.colors.primaryBorder};
+  border: 1px solid ${({ theme }) => theme.colors.primaryBorder};
 
-  border-radius:
-    ${({ theme }) =>
-      theme.radius.md};
+  border-radius: ${({ theme }) => theme.radius.md};
 
-  background:
-    ${({ theme }) =>
-      theme.colors.primarySoft};
+  background: ${({ theme }) => theme.colors.primarySoft};
 
-  color:
-    ${({ theme }) =>
-      theme.colors.text};
+  color: ${({ theme }) => theme.colors.text};
 
   font-weight: 600;
 
@@ -93,85 +71,67 @@ const NoticeBanner = styled.div`
 `;
 
 export default function Projetos() {
-  const {
-    projects,
-    loading,
-    error,
-  } = usePublicProjects();
+  const { projects, loading, error } = usePublicProjects();
 
-  const portfolioItems =
-    projects.map((project) => ({
-      slug: project.slug,
+  const portfolioItems = projects.map((project) => ({
+    slug: project.slug,
 
-      title: project.title,
+    title: project.title,
 
-      category: project.category,
+    category: project.category,
 
-      local:
-        project.city &&
-        project.state
-          ? `${project.city} / ${project.state}`
-          : project.city ??
-            project.state ??
-            "",
+    local:
+      project.city && project.state
+        ? `${project.city} / ${project.state}`
+        : (project.city ?? project.state ?? ""),
 
-      description:
-        project.description,
+    description: project.description,
 
-      cover:
-        project.featuredImage ??
-        project.images?.[0]?.imageUrl,
+    cover: project.featuredImage ?? project.images?.[0]?.imageUrl,
 
-      images:
-        project.images?.map(
-          (image) =>
-            image.imageUrl
-        ) ?? [],
-    }));
+    images: project.images?.map((image) => image.imageUrl) ?? [],
+  }));
 
   return (
     <Page>
+      <Helmet>
+        <title>Projetos — ROOM Arquitetura Sustentável</title>
+        <meta
+          name="description"
+          content="Conheça os projetos residenciais desenvolvidos pela ROOM Arquitetura Sustentável."
+        />
+        <meta
+          property="og:title"
+          content="Projetos — ROOM Arquitetura Sustentável"
+        />
+        <meta
+          property="og:description"
+          content="Conheça os projetos residenciais desenvolvidos pela ROOM Arquitetura Sustentável."
+        />
+      </Helmet>
+
       <Reveal>
         <Container>
+          <BackLink to="/">← Voltar ao Início</BackLink>
 
-          <BackLink to="/">
-            ← Voltar ao Início
-          </BackLink>
+          {loading && <NoticeBanner>Carregando projetos...</NoticeBanner>}
 
-          {loading && (
-            <NoticeBanner>
-              Carregando projetos...
-            </NoticeBanner>
+          {error && <NoticeBanner>{error}</NoticeBanner>}
+
+          {!loading && !error && projects.length === 0 && (
+            <NoticeBanner>Nenhum projeto publicado no momento.</NoticeBanner>
           )}
 
-          {error && (
-            <NoticeBanner>
-              {error}
-            </NoticeBanner>
+          {!loading && !error && projects.length > 0 && (
+            <PortfolioSection
+              eyebrow="Portfólio"
+              title="Nossos projetos"
+              description="Conheça os projetos desenvolvidos pela ROOM Arquitetura Sustentável."
+              items={portfolioItems}
+              showFilter={true}
+              useSectionContainer={false}
+            />
           )}
-
-          {!loading &&
-            !error &&
-            projects.length === 0 && (
-              <NoticeBanner>
-                Nenhum projeto publicado
-                no momento.
-              </NoticeBanner>
-            )}
-
-          {!loading &&
-            !error &&
-            projects.length > 0 && (
-              <PortfolioSection
-                eyebrow="Portfólio"
-                title="Nossos projetos"
-                description="Conheça os projetos desenvolvidos pela ROOM Arquitetura Sustentável."
-                items={portfolioItems}
-                showFilter={true}
-                useSectionContainer={false}
-              />
-            )}
-
         </Container>
       </Reveal>
     </Page>
