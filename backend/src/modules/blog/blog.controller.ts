@@ -96,4 +96,13 @@ export class BlogController {
     await service.remove(id);
     return response.status(204).send();
   }
+
+  async cleanupOrphanedStorage(_request: Request, response: Response) {
+    const result = await service.cleanupOrphanedStorage();
+
+    return response.json({
+      message: "Limpeza do armazenamento do Blog concluída.",
+      ...result,
+    });
+  }
 }
