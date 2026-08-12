@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
+import { Helmet } from "react-helmet-async";
 
 import { Container } from "../../components/ui/Container";
 import {
@@ -35,13 +36,17 @@ const Article = styled.article`
 
 const Cover = styled.img`
   width: 100%;
-  height: 420px;
+  height: 220px;
   object-fit: cover;
   border-radius: ${({ theme }) => theme.radius.lg};
   display: block;
 
   @media ${media.tablet} {
-    height: 500px;
+    height: 360px;
+  }
+
+  @media ${media.laptop} {
+    height: 480px;
   }
 `;
 
@@ -112,7 +117,7 @@ const Body = styled.div`
 
   iframe {
     width: 100%;
-    min-height: 320px;
+    aspect-ratio: 16 / 9;
     border: 0;
     border-radius: ${({ theme }) => theme.radius.md};
     margin: 1rem 0;
@@ -143,10 +148,14 @@ const RelatedCard = styled(Link)`
 
 const RelatedImage = styled.img`
   width: 100%;
-  height: 180px;
+  height: 160px;
   object-fit: cover;
   border-radius: ${({ theme }) => theme.radius.sm};
   display: block;
+
+  @media ${media.tablet} {
+    height: 180px;
+  }
 `;
 
 const RelatedTitle = styled.h3`
@@ -231,19 +240,6 @@ export default function BlogPost() {
     };
   }, [slug]);
 
-  useEffect(() => {
-    if (post?.title) {
-      document.title = `${post.title} — ROOM Arquitetura Sustentável`;
-    } else if (!loading) {
-      document.title =
-        "Publicação não encontrada — ROOM Arquitetura Sustentável";
-    }
-
-    return () => {
-      document.title = "ROOM Arquitetura Sustentável";
-    };
-  }, [post?.title, loading]);
-
   const safeHtml = useMemo(() => {
     if (!post?.content) {
       return "";
@@ -282,14 +278,37 @@ export default function BlogPost() {
   }
 
   const youtubeEmbedUrl = getYoutubeEmbedUrl(post.youtubeUrl);
+  const pageTitle = `${post.title} — ROOM Arquitetura Sustentável`;
+  const pageDescription =
+    post.excerpt ||
+    `Leia ${post.title} no blog da ROOM Arquitetura Sustentável.`;
 
   return (
     <Page>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:type" content="article" />
+        {post.coverImage && (
+          <meta property="og:image" content={post.coverImage} />
+        )}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        {post.coverImage && (
+          <meta name="twitter:image" content={post.coverImage} />
+        )}
+      </Helmet>
+
       <Container>
         <BackLink to="/blog">← Voltar ao blog</BackLink>
 
         <Article>
-          {post.coverImage && <Cover src={post.coverImage} alt={post.title} />}
+          {post.coverImage && (
+            <Cover src={post.coverImage} alt={post.title} loading="eager" />
+          )}
 
           <Meta>
             <Tag>{post.category}</Tag>
@@ -332,6 +351,7 @@ export default function BlogPost() {
                       "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80"
                     }
                     alt={item.title}
+                    loading="lazy"
                   />
                   <RelatedTitle>{item.title}</RelatedTitle>
                 </RelatedCard>

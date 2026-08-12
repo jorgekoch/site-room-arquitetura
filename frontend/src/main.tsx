@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
+import { HelmetProvider } from "react-helmet-async";
 
 import App from "./App";
 import { GlobalStyle } from "./styles/GlobalStyle";
@@ -10,15 +11,17 @@ import { AdminProvider } from "./contexts/AdminContext";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <ThemeModeProvider>
-        <AdminProvider>
-          <GlobalStyle />
-          <App />
-        </AdminProvider>
-      </ThemeModeProvider>
+    <HelmetProvider>
+      <BrowserRouter>
+        <ThemeModeProvider>
+          <AdminProvider>
+            <GlobalStyle />
+            <App />
+          </AdminProvider>
+        </ThemeModeProvider>
 
-      <Analytics />
-    </BrowserRouter>
-  </React.StrictMode>
+        <Analytics />
+      </BrowserRouter>
+    </HelmetProvider>
+  </React.StrictMode>,
 );
