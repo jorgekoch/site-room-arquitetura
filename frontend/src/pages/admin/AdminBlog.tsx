@@ -26,7 +26,6 @@ type Draft = {
   author: string;
   category: string;
   publishedAt: string;
-  readingTime: number;
   status: "draft" | "published";
 };
 
@@ -39,7 +38,6 @@ const initialDraft: Draft = {
   author: "ROOM Arquitetura",
   category: "Arquitetura",
   publishedAt: new Date().toISOString(),
-  readingTime: 4,
   status: "published",
 };
 
@@ -449,7 +447,6 @@ export default function AdminBlog() {
       author: post.author,
       category: post.category,
       publishedAt: post.publishedAt,
-      readingTime: post.readingTime,
       status: normalizeBlogStatus(post.status),
     });
     setMessage("");
