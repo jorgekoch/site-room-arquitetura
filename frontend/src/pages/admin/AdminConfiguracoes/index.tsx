@@ -1,164 +1,76 @@
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
-import {
-  Eye,
-  EyeOff,
-} from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
-import {
-  useCurrentAdmin,
-} from "../../../hooks/useCurrentAdmin";
+import { useCurrentAdmin } from "../../../hooks/useCurrentAdmin";
 
-import {
-  useThemeMode,
-} from "../../../contexts/ThemeModeContext";
+import { useThemeMode } from "../../../contexts/ThemeModeContext";
 
-import {
-  changeAdminPassword,
-  updateAdminProfile,
-} from "../../../lib/auth";
+import { changeAdminPassword, updateAdminProfile } from "../../../lib/auth";
 
-import {
-  getSiteSettings,
-  updateSiteSettings,
-} from "../../../lib/settings";
+import { getSiteSettings, updateSiteSettings } from "../../../lib/settings";
 
 import * as S from "./styles";
 
 export default function AdminConfiguracoes() {
-  const {
-    user,
-    setUser,
-  } = useCurrentAdmin();
+  const { user, setUser } = useCurrentAdmin();
 
-  const {
-    mode,
-    setMode,
-  } = useThemeMode();
+  const { mode, setMode } = useThemeMode();
 
   /*
    * Dados da conta
    */
-  const [
-    name,
-    setName,
-  ] = useState("");
+  const [name, setName] = useState("");
 
-  const [
-    email,
-    setEmail,
-  ] = useState("");
+  const [email, setEmail] = useState("");
 
-  const [
-    saving,
-    setSaving,
-  ] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const [
-    message,
-    setMessage,
-  ] = useState("");
+  const [message, setMessage] = useState("");
 
-  const [
-    error,
-    setError,
-  ] = useState("");
+  const [error, setError] = useState("");
 
   /*
    * Alteração de senha
    */
-  const [
-    currentPassword,
-    setCurrentPassword,
-  ] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
 
-  const [
-    newPassword,
-    setNewPassword,
-  ] = useState("");
+  const [newPassword, setNewPassword] = useState("");
 
-  const [
-    confirmPassword,
-    setConfirmPassword,
-  ] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [
-    changingPassword,
-    setChangingPassword,
-  ] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
 
-  const [
-    passwordMessage,
-    setPasswordMessage,
-  ] = useState("");
+  const [passwordMessage, setPasswordMessage] = useState("");
 
-  const [
-    passwordError,
-    setPasswordError,
-  ] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
-  const [
-    showCurrentPassword,
-    setShowCurrentPassword,
-  ] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
 
-  const [
-    showNewPassword,
-    setShowNewPassword,
-  ] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
-  const [
-    showConfirmPassword,
-    setShowConfirmPassword,
-  ] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   /*
    * Configurações do site
    *
-   * Disponíveis somente para OWNER.
+   * Disponíveis para OWNER e DEV.
    */
-  const [
-    whatsapp,
-    setWhatsapp,
-  ] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
 
-  const [
-    instagram,
-    setInstagram,
-  ] = useState("");
+  const [instagram, setInstagram] = useState("");
 
-  const [
-    maxProjectImages,
-    setMaxProjectImages,
-  ] = useState("20");
+  const [maxProjectImages, setMaxProjectImages] = useState("20");
 
-  const [
-    maxProjectImageSizeMb,
-    setMaxProjectImageSizeMb,
-  ] = useState("10");
+  const [maxProjectImageSizeMb, setMaxProjectImageSizeMb] = useState("10");
 
-  const [
-    loadingSettings,
-    setLoadingSettings,
-  ] = useState(false);
+  const [loadingSettings, setLoadingSettings] = useState(false);
 
-  const [
-    savingSettings,
-    setSavingSettings,
-  ] = useState(false);
+  const [savingSettings, setSavingSettings] = useState(false);
 
-  const [
-    settingsMessage,
-    setSettingsMessage,
-  ] = useState("");
+  const [settingsMessage, setSettingsMessage] = useState("");
 
-  const [
-    settingsError,
-    setSettingsError,
-  ] = useState("");
+  const [settingsError, setSettingsError] = useState("");
 
   /*
    * Preenche os dados da conta
@@ -175,13 +87,10 @@ export default function AdminConfiguracoes() {
 
   /*
    * Carrega as configurações
-   * do site somente para OWNER.
+   * do site para OWNER e DEV.
    */
   useEffect(() => {
-    if (
-      !user ||
-      user.role !== "OWNER"
-    ) {
+    if (!user || (user.role !== "OWNER" && user.role !== "DEV")) {
       return;
     }
 
@@ -192,46 +101,30 @@ export default function AdminConfiguracoes() {
       setSettingsError("");
 
       try {
-        const settings =
-          await getSiteSettings();
+        const settings = await getSiteSettings();
 
         if (cancelled) {
           return;
         }
 
-        setWhatsapp(
-          settings.whatsapp ?? ""
-        );
+        setWhatsapp(settings.whatsapp ?? "");
 
-        setInstagram(
-          settings.instagram ?? ""
-        );
+        setInstagram(settings.instagram ?? "");
 
-        setMaxProjectImages(
-          String(
-            settings.maxProjectImages
-          )
-        );
+        setMaxProjectImages(String(settings.maxProjectImages));
 
-        setMaxProjectImageSizeMb(
-          String(
-            settings.maxProjectImageSizeMb
-          )
-        );
+        setMaxProjectImageSizeMb(String(settings.maxProjectImageSizeMb));
       } catch (error) {
         if (cancelled) {
           return;
         }
 
-        console.error(
-          "Erro ao carregar configurações do site:",
-          error
-        );
+        console.error("Erro ao carregar configurações do site:", error);
 
         setSettingsError(
           error instanceof Error
             ? error.message
-            : "Não foi possível carregar as configurações do site."
+            : "Não foi possível carregar as configurações do site.",
         );
       } finally {
         if (!cancelled) {
@@ -256,37 +149,25 @@ export default function AdminConfiguracoes() {
     setError("");
 
     try {
-      const response =
-        await updateAdminProfile({
-          name,
-          email,
-        });
+      const response = await updateAdminProfile({
+        name,
+        email,
+      });
 
-      setName(
-        response.user.name
-      );
+      setName(response.user.name);
 
-      setEmail(
-        response.user.email
-      );
+      setEmail(response.user.email);
 
-      setUser(
-        response.user
-      );
+      setUser(response.user);
 
-      setMessage(
-        "Dados atualizados com sucesso."
-      );
+      setMessage("Dados atualizados com sucesso.");
     } catch (error) {
-      console.error(
-        "Erro ao atualizar dados do administrador:",
-        error
-      );
+      console.error("Erro ao atualizar dados do administrador:", error);
 
       setError(
         error instanceof Error
           ? error.message
-          : "Não foi possível salvar as alterações."
+          : "Não foi possível salvar as alterações.",
       );
     } finally {
       setSaving(false);
@@ -303,30 +184,24 @@ export default function AdminConfiguracoes() {
     setPasswordError("");
 
     try {
-      const response =
-        await changeAdminPassword({
-          currentPassword,
-          newPassword,
-          confirmPassword,
-        });
+      const response = await changeAdminPassword({
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      });
 
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
 
-      setPasswordMessage(
-        response.message
-      );
+      setPasswordMessage(response.message);
     } catch (error) {
-      console.error(
-        "Erro ao alterar senha:",
-        error
-      );
+      console.error("Erro ao alterar senha:", error);
 
       setPasswordError(
         error instanceof Error
           ? error.message
-          : "Não foi possível alterar a senha."
+          : "Não foi possível alterar a senha.",
       );
     } finally {
       setChangingPassword(false);
@@ -335,7 +210,7 @@ export default function AdminConfiguracoes() {
 
   /*
    * Salva as configurações
-   * exclusivas do OWNER.
+   * disponíveis para OWNER e DEV.
    */
   async function handleSaveSettings() {
     setSavingSettings(true);
@@ -343,24 +218,13 @@ export default function AdminConfiguracoes() {
     setSettingsMessage("");
     setSettingsError("");
 
-    const parsedMaxImages =
-      Number(
-        maxProjectImages
-      );
+    const parsedMaxImages = Number(maxProjectImages);
 
-    const parsedMaxSizeMb =
-      Number(
-        maxProjectImageSizeMb
-      );
+    const parsedMaxSizeMb = Number(maxProjectImageSizeMb);
 
-    if (
-      !Number.isInteger(
-        parsedMaxImages
-      ) ||
-      parsedMaxImages < 1
-    ) {
+    if (!Number.isInteger(parsedMaxImages) || parsedMaxImages < 1) {
       setSettingsError(
-        "O máximo de imagens deve ser um número inteiro maior que zero."
+        "O máximo de imagens deve ser um número inteiro maior que zero.",
       );
 
       setSavingSettings(false);
@@ -368,15 +232,8 @@ export default function AdminConfiguracoes() {
       return;
     }
 
-    if (
-      !Number.isFinite(
-        parsedMaxSizeMb
-      ) ||
-      parsedMaxSizeMb <= 0
-    ) {
-      setSettingsError(
-        "O tamanho máximo por imagem deve ser maior que zero."
-      );
+    if (!Number.isFinite(parsedMaxSizeMb) || parsedMaxSizeMb <= 0) {
+      setSettingsError("O tamanho máximo por imagem deve ser maior que zero.");
 
       setSavingSettings(false);
 
@@ -384,54 +241,32 @@ export default function AdminConfiguracoes() {
     }
 
     try {
-      const settings =
-        await updateSiteSettings({
-          whatsapp:
-            whatsapp.trim(),
+      const settings = await updateSiteSettings({
+        whatsapp: whatsapp.trim(),
 
-          instagram:
-            instagram.trim(),
+        instagram: instagram.trim(),
 
-          maxProjectImages:
-            parsedMaxImages,
+        maxProjectImages: parsedMaxImages,
 
-          maxProjectImageSizeMb:
-            parsedMaxSizeMb,
-        });
+        maxProjectImageSizeMb: parsedMaxSizeMb,
+      });
 
-      setWhatsapp(
-        settings.whatsapp ?? ""
-      );
+      setWhatsapp(settings.whatsapp ?? "");
 
-      setInstagram(
-        settings.instagram ?? ""
-      );
+      setInstagram(settings.instagram ?? "");
 
-      setMaxProjectImages(
-        String(
-          settings.maxProjectImages
-        )
-      );
+      setMaxProjectImages(String(settings.maxProjectImages));
 
-      setMaxProjectImageSizeMb(
-        String(
-          settings.maxProjectImageSizeMb
-        )
-      );
+      setMaxProjectImageSizeMb(String(settings.maxProjectImageSizeMb));
 
-      setSettingsMessage(
-        "Configurações do site atualizadas com sucesso."
-      );
+      setSettingsMessage("Configurações do site atualizadas com sucesso.");
     } catch (error) {
-      console.error(
-        "Erro ao atualizar configurações do site:",
-        error
-      );
+      console.error("Erro ao atualizar configurações do site:", error);
 
       setSettingsError(
         error instanceof Error
           ? error.message
-          : "Não foi possível salvar as configurações do site."
+          : "Não foi possível salvar as configurações do site.",
       );
     } finally {
       setSavingSettings(false);
@@ -442,16 +277,14 @@ export default function AdminConfiguracoes() {
     <>
       <div
         style={{
-          marginBottom:
-            "24px",
+          marginBottom: "24px",
         }}
       >
         <h1
           style={{
             margin: 0,
             color: "inherit",
-            fontSize:
-              "1.5rem",
+            fontSize: "1.5rem",
           }}
         >
           Configurações
@@ -459,14 +292,11 @@ export default function AdminConfiguracoes() {
 
         <p
           style={{
-            marginTop:
-              "6px",
+            marginTop: "6px",
             opacity: 0.7,
           }}
         >
-          Gerencie sua conta,
-          aparência e
-          configurações do site.
+          Gerencie sua conta, aparência e configurações do site.
         </p>
       </div>
 
@@ -477,86 +307,49 @@ export default function AdminConfiguracoes() {
         <S.Card>
           <S.CardHeader>
             <div>
-              <h2>
-                Conta
-              </h2>
+              <h2>Conta</h2>
 
-              <p>
-                Dados do
-                administrador
-              </p>
+              <p>Dados do administrador</p>
             </div>
           </S.CardHeader>
 
           <S.Form>
             <S.Field>
-              <label htmlFor="admin-name">
-                Nome
-              </label>
+              <label htmlFor="admin-name">Nome</label>
 
               <input
                 id="admin-name"
                 type="text"
                 value={name}
-                onChange={(
-                  event
-                ) =>
-                  setName(
-                    event.target
-                      .value
-                  )
-                }
+                onChange={(event) => setName(event.target.value)}
                 required
                 minLength={3}
               />
             </S.Field>
 
             <S.Field>
-              <label htmlFor="admin-email">
-                E-mail
-              </label>
+              <label htmlFor="admin-email">E-mail</label>
 
               <input
                 id="admin-email"
                 type="email"
                 value={email}
-                onChange={(
-                  event
-                ) =>
-                  setEmail(
-                    event.target
-                      .value
-                  )
-                }
+                onChange={(event) => setEmail(event.target.value)}
                 required
               />
             </S.Field>
 
-            {error && (
-              <S.ErrorMessage>
-                {error}
-              </S.ErrorMessage>
-            )}
+            {error && <S.ErrorMessage>{error}</S.ErrorMessage>}
 
-            {message && (
-              <S.SuccessMessage>
-                {message}
-              </S.SuccessMessage>
-            )}
+            {message && <S.SuccessMessage>{message}</S.SuccessMessage>}
 
             <S.Actions>
               <S.PrimaryButton
                 type="button"
-                onClick={
-                  handleSave
-                }
-                disabled={
-                  saving
-                }
+                onClick={handleSave}
+                disabled={saving}
               >
-                {saving
-                  ? "Salvando..."
-                  : "Salvar alterações"}
+                {saving ? "Salvando..." : "Salvar alterações"}
               </S.PrimaryButton>
             </S.Actions>
           </S.Form>
@@ -568,76 +361,39 @@ export default function AdminConfiguracoes() {
         <S.Card>
           <S.CardHeader>
             <div>
-              <h2>
-                Aparência
-              </h2>
+              <h2>Aparência</h2>
 
-              <p>
-                Escolha o tema
-                do painel.
-              </p>
+              <p>Escolha o tema do painel.</p>
             </div>
           </S.CardHeader>
 
           <S.Options>
             <S.Option
               type="button"
-              $active={
-                mode ===
-                "light"
-              }
-              onClick={() =>
-                setMode(
-                  "light"
-                )
-              }
+              $active={mode === "light"}
+              onClick={() => setMode("light")}
             >
               <S.OptionContent>
-                <strong>
-                  Modo claro
-                </strong>
+                <strong>Modo claro</strong>
 
-                <span>
-                  Tema claro
-                </span>
+                <span>Tema claro</span>
               </S.OptionContent>
 
-              <S.Radio
-                $active={
-                  mode ===
-                  "light"
-                }
-              />
+              <S.Radio $active={mode === "light"} />
             </S.Option>
 
             <S.Option
               type="button"
-              $active={
-                mode ===
-                "dark"
-              }
-              onClick={() =>
-                setMode(
-                  "dark"
-                )
-              }
+              $active={mode === "dark"}
+              onClick={() => setMode("dark")}
             >
               <S.OptionContent>
-                <strong>
-                  Modo escuro
-                </strong>
+                <strong>Modo escuro</strong>
 
-                <span>
-                  Tema escuro
-                </span>
+                <span>Tema escuro</span>
               </S.OptionContent>
 
-              <S.Radio
-                $active={
-                  mode ===
-                  "dark"
-                }
-              />
+              <S.Radio $active={mode === "dark"} />
             </S.Option>
           </S.Options>
         </S.Card>
@@ -648,218 +404,106 @@ export default function AdminConfiguracoes() {
         <S.Card>
           <S.CardHeader>
             <div>
-              <h2>
-                Segurança
-              </h2>
+              <h2>Segurança</h2>
 
-              <p>
-                Altere a senha
-                de acesso ao
-                painel
-                administrativo.
-              </p>
+              <p>Altere a senha de acesso ao painel administrativo.</p>
             </div>
           </S.CardHeader>
 
           <S.Form>
             <S.Field>
-              <label htmlFor="current-password">
-                Senha atual
-              </label>
+              <label htmlFor="current-password">Senha atual</label>
 
               <S.PasswordInputWrapper>
                 <S.PasswordInput
                   id="current-password"
-                  type={
-                    showCurrentPassword
-                      ? "text"
-                      : "password"
-                  }
-                  value={
-                    currentPassword
-                  }
-                  onChange={(
-                    event
-                  ) =>
-                    setCurrentPassword(
-                      event.target
-                        .value
-                    )
-                  }
+                  type={showCurrentPassword ? "text" : "password"}
+                  value={currentPassword}
+                  onChange={(event) => setCurrentPassword(event.target.value)}
                   autoComplete="current-password"
                 />
 
                 <S.PasswordToggle
                   type="button"
-                  onClick={() =>
-                    setShowCurrentPassword(
-                      (
-                        current
-                      ) =>
-                        !current
-                    )
-                  }
+                  onClick={() => setShowCurrentPassword((current) => !current)}
                   aria-label={
-                    showCurrentPassword
-                      ? "Ocultar senha"
-                      : "Mostrar senha"
+                    showCurrentPassword ? "Ocultar senha" : "Mostrar senha"
                   }
                 >
                   {showCurrentPassword ? (
-                    <EyeOff
-                      size={18}
-                    />
+                    <EyeOff size={18} />
                   ) : (
-                    <Eye
-                      size={18}
-                    />
+                    <Eye size={18} />
                   )}
                 </S.PasswordToggle>
               </S.PasswordInputWrapper>
             </S.Field>
 
             <S.Field>
-              <label htmlFor="new-password">
-                Nova senha
-              </label>
+              <label htmlFor="new-password">Nova senha</label>
 
               <S.PasswordInputWrapper>
                 <S.PasswordInput
                   id="new-password"
-                  type={
-                    showNewPassword
-                      ? "text"
-                      : "password"
-                  }
-                  value={
-                    newPassword
-                  }
-                  onChange={(
-                    event
-                  ) =>
-                    setNewPassword(
-                      event.target
-                        .value
-                    )
-                  }
+                  type={showNewPassword ? "text" : "password"}
+                  value={newPassword}
+                  onChange={(event) => setNewPassword(event.target.value)}
                   autoComplete="new-password"
                 />
 
                 <S.PasswordToggle
                   type="button"
-                  onClick={() =>
-                    setShowNewPassword(
-                      (
-                        current
-                      ) =>
-                        !current
-                    )
-                  }
+                  onClick={() => setShowNewPassword((current) => !current)}
                   aria-label={
-                    showNewPassword
-                      ? "Ocultar senha"
-                      : "Mostrar senha"
+                    showNewPassword ? "Ocultar senha" : "Mostrar senha"
                   }
                 >
-                  {showNewPassword ? (
-                    <EyeOff
-                      size={18}
-                    />
-                  ) : (
-                    <Eye
-                      size={18}
-                    />
-                  )}
+                  {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </S.PasswordToggle>
               </S.PasswordInputWrapper>
             </S.Field>
 
             <S.Field>
-              <label htmlFor="confirm-password">
-                Confirmar nova
-                senha
-              </label>
+              <label htmlFor="confirm-password">Confirmar nova senha</label>
 
               <S.PasswordInputWrapper>
                 <S.PasswordInput
                   id="confirm-password"
-                  type={
-                    showConfirmPassword
-                      ? "text"
-                      : "password"
-                  }
-                  value={
-                    confirmPassword
-                  }
-                  onChange={(
-                    event
-                  ) =>
-                    setConfirmPassword(
-                      event.target
-                        .value
-                    )
-                  }
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(event) => setConfirmPassword(event.target.value)}
                   autoComplete="new-password"
                 />
 
                 <S.PasswordToggle
                   type="button"
-                  onClick={() =>
-                    setShowConfirmPassword(
-                      (
-                        current
-                      ) =>
-                        !current
-                    )
-                  }
+                  onClick={() => setShowConfirmPassword((current) => !current)}
                   aria-label={
-                    showConfirmPassword
-                      ? "Ocultar senha"
-                      : "Mostrar senha"
+                    showConfirmPassword ? "Ocultar senha" : "Mostrar senha"
                   }
                 >
                   {showConfirmPassword ? (
-                    <EyeOff
-                      size={18}
-                    />
+                    <EyeOff size={18} />
                   ) : (
-                    <Eye
-                      size={18}
-                    />
+                    <Eye size={18} />
                   )}
                 </S.PasswordToggle>
               </S.PasswordInputWrapper>
             </S.Field>
 
-            {passwordError && (
-              <S.ErrorMessage>
-                {
-                  passwordError
-                }
-              </S.ErrorMessage>
-            )}
+            {passwordError && <S.ErrorMessage>{passwordError}</S.ErrorMessage>}
 
             {passwordMessage && (
-              <S.SuccessMessage>
-                {
-                  passwordMessage
-                }
-              </S.SuccessMessage>
+              <S.SuccessMessage>{passwordMessage}</S.SuccessMessage>
             )}
 
             <S.Actions>
               <S.PrimaryButton
                 type="button"
-                onClick={
-                  handleChangePassword
-                }
-                disabled={
-                  changingPassword
-                }
+                onClick={handleChangePassword}
+                disabled={changingPassword}
               >
-                {changingPassword
-                  ? "Alterando..."
-                  : "Alterar senha"}
+                {changingPassword ? "Alterando..." : "Alterar senha"}
               </S.PrimaryButton>
             </S.Actions>
           </S.Form>
@@ -867,85 +511,51 @@ export default function AdminConfiguracoes() {
 
         {/* =========================
             CONFIGURAÇÕES DO SITE
-            SOMENTE OWNER
+            OWNER E DEV
         ========================== */}
-        {user?.role ===
-          "OWNER" && (
+        {(user?.role === "OWNER" || user?.role === "DEV") && (
           <S.Card>
             <S.CardHeader>
               <div>
-                <h2>
-                  Configurações
-                  do site
-                </h2>
+                <h2>Configurações do site</h2>
 
-                <p>
-                  Informações exibidas
-                  no site e limites
-                  dos projetos.
-                </p>
+                <p>Informações exibidas no site e limites dos projetos.</p>
               </div>
             </S.CardHeader>
 
             {loadingSettings ? (
               <S.Info>
-                <span>
-                  Carregando
-                  configurações...
-                </span>
+                <span>Carregando configurações...</span>
               </S.Info>
             ) : (
               <S.Form>
                 <S.Field>
-                  <label htmlFor="site-whatsapp">
-                    WhatsApp
-                  </label>
+                  <label htmlFor="site-whatsapp">WhatsApp</label>
 
                   <input
                     id="site-whatsapp"
                     type="text"
-                    value={
-                      whatsapp
-                    }
-                    onChange={(
-                      event
-                    ) =>
-                      setWhatsapp(
-                        event.target
-                          .value
-                      )
-                    }
+                    value={whatsapp}
+                    onChange={(event) => setWhatsapp(event.target.value)}
                     placeholder="(41) 99999-9999"
                   />
                 </S.Field>
 
                 <S.Field>
-                  <label htmlFor="site-instagram">
-                    Instagram
-                  </label>
+                  <label htmlFor="site-instagram">Instagram</label>
 
                   <input
                     id="site-instagram"
                     type="text"
-                    value={
-                      instagram
-                    }
-                    onChange={(
-                      event
-                    ) =>
-                      setInstagram(
-                        event.target
-                          .value
-                      )
-                    }
+                    value={instagram}
+                    onChange={(event) => setInstagram(event.target.value)}
                     placeholder="@roomarquitetura"
                   />
                 </S.Field>
 
                 <S.Field>
                   <label htmlFor="max-project-images">
-                    Máximo de imagens
-                    por projeto
+                    Máximo de imagens por projeto
                   </label>
 
                   <input
@@ -953,24 +563,16 @@ export default function AdminConfiguracoes() {
                     type="number"
                     min={1}
                     step={1}
-                    value={
-                      maxProjectImages
-                    }
-                    onChange={(
-                      event
-                    ) =>
-                      setMaxProjectImages(
-                        event.target
-                          .value
-                      )
+                    value={maxProjectImages}
+                    onChange={(event) =>
+                      setMaxProjectImages(event.target.value)
                     }
                   />
                 </S.Field>
 
                 <S.Field>
                   <label htmlFor="max-project-image-size">
-                    Tamanho máximo
-                    por imagem
+                    Tamanho máximo por imagem
                   </label>
 
                   <input
@@ -978,49 +580,28 @@ export default function AdminConfiguracoes() {
                     type="number"
                     min={0.1}
                     step={0.1}
-                    value={
-                      maxProjectImageSizeMb
-                    }
-                    onChange={(
-                      event
-                    ) =>
-                      setMaxProjectImageSizeMb(
-                        event.target
-                          .value
-                      )
+                    value={maxProjectImageSizeMb}
+                    onChange={(event) =>
+                      setMaxProjectImageSizeMb(event.target.value)
                     }
                   />
                 </S.Field>
 
                 {settingsError && (
-                  <S.ErrorMessage>
-                    {
-                      settingsError
-                    }
-                  </S.ErrorMessage>
+                  <S.ErrorMessage>{settingsError}</S.ErrorMessage>
                 )}
 
                 {settingsMessage && (
-                  <S.SuccessMessage>
-                    {
-                      settingsMessage
-                    }
-                  </S.SuccessMessage>
+                  <S.SuccessMessage>{settingsMessage}</S.SuccessMessage>
                 )}
 
                 <S.Actions>
                   <S.PrimaryButton
                     type="button"
-                    onClick={
-                      handleSaveSettings
-                    }
-                    disabled={
-                      savingSettings
-                    }
+                    onClick={handleSaveSettings}
+                    disabled={savingSettings}
                   >
-                    {savingSettings
-                      ? "Salvando..."
-                      : "Salvar configurações"}
+                    {savingSettings ? "Salvando..." : "Salvar configurações"}
                   </S.PrimaryButton>
                 </S.Actions>
               </S.Form>
