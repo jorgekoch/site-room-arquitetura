@@ -1,27 +1,22 @@
 import { Prisma, ProposalRequest } from "@prisma/client";
 
 import { env } from "../../config/env";
-
 import { storage } from "../../services/storage";
-
 import { AppError } from "../../utils/AppError";
 import {
   decryptPersonalData,
   encryptPersonalData,
 } from "../../utils/dataEncryption";
-
 import {
   sendProposalConfirmationEmail,
   sendProposalNotificationEmail,
   sendProposalStatusChangedEmail,
 } from "./proposal.mail";
-
 import {
   CreateProposalInput,
   UpdateProposalNotesInput,
   UpdateProposalStatusInput,
 } from "./proposal.schema";
-
 import { ProposalRepository } from "./proposal.repository";
 import { createProposalsWorkbook } from "./proposal.export";
 
@@ -46,77 +41,46 @@ export class ProposalService {
   async create(data: CreateProposalInput) {
     const projectDetails =
       data.projectType === "new-construction"
-        ? {
-            newConstruction: data.newConstruction ?? null,
-          }
+        ? { newConstruction: data.newConstruction ?? null }
         : data.projectType === "interiors"
-          ? {
-              interiors: data.interiors ?? null,
-            }
+          ? { interiors: data.interiors ?? null }
           : data.projectType === "renovation"
-            ? {
-                renovation: data.renovation ?? null,
-              }
-            : {
-                consulting: data.consulting ?? null,
-              };
+            ? { renovation: data.renovation ?? null }
+            : { consulting: data.consulting ?? null };
 
     const storedProposal = await this.repository.create({
       email: encryptPersonalData(data.email),
-
       fullName: encryptPersonalData(data.fullName),
-
       cpf: encryptPersonalData(data.cpf),
-
       address: encryptPersonalData(data.address),
-
       birthDate: encryptPersonalData(data.birthDate),
-
       phone: encryptPersonalData(data.phone),
-
       socialProfile: data.socialProfile
         ? encryptPersonalData(data.socialProfile)
         : null,
-
       preferredContactMethod: data.preferredContactMethod,
-
       preferredContactMethodOther: data.preferredContactMethodOther || null,
-
       referralSource: data.referralSource,
-
       referralSourceOther: data.referralSourceOther || null,
-
       desiredWorkStart: data.desiredWorkStart,
-
       projectType: data.projectType,
-
       projectTypeOther: data.projectTypeOther || null,
-
       taxAgreement: data.taxAgreement,
-
       paymentMethod: data.paymentMethod,
-
       paymentMethodOther: data.paymentMethodOther || null,
-
       projectDetailsJson: projectDetails,
-
       referenceFilesJson: data.referenceFilesJson?.length
         ? data.referenceFilesJson.map(({ url: _url, ...file }) => file)
         : Prisma.JsonNull,
-
       pixKeySnapshot: data.paymentMethod === "pix" ? env.pixKey || null : null,
-
       paymentProofUrl: null,
-
       paymentProofStorageKey: data.paymentProofStorageKey || null,
-
       paymentProofUploadedAt: data.paymentProofUrl ? new Date() : null,
     });
 
     const proposal = decryptProposal(storedProposal);
 
     void sendProposalNotificationEmail(proposal).catch(console.error);
-
     void sendProposalConfirmationEmail(proposal).catch(console.error);
 
     return proposal;
@@ -124,24 +88,15 @@ export class ProposalService {
 
   async list(filters?: {
     status?: string;
-
     projectType?: string;
-
     search?: string;
   }) {
     const where = {
-      ...(filters?.status && {
-        status: filters.status as any,
-      }),
-
-      ...(filters?.projectType && {
-        projectType: filters.projectType,
-      }),
+      ...(filters?.status && { status: filters.status as any }),
+      ...(filters?.projectType && { projectType: filters.projectType }),
     };
 
-    const proposals = (await this.repository.findAll(where)).map(
-      decryptProposal,
-    );
+    const proposals = (await this.repository.findAll(where)).map(decryptProposal);
     const search = filters?.search?.trim().toLocaleLowerCase();
 
     if (!search) return proposals;
@@ -159,7 +114,6 @@ export class ProposalService {
     search?: string;
   }) {
     const proposals = await this.list(filters);
-
     return createProposalsWorkbook(proposals);
   }
 
@@ -216,10 +170,10 @@ export class ProposalService {
     await this.repository.delete(id);
 
     try {
-      await storage.deleteMany(storageKeys);
+      await storage.deletePrivateMany(storageKeys);
     } catch (error) {
       console.error(
-        "[ProposalService] Falha ao remover arquivos da proposta. Possíveis arquivos órfãos:",
+        "[ProposalService] Falha ao remover arquivos privados da proposta. Possíveis arquivos órfãos:",
         { id, storageKeys, error },
       );
     }
@@ -232,9 +186,7 @@ export class ProposalService {
   ) {
     return storage.generatePrivateSignedUploadUrl({
       folder: `proposals/${folder}`,
-
       fileName,
-
       fileType,
     });
   }
@@ -258,9 +210,7 @@ export class ProposalService {
 
     const updatedProposal = await this.repository.update(id, {
       paymentProofStorageKey: storageKey,
-
       paymentProofUrl: null,
-
       paymentProofUploadedAt: new Date(),
     });
     return decryptProposal(updatedProposal);
@@ -321,12 +271,6 @@ export class ProposalService {
 
     return storage.getPrivateDownloadUrl(file.storageKey);
   }
-
-  /*
-   |--------------------------------------------------------------------------
-   | Dashboard
-   |--------------------------------------------------------------------------
-   */
 
   async count() {
     return this.repository.count();
