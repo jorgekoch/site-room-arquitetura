@@ -1,6 +1,6 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
-const TOKEN_KEY = "room_admin_token";
+export const TOKEN_KEY = "room_admin_token";
 
 type FlattenedIssues = {
   formErrors?: string[];
@@ -63,7 +63,7 @@ async function request(
 async function parseResponse<T>(response: Response, path?: string): Promise<T> {
   if (!response.ok) {
     if (response.status === 401 && path !== "/admin-auth/login") {
-      localStorage.removeItem("room_admin_token");
+      removeAdminToken();
 
       if (window.location.pathname !== "/admin/login") {
         window.location.href = "/admin/login?session=expired";
@@ -71,18 +71,14 @@ async function parseResponse<T>(response: Response, path?: string): Promise<T> {
     }
 
     let message = "Erro inesperado.";
-
     let issues: unknown;
 
     try {
       const data = await response.json();
-
       message = data?.message || data?.error || message;
-
       issues = data?.issues;
 
       const issueMessage = getFirstIssueMessage(issues);
-
       if (issueMessage) {
         message = issueMessage;
       }
@@ -99,7 +95,6 @@ async function parseResponse<T>(response: Response, path?: string): Promise<T> {
     };
 
     error.issues = issues;
-
     throw error;
   }
 
@@ -110,13 +105,16 @@ async function parseResponse<T>(response: Response, path?: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+export function removeAdminToken() {
+  localStorage.removeItem(TOKEN_KEY);
+}
+
 export async function apiFetch(path: string, init?: RequestInit) {
   return request(path, init);
 }
 
 export async function apiGet<T>(path: string): Promise<T> {
   const response = await request(path);
-
   return parseResponse<T>(response, path);
 }
 
