@@ -20,6 +20,10 @@ blogRoutes.post("/upload-url", (request, response) =>
   controller.getUploadUrl(request, response),
 );
 
+blogRoutes.delete("/orphans", (request, response) =>
+  controller.cleanupOrphanedStorage(request, response),
+);
+
 blogRoutes.get("/", (request, response) => controller.list(request, response));
 
 blogRoutes.post("/", (request, response) =>
