@@ -14,6 +14,8 @@ import Home from "./pages/public/Home";
 import Contato from "./pages/public/Contato";
 import Projetos from "./pages/public/Projetos";
 import ProjetoDetalhe from "./pages/public/ProjetoDetalhe";
+import Blog from "./pages/public/Blog";
+import BlogPost from "./pages/public/BlogPost";
 import PropostaEnviada from "./pages/public/PropostaEnviada";
 
 // Administração
@@ -25,6 +27,7 @@ import AdminPropostas from "./pages/admin/AdminPropostas/index";
 import AdminRequestAccess from "./pages/admin/AdminRequestAccess";
 import AdminUsuarios from "./pages/admin/AdminUsuarios";
 import AdminProjetos from "./pages/admin/AdminProjetos";
+import AdminBlog from "./pages/admin/AdminBlog";
 import AdminConfiguracoes from "./pages/admin/AdminConfiguracoes";
 
 function App() {
@@ -84,6 +87,24 @@ function App() {
           }
         />
 
+        <Route
+          path="/blog"
+          element={
+            <PageShell>
+              <Blog />
+            </PageShell>
+          }
+        />
+
+        <Route
+          path="/blog/:slug"
+          element={
+            <PageShell>
+              <BlogPost />
+            </PageShell>
+          }
+        />
+
         {/* ========================= */}
         {/* AUTENTICAÇÃO ADMIN */}
         {/* ========================= */}
@@ -119,6 +140,9 @@ function App() {
 
           {/* Propostas */}
           <Route path="propostas" element={<AdminPropostas />} />
+
+          {/* Blog */}
+          <Route path="blog" element={<AdminBlog />} />
 
           {/* Usuários */}
           <Route

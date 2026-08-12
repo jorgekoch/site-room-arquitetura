@@ -26,7 +26,8 @@ const NAV_GROUPS: NavGroup[] = [
   NAV_ITEMS[0],
   { ...NAV_ITEMS[1], children: [NAV_ITEMS[2]] },
   { ...NAV_ITEMS[3], children: [NAV_ITEMS[4], NAV_ITEMS[5]] },
-  { ...NAV_ITEMS[6], children: [NAV_ITEMS[7]] },
+  NAV_ITEMS[6],
+  NAV_ITEMS[7],
 ];
 
 const HEADER_OFFSET = 110;
@@ -375,7 +376,10 @@ const MenuIcon = styled.span<{ $open: boolean }>`
     height: 2px;
     border-radius: 999px;
     background: currentColor;
-    transition: transform 0.25s ease, opacity 0.25s ease, top 0.25s ease;
+    transition:
+      transform 0.25s ease,
+      opacity 0.25s ease,
+      top 0.25s ease;
   }
 
   &::before {
@@ -632,7 +636,8 @@ export function TopbarMobile() {
                   const childActive = item.children?.some(
                     (child) => activeSection === child.id,
                   );
-                  const itemActive = activeSection === item.id || Boolean(childActive);
+                  const itemActive =
+                    activeSection === item.id || Boolean(childActive);
 
                   if (!item.children?.length) {
                     return (
@@ -640,7 +645,9 @@ export function TopbarMobile() {
                         key={item.href}
                         href={item.href}
                         $active={itemActive}
-                        aria-current={activeSection === item.id ? "page" : undefined}
+                        aria-current={
+                          activeSection === item.id ? "page" : undefined
+                        }
                       >
                         {item.label}
                       </NavLink>
@@ -652,7 +659,9 @@ export function TopbarMobile() {
                       <NavTrigger
                         href={item.href}
                         $active={itemActive}
-                        aria-current={activeSection === item.id ? "page" : undefined}
+                        aria-current={
+                          activeSection === item.id ? "page" : undefined
+                        }
                         aria-haspopup="true"
                       >
                         {item.label}

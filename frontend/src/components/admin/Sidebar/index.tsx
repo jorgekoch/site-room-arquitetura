@@ -2,6 +2,7 @@ import {
   LayoutDashboard,
   FolderOpen,
   FileText,
+  NotebookText,
   Users,
   Settings,
   Globe,
@@ -31,6 +32,11 @@ const menuItems = [
     icon: FileText,
     to: "/admin/propostas",
     notificationKey: "newProposals",
+  },
+  {
+    label: "Blog",
+    icon: NotebookText,
+    to: "/admin/blog",
   },
   {
     label: "Usuários",

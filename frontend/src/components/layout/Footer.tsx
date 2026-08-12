@@ -20,18 +20,15 @@ const NAV_ITEMS = [
 const FooterWrapper = styled.footer`
   padding: 4rem 0 1.5rem;
 
-  border-top: 1px solid
-    ${({ theme }) => theme.colors.border};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
 
   background:
     radial-gradient(
       circle at top,
-      ${({ theme }) =>
-        theme.colors.secondarySoft},
+      ${({ theme }) => theme.colors.secondarySoft},
       transparent 32%
     ),
-    ${({ theme }) =>
-      theme.colors.background};
+    ${({ theme }) => theme.colors.background};
 `;
 
 const Grid = styled.div`
@@ -39,8 +36,7 @@ const Grid = styled.div`
   gap: 2rem;
 
   @media ${media.tablet} {
-    grid-template-columns:
-      1.2fr 0.8fr 0.8fr;
+    grid-template-columns: 1.2fr 0.8fr 0.8fr;
 
     align-items: start;
   }
@@ -79,28 +75,19 @@ const BrandMarkFallback = styled.div`
   width: 56px;
   height: 56px;
 
-  border-radius:
-    ${({ theme }) => theme.radius.md};
+  border-radius: ${({ theme }) => theme.radius.md};
 
   display: grid;
   place-items: center;
 
-  background:
-    ${({ theme }) =>
-      theme.colors.secondarySoft};
+  background: ${({ theme }) => theme.colors.secondarySoft};
 
-  border: 1px solid
-    ${({ theme }) =>
-      theme.colors.secondaryBorder};
+  border: 1px solid ${({ theme }) => theme.colors.secondaryBorder};
 
-  color:
-    ${({ theme }) =>
-      theme.colors.secondary};
+  color: ${({ theme }) => theme.colors.secondary};
 
   font-weight: 800;
-  font-size:
-    ${({ theme }) =>
-      theme.fontSizes.md};
+  font-size: ${({ theme }) => theme.fontSizes.md};
 
   flex-shrink: 0;
 `;
@@ -121,16 +108,12 @@ const Column = styled.div`
 `;
 
 const ColumnTitle = styled.h3`
-  font-size:
-    ${({ theme }) =>
-      theme.fontSizes.xs};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
 
   text-transform: uppercase;
   letter-spacing: 0.08em;
 
-  color:
-    ${({ theme }) =>
-      theme.colors.textMuted};
+  color: ${({ theme }) => theme.colors.textMuted};
 `;
 
 const LinkList = styled.div`
@@ -139,9 +122,7 @@ const LinkList = styled.div`
 `;
 
 const FooterLink = styled.a`
-  color:
-    ${({ theme }) =>
-      theme.colors.textSoft};
+  color: ${({ theme }) => theme.colors.textSoft};
 
   text-decoration: none;
   line-height: 1.6;
@@ -149,27 +130,18 @@ const FooterLink = styled.a`
   width: fit-content;
 
   transition:
-    color
-      ${({ theme }) =>
-        theme.transitions.default},
-    transform
-      ${({ theme }) =>
-        theme.transitions.default};
+    color ${({ theme }) => theme.transitions.default},
+    transform ${({ theme }) => theme.transitions.default};
 
   &:hover {
-    color:
-      ${({ theme }) =>
-        theme.colors.text};
+    color: ${({ theme }) => theme.colors.text};
 
-    transform:
-      translateX(2px);
+    transform: translateX(2px);
   }
 `;
 
 const FooterText = styled.span`
-  color:
-    ${({ theme }) =>
-      theme.colors.textSoft};
+  color: ${({ theme }) => theme.colors.textSoft};
 
   line-height: 1.6;
 `;
@@ -184,21 +156,15 @@ const BottomBar = styled.div`
 
   padding-top: 1rem;
 
-  border-top: 1px solid
-    ${({ theme }) =>
-      theme.colors.border};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
 
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
 
-  color:
-    ${({ theme }) =>
-      theme.colors.textMuted};
+  color: ${({ theme }) => theme.colors.textMuted};
 
-  font-size:
-    ${({ theme }) =>
-      theme.fontSizes.sm};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
 
   @media ${media.tablet} {
     flex-direction: row;
@@ -213,21 +179,15 @@ const CreditLink = styled.a`
   text-decoration: underline;
   text-underline-offset: 3px;
 
-  transition:
-    opacity
-      ${({ theme }) =>
-        theme.transitions.default};
+  transition: opacity ${({ theme }) => theme.transitions.default};
 
   &:hover {
     opacity: 0.75;
   }
 `;
 
-function normalizeWhatsApp(
-  value: string
-) {
-  const digits =
-    value.replace(/\D/g, "");
+function normalizeWhatsApp(value: string) {
+  const digits = value.replace(/\D/g, "");
 
   if (!digits) {
     return "";
@@ -246,18 +206,12 @@ function normalizeWhatsApp(
   return `https://wa.me/55${digits}`;
 }
 
-function normalizeInstagram(
-  value: string
-) {
-  const username =
-    value
-      .trim()
-      .replace(/^@/, "")
-      .replace(
-        /^https?:\/\/(www\.)?instagram\.com\//i,
-        ""
-      )
-      .replace(/\/+$/, "");
+function normalizeInstagram(value: string) {
+  const username = value
+    .trim()
+    .replace(/^@/, "")
+    .replace(/^https?:\/\/(www\.)?instagram\.com\//i, "")
+    .replace(/\/+$/, "");
 
   if (!username) {
     return "";
@@ -267,25 +221,15 @@ function normalizeInstagram(
 }
 
 export function Footer() {
-  const {
-    settings,
-  } = useSiteSettings();
+  const { settings } = useSiteSettings();
 
-  const whatsapp =
-    settings?.whatsapp?.trim() || "";
+  const whatsapp = settings?.whatsapp?.trim() || "";
 
-  const instagram =
-    settings?.instagram?.trim() || "";
+  const instagram = settings?.instagram?.trim() || "";
 
-  const whatsappUrl =
-    normalizeWhatsApp(
-      whatsapp
-    );
+  const whatsappUrl = normalizeWhatsApp(whatsapp);
 
-  const instagramUrl =
-    normalizeInstagram(
-      instagram
-    );
+  const instagramUrl = normalizeInstagram(instagram);
 
   return (
     <FooterWrapper>
@@ -295,74 +239,44 @@ export function Footer() {
             <BrandRow>
               {logoRoomIcon ? (
                 <BrandLogo
-                  src={
-                    logoRoomIcon
-                  }
+                  src={logoRoomIcon}
                   alt="ROOM Arquitetura Sustentável"
                 />
               ) : (
-                <BrandMarkFallback>
-                  R
-                </BrandMarkFallback>
+                <BrandMarkFallback>R</BrandMarkFallback>
               )}
 
               <BrandInfo>
-                <BrandTitle>
-                  ROOM Arquitetura
-                  Sustentável
-                </BrandTitle>
+                <BrandTitle>ROOM Arquitetura Sustentável</BrandTitle>
               </BrandInfo>
             </BrandRow>
-
           </BrandBlock>
 
           <Column>
-            <ColumnTitle>
-              Navegação
-            </ColumnTitle>
+            <ColumnTitle>Navegação</ColumnTitle>
 
             <LinkList>
-              {NAV_ITEMS.map(
-                (item) => (
-                  <FooterLink
-                    key={
-                      item.href
-                    }
-                    href={
-                      item.href
-                    }
-                  >
-                    {item.label}
-                  </FooterLink>
-                )
-              )}
+              {NAV_ITEMS.map((item) => (
+                <FooterLink key={item.href} href={item.href}>
+                  {item.label}
+                </FooterLink>
+              ))}
             </LinkList>
           </Column>
 
           <Column>
-            <ColumnTitle>
-              Contato
-            </ColumnTitle>
+            <ColumnTitle>Contato</ColumnTitle>
 
             <ContactGroup>
               {whatsapp && (
-                <FooterLink
-                  href={
-                    whatsappUrl
-                  }
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  WhatsApp:{" "}
-                  {whatsapp}
+                <FooterLink href={whatsappUrl} target="_blank" rel="noreferrer">
+                  WhatsApp: {whatsapp}
                 </FooterLink>
               )}
 
               {instagram && (
                 <FooterLink
-                  href={
-                    instagramUrl
-                  }
+                  href={instagramUrl}
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -370,27 +284,18 @@ export function Footer() {
                 </FooterLink>
               )}
 
-              <FooterLink href="#contato">
-                Solicitar proposta
-              </FooterLink>
+              <FooterLink href="#contato">Solicitar proposta</FooterLink>
 
-              <FooterText>
-                Atendimento online
-                em todo o Brasil
-              </FooterText>
+              <FooterText>Atendimento online em todo o Brasil</FooterText>
 
-              <FooterText>
-                Rio do Sul/SC
-              </FooterText>
+              <FooterText>Rio do Sul/SC</FooterText>
             </ContactGroup>
           </Column>
         </Grid>
 
         <BottomBar>
           <span>
-            © 2026 ROOM Arquitetura
-            Sustentável. Todos os
-            direitos reservados.
+            © 2026 ROOM Arquitetura Sustentável. Todos os direitos reservados.
           </span>
 
           <span>

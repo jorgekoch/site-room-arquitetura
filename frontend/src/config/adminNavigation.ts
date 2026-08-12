@@ -2,6 +2,7 @@ import {
   LayoutDashboard,
   FolderOpen,
   FileText,
+  NotebookText,
   Users,
   Settings,
 } from "lucide-react";
@@ -29,6 +30,11 @@ export const adminNavigation: AdminNavigationItem[] = [
     label: "Propostas",
     path: "/admin/propostas",
     icon: FileText,
+  },
+  {
+    label: "Blog",
+    path: "/admin/blog",
+    icon: NotebookText,
   },
   {
     label: "Usuários",
