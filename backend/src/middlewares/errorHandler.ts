@@ -22,9 +22,6 @@ export function errorHandler(
   response: Response,
   _next: NextFunction
 ) {
-  /**
-   * ZOD
-   */
   if (error instanceof ZodError) {
     console.error("Erro de validação", {
       method: request.method,
@@ -38,9 +35,6 @@ export function errorHandler(
     });
   }
 
-  /**
-   * APP ERROR
-   */
   if (error instanceof AppError) {
     console.error("Erro da aplicação", {
       method: request.method,
@@ -54,9 +48,6 @@ export function errorHandler(
     });
   }
 
-  /**
-   * PRISMA - ERROS CONHECIDOS
-   */
   if (
     error instanceof
     Prisma.PrismaClientKnownRequestError
@@ -69,9 +60,6 @@ export function errorHandler(
       message: error.message,
     });
 
-    /**
-     * Registro duplicado
-     */
     if (error.code === "P2002") {
       return response.status(409).json({
         message:
@@ -79,9 +67,6 @@ export function errorHandler(
       });
     }
 
-    /**
-     * Registro não encontrado
-     */
     if (error.code === "P2025") {
       return response.status(404).json({
         message:
@@ -89,41 +74,26 @@ export function errorHandler(
       });
     }
 
-    /**
-     * Tabela não existe
-     */
     if (error.code === "P2021") {
       return response.status(500).json({
         message:
           "A estrutura do banco de dados está desatualizada.",
-        code: error.code,
       });
     }
 
-    /**
-     * Coluna não existe
-     */
     if (error.code === "P2022") {
       return response.status(500).json({
         message:
           "A estrutura do banco de dados está incompatível com a aplicação.",
-        code: error.code,
       });
     }
 
-    /**
-     * Erro genérico conhecido do Prisma
-     */
     return response.status(500).json({
       message:
         "Erro ao acessar o banco de dados.",
-      code: error.code,
     });
   }
 
-  /**
-   * PRISMA - ERROS DE VALIDAÇÃO
-   */
   if (
     error instanceof
     Prisma.PrismaClientValidationError
@@ -143,9 +113,6 @@ export function errorHandler(
     });
   }
 
-  /**
-   * PRISMA - ERRO DE INICIALIZAÇÃO / CONEXÃO
-   */
   if (
     error instanceof
     Prisma.PrismaClientInitializationError
@@ -165,9 +132,6 @@ export function errorHandler(
     });
   }
 
-  /**
-   * ERROS HTTP / EXPRESS / OUTROS
-   */
   const httpError =
     error as HttpError;
 
@@ -187,9 +151,6 @@ export function errorHandler(
     }
   );
 
-  /**
-   * Payload muito grande
-   */
   if (
     httpError.status === 413 ||
     httpError.statusCode === 413
