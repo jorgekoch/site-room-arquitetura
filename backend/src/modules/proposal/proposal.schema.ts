@@ -7,6 +7,47 @@ const storageKeySchema = z
     "Chave de armazenamento inválida."
   );
 
+const optionalText = z.string().trim().max(5000).optional();
+
+export const newConstructionSchema = z.object({
+  terrainSize: optionalText,
+  terrainSlope: optionalText,
+  terrainSlopeOther: optionalText,
+  terrainZone: optionalText,
+  terrainZoneOther: optionalText,
+  terrainAddress: optionalText,
+  scopeDescription: optionalText,
+  floors: optionalText,
+  floorsOther: optionalText,
+  desiredArea: optionalText,
+  definedBudget: optionalText,
+  wantsEngineeringPartnership: optionalText,
+  referencesLinks: optionalText,
+  observations: optionalText,
+  projectMode: optionalText,
+});
+
+export const interiorsSchema = z.object({
+  includedItems: z.array(z.string().trim().min(1).max(100)).max(50).optional(),
+  includedItemsOther: optionalText,
+  environments: optionalText,
+  referencesLinks: optionalText,
+  observations: optionalText,
+  projectMode: optionalText,
+});
+
+export const renovationSchema = z.object({
+  projectDescription: optionalText,
+  locationAddress: optionalText,
+  referencesLinks: optionalText,
+  observations: optionalText,
+  projectMode: optionalText,
+});
+
+export const consultingSchema = z.object({
+  requestDescription: optionalText,
+});
+
 export const uploadUrlSchema = z.object({
   fileName: z.string().trim().min(1).max(120),
   fileType: z.enum([
@@ -38,10 +79,10 @@ export const createProposalSchema = z.object({
   projectType: z.string().min(1),
   projectTypeOther: z.string().optional().nullable(),
 
-  newConstruction: z.any().optional(),
-  interiors: z.any().optional(),
-  renovation: z.any().optional(),
-  consulting: z.any().optional(),
+  newConstruction: newConstructionSchema.optional(),
+  interiors: interiorsSchema.optional(),
+  renovation: renovationSchema.optional(),
+  consulting: consultingSchema.optional(),
 
   taxAgreement: z.boolean(),
   paymentMethod: z.string().min(1),
@@ -98,7 +139,7 @@ export const updatePaymentProofSchema = z.object({
       ),
     {
       message:
-        "A chave deve pertencer à pasta de comprovantes.",
+        "A chave deve pertencer à pasta de comprovantes."
     }
   ),
 });
