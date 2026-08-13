@@ -24,13 +24,6 @@ const Page = styled.div`
   }
 `;
 
-const ProjectSectionHeader = styled(SectionHeader)`
-  h2 {
-    font-size: clamp(2.25rem, 4vw, 3.5rem);
-    line-height: 1.08;
-  }
-`;
-
 const ConstructionCard = styled.div`
   display: grid;
   justify-items: center;
@@ -159,7 +152,7 @@ export default function Projetos() {
 
       <Reveal>
         <Container>
-          <ProjectSectionHeader
+          <SectionHeader
             eyebrow="Projetos"
             title="Projetos selecionados"
             description="Projetos pensados a partir da escuta, do lugar e da identidade de quem vive cada espaço."
