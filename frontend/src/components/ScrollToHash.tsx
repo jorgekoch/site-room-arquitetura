@@ -7,19 +7,34 @@ export function ScrollToHash() {
   useEffect(() => {
     if (!location.hash) return;
 
-    const id = location.hash.replace("#", "");
-    const element = document.getElementById(id);
+    const id = decodeURIComponent(location.hash.slice(1));
 
-    if (!element) return;
+    const scrollToTarget = () => {
+      const element = document.getElementById(id);
 
-    const yOffset = -80;
-    const y =
-      element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      if (!element) return false;
 
-    window.scrollTo({
-      top: y,
-      behavior: "smooth",
+      const yOffset = -80;
+      const y =
+        element.getBoundingClientRect().top + window.scrollY + yOffset;
+
+      window.scrollTo({
+        top: y,
+        behavior: "smooth",
+      });
+
+      return true;
+    };
+
+    // The page section may still be mounting when the hash changes.
+    // Try on the next frame so anchors such as #portfolio always resolve.
+    const frame = window.requestAnimationFrame(() => {
+      if (!scrollToTarget()) {
+        window.requestAnimationFrame(scrollToTarget);
+      }
     });
+
+    return () => window.cancelAnimationFrame(frame);
   }, [location]);
 
   return null;
