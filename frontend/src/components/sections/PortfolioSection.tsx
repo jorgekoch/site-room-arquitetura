@@ -31,6 +31,7 @@ type PortfolioSectionProps = {
   description?: string;
   items?: PortfolioItem[];
   limit?: number;
+  showHeader?: boolean;
   showFilter?: boolean;
   viewAllCard?: {
     title: string;
@@ -62,9 +63,13 @@ const EmptyState = styled.p`
 
 const FilterButton = styled.button<{ isActive: boolean }>`
   appearance: none;
-  border: 1px solid ${({ theme, isActive }) => isActive ? theme.colors.secondary : theme.colors.border};
-  background: ${({ theme, isActive }) => isActive ? theme.colors.secondary : theme.colors.surface};
-  color: ${({ theme, isActive }) => isActive ? theme.colors.secondaryContrast : theme.colors.text};
+  border: 1px solid
+    ${({ theme, isActive }) =>
+      isActive ? theme.colors.secondary : theme.colors.border};
+  background: ${({ theme, isActive }) =>
+    isActive ? theme.colors.secondary : theme.colors.surface};
+  color: ${({ theme, isActive }) =>
+    isActive ? theme.colors.secondaryContrast : theme.colors.text};
   border-radius: ${({ theme }) => theme.radius.pill};
   padding: 0.65rem 1rem;
   font-size: ${({ theme }) => theme.fontSizes.xs};
@@ -151,11 +156,7 @@ const CoverPlaceholder = styled.div`
 const ImageOverlay = styled.div`
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.04),
-    rgba(0, 0, 0, 0.26)
-  );
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.26));
   pointer-events: none;
 `;
 
@@ -237,6 +238,7 @@ export function PortfolioSection({
   items = [],
   limit,
   showFilter = false,
+  showHeader = true,
   viewAllCard,
   useSectionContainer = true,
 }: PortfolioSectionProps) {
@@ -280,7 +282,9 @@ export function PortfolioSection({
 
           <Grid>
             {displayedItems.length === 0 ? (
-              <EmptyState>Nenhum projeto encontrado para esta categoria.</EmptyState>
+              <EmptyState>
+                Nenhum projeto encontrado para esta categoria.
+              </EmptyState>
             ) : (
               displayedItems.map((item) => (
                 <Card
@@ -290,9 +294,15 @@ export function PortfolioSection({
                 >
                   <Cover>
                     {item.cover ? (
-                      <CoverImage src={item.cover} alt={item.title} loading="lazy" />
+                      <CoverImage
+                        src={item.cover}
+                        alt={item.title}
+                        loading="lazy"
+                      />
                     ) : (
-                      <CoverPlaceholder>Imagem de capa do projeto</CoverPlaceholder>
+                      <CoverPlaceholder>
+                        Imagem de capa do projeto
+                      </CoverPlaceholder>
                     )}
 
                     <ImageOverlay />
@@ -309,7 +319,8 @@ export function PortfolioSection({
 
                     <BottomMeta>
                       <ImageCount>
-                        {item.images.length} {item.images.length === 1 ? "imagem" : "imagens"}
+                        {item.images.length}{" "}
+                        {item.images.length === 1 ? "imagem" : "imagens"}
                       </ImageCount>
                       <ExploreText>Explorar →</ExploreText>
                     </BottomMeta>
@@ -340,11 +351,13 @@ export function PortfolioSection({
         </Container>
       ) : (
         <>
-          <SectionHeader
-            eyebrow={eyebrow}
-            title={title}
-            description={description}
-          />
+          {showHeader && (
+            <SectionHeader
+              eyebrow={eyebrow}
+              title={title}
+              description={description}
+            />
+          )}
 
           {showFilter ? (
             <FilterBar>
@@ -363,7 +376,9 @@ export function PortfolioSection({
 
           <Grid>
             {displayedItems.length === 0 ? (
-              <EmptyState>Nenhum projeto encontrado para esta categoria.</EmptyState>
+              <EmptyState>
+                Nenhum projeto encontrado para esta categoria.
+              </EmptyState>
             ) : (
               displayedItems.map((item) => (
                 <Card
@@ -373,9 +388,15 @@ export function PortfolioSection({
                 >
                   <Cover>
                     {item.cover ? (
-                      <CoverImage src={item.cover} alt={item.title} loading="lazy" />
+                      <CoverImage
+                        src={item.cover}
+                        alt={item.title}
+                        loading="lazy"
+                      />
                     ) : (
-                      <CoverPlaceholder>Imagem de capa do projeto</CoverPlaceholder>
+                      <CoverPlaceholder>
+                        Imagem de capa do projeto
+                      </CoverPlaceholder>
                     )}
 
                     <ImageOverlay />
@@ -392,7 +413,8 @@ export function PortfolioSection({
 
                     <BottomMeta>
                       <ImageCount>
-                        {item.images.length} {item.images.length === 1 ? "imagem" : "imagens"}
+                        {item.images.length}{" "}
+                        {item.images.length === 1 ? "imagem" : "imagens"}
                       </ImageCount>
                       <ExploreText>Explorar →</ExploreText>
                     </BottomMeta>

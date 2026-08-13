@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
 
 import { PortfolioSection } from "../../components/sections/PortfolioSection";
+import { SectionHeader } from "../../components/sections/SectionHeader";
 
 import { Reveal } from "../../components/motion/Reveal";
 
@@ -11,28 +11,6 @@ import { Container } from "../../components/ui/Container";
 import { media } from "../../styles/breakpoints";
 
 import { usePublicProjects } from "../../hooks/usePublicProjects";
-
-const BackLink = styled(Link)`
-  display: inline-flex;
-
-  align-items: center;
-
-  gap: 0.45rem;
-
-  margin-bottom: 1.4rem;
-
-  color: ${({ theme }) => theme.colors.textSoft};
-
-  text-decoration: none;
-
-  font-weight: 600;
-
-  transition: color ${({ theme }) => theme.transitions.default};
-
-  &:hover {
-    color: ${({ theme }) => theme.colors.text};
-  }
-`;
 
 const Page = styled.div`
   padding: 2rem 0 6rem;
@@ -44,6 +22,62 @@ const Page = styled.div`
   @media ${media.laptop} {
     padding: 3rem 0 7rem;
   }
+`;
+
+const ConstructionCard = styled.div`
+  display: grid;
+  justify-items: center;
+  text-align: center;
+
+  padding: 4rem 2rem;
+
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.lg};
+
+  background: ${({ theme }) => theme.colors.surface};
+
+  box-shadow: ${({ theme }) => theme.shadow.md};
+
+  @media ${media.tablet} {
+    padding: 4.5rem 3rem;
+  }
+`;
+
+const ConstructionIcon = styled.div`
+  display: grid;
+  place-items: center;
+
+  width: 3.5rem;
+  height: 3.5rem;
+
+  margin-bottom: 1.25rem;
+
+  border-radius: 50%;
+
+  background: ${({ theme }) => theme.colors.backgroundSoft};
+
+  color: ${({ theme }) => theme.colors.secondary};
+
+  font-size: 1.4rem;
+`;
+
+const ConstructionTitle = styled.h3`
+  margin-bottom: 0.75rem;
+
+  font-size: 1.35rem;
+  line-height: 1.3;
+
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const ConstructionText = styled.p`
+  max-width: 540px;
+
+  color: ${({ theme }) => theme.colors.textSoft};
+
+  font-size: ${({ theme }) => theme.fontSizes.md};
+
+  line-height: 1.75;
 `;
 
 const NoticeBanner = styled.div`
@@ -92,18 +126,24 @@ export default function Projetos() {
     images: project.images?.map((image) => image.imageUrl) ?? [],
   }));
 
+  const hasProjects = !loading && !error && projects.length > 0;
+  const isEmpty = !loading && !error && projects.length === 0;
+
   return (
     <Page>
       <Helmet>
         <title>Projetos — ROOM Arquitetura Sustentável</title>
+
         <meta
           name="description"
           content="Conheça os projetos residenciais desenvolvidos pela ROOM Arquitetura Sustentável."
         />
+
         <meta
           property="og:title"
           content="Projetos — ROOM Arquitetura Sustentável"
         />
+
         <meta
           property="og:description"
           content="Conheça os projetos residenciais desenvolvidos pela ROOM Arquitetura Sustentável."
@@ -112,21 +152,43 @@ export default function Projetos() {
 
       <Reveal>
         <Container>
-          <BackLink to="/">← Voltar ao Início</BackLink>
+          <SectionHeader
+            eyebrow="Projetos"
+            title="Projetos selecionados"
+            description="Projetos pensados a partir da escuta, do lugar e da identidade de quem vive cada espaço."
+          />
+
+          {hasProjects && (
+            <PortfolioSection
+              items={portfolioItems}
+              showFilter={true}
+              showHeader={false}
+              useSectionContainer={false}
+            />
+          )}
 
           {loading && <NoticeBanner>Carregando projetos...</NoticeBanner>}
 
           {error && <NoticeBanner>{error}</NoticeBanner>}
 
-          {!loading && !error && projects.length === 0 && (
-            <NoticeBanner>Nenhum projeto publicado no momento.</NoticeBanner>
+          {isEmpty && (
+            <ConstructionCard>
+              <ConstructionIcon>✦</ConstructionIcon>
+
+              <ConstructionTitle>Em construção</ConstructionTitle>
+
+              <ConstructionText>
+                Estamos preparando esta seleção de projetos. Em breve, novos
+                trabalhos da ROOM Arquitetura Sustentável estarão aqui.
+              </ConstructionText>
+            </ConstructionCard>
           )}
 
-          {!loading && !error && projects.length > 0 && (
+          {hasProjects && (
             <PortfolioSection
-              eyebrow="Portfólio"
-              title="Nossos projetos"
-              description="Conheça os projetos desenvolvidos pela ROOM Arquitetura Sustentável."
+              eyebrow="Projetos"
+              title="Projetos selecionados"
+              description="Projetos pensados a partir da escuta, do lugar e da identidade de quem vive cada espaço."
               items={portfolioItems}
               showFilter={true}
               useSectionContainer={false}
