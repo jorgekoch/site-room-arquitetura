@@ -15,7 +15,7 @@ export function HomeProjects() {
 
   if (loading) {
     return (
-      <S.Section>
+      <S.Section id="portfolio">
         <S.Container>
           <S.Header>
             <S.Eyebrow>
@@ -53,7 +53,7 @@ export function HomeProjects() {
     projects.length === 0
   ) {
     return (
-      <S.Section>
+      <S.Section id="portfolio">
         <S.Container>
           <S.Header>
             <S.Eyebrow>
@@ -95,7 +95,7 @@ export function HomeProjects() {
   }
 
   return (
-    <S.Section>
+    <S.Section id="portfolio">
       <S.Container>
         <S.Header>
           <S.Eyebrow>

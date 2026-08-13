@@ -7,14 +7,14 @@ import logoRoomIcon from "../../assets/images/ui/logo-room-icon.png";
 import styled from "styled-components";
 
 const NAV_ITEMS = [
-  { label: "Início", href: "#topo" },
-  { label: "Pra quem é", href: "#pra-quem-e" },
-  { label: "Como projetamos", href: "#como-projetamos" },
-  { label: "Projetos", href: "#portfolio" },
-  { label: "Processo", href: "#processo" },
-  { label: "Formatos", href: "#formatos" },
-  { label: "Sobre", href: "#sobre" },
-  { label: "Contato", href: "#contato" },
+  { label: "Início", href: "/#topo" },
+  { label: "Pra quem é", href: "/#pra-quem-e" },
+  { label: "Como projetamos", href: "/#como-projetamos" },
+  { label: "Projetos", href: "/#portfolio" },
+  { label: "Processo", href: "/#processo" },
+  { label: "Formatos", href: "/#formatos" },
+  { label: "Sobre", href: "/#sobre" },
+  { label: "Contato", href: "/#contato" },
 ];
 
 const FooterWrapper = styled.footer`
@@ -284,7 +284,7 @@ export function Footer() {
                 </FooterLink>
               )}
 
-              <FooterLink href="#contato">Solicitar proposta</FooterLink>
+              <FooterLink href="/#contato">Solicitar proposta</FooterLink>
 
               <FooterText>Atendimento online em todo o Brasil</FooterText>
 

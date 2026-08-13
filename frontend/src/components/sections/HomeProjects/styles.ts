@@ -31,22 +31,33 @@ export const Header = styled.div`
 `;
 
 export const Eyebrow = styled.span`
-  display: block;
+  display: inline-flex;
+  width: fit-content;
 
   margin-bottom: 0.6rem;
+  padding: 0.45rem 0.9rem;
+
+  border: 1px solid
+    ${({ theme }) =>
+      theme.colors.secondaryBorder};
+  border-radius:
+    ${({ theme }) =>
+      theme.radius.pill};
+
+  background:
+    ${({ theme }) =>
+      theme.colors.secondarySoft};
 
   color:
     ${({ theme }) =>
-      theme.colors.primary};
+      theme.colors.secondary};
 
   font-size:
     ${({ theme }) =>
       theme.fontSizes.xs};
-
   font-weight: 700;
 
   text-transform: uppercase;
-
   letter-spacing: 0.08em;
 `;
 

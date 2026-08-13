@@ -3,11 +3,23 @@ export type NavigationItem = {
   path: string;
 };
 
+export function resolveHomeSectionHref(currentPath: string, hash: string) {
+  if (!hash.startsWith("#")) {
+    return hash;
+  }
+
+  if (currentPath === "/") {
+    return hash;
+  }
+
+  return `/${hash}`;
+}
+
 export const navigationItems: NavigationItem[] = [
-  { label: "Início", path: "#topo" },
-  { label: "Projetos", path: "#portfolio" },
-  { label: "Processo", path: "#processo" },
-  { label: "Formatos", path: "#formatos" },
-  { label: "Sobre", path: "#sobre" },
-  { label: "Contato", path: "#contato" },
+  { label: "Início", path: "/#topo" },
+  { label: "Projetos", path: "/#portfolio" },
+  { label: "Processo", path: "/#processo" },
+  { label: "Formatos", path: "/#formatos" },
+  { label: "Sobre", path: "/#sobre" },
+  { label: "Contato", path: "/#contato" },
 ];

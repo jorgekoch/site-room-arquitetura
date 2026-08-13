@@ -38,7 +38,7 @@ export const siteConfig: SiteConfig = {
     primaryLabel: "Solicitar proposta",
     primaryTo: "/contato",
     secondaryLabel: "Explorar projetos",
-    secondaryTo: "#portfolio",
+    secondaryTo: "/#portfolio",
   },
 
   footer: {
