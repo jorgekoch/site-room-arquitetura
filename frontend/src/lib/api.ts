@@ -60,12 +60,23 @@ async function request(
   });
 }
 
+export function shouldRedirectToAdminLogin(
+  currentPath: string,
+  path?: string,
+) {
+  if (!path || path === "/admin-auth/login") {
+    return false;
+  }
+
+  return currentPath.startsWith("/admin");
+}
+
 async function parseResponse<T>(response: Response, path?: string): Promise<T> {
   if (!response.ok) {
     if (response.status === 401 && path !== "/admin-auth/login") {
       removeAdminToken();
 
-      if (window.location.pathname !== "/admin/login") {
+      if (shouldRedirectToAdminLogin(window.location.pathname, path)) {
         window.location.href = "/admin/login?session=expired";
       }
     }
