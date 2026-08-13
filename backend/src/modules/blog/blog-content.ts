@@ -149,7 +149,7 @@ export function sanitizeBlogContent(content: string) {
       ],
       "*": ["style"],
     },
-    allowedSchemes: ["http", "https", "mailto", "tel", "data"],
+    allowedSchemes: ["http", "https", "mailto", "tel"],
     allowedSchemesAppliedToAttributes: ["href", "src", "srcset"],
     allowProtocolRelative: false,
     allowedIframeHostnames: YOUTUBE_IFRAME_HOSTNAMES,
