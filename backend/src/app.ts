@@ -23,10 +23,6 @@ if (env.nodeEnv === "production" || process.env.RENDER) {
 const allowedOrigins = [
   env.frontendUrl,
 
-  "http://localhost:5173",
-
-  "http://127.0.0.1:5173",
-
   "https://roomarquiteturasustentavel.com.br",
 
   "https://www.roomarquiteturasustentavel.com.br",
@@ -36,6 +32,19 @@ const allowedOrigins = [
   "https://site-room-arquitetura.onrender.com",
 ].filter(Boolean);
 
+const isLocalDevOrigin = (origin: string) => {
+  try {
+    const url = new URL(origin);
+
+    return (
+      (url.hostname === "localhost" || url.hostname === "127.0.0.1") &&
+      (url.protocol === "http:" || url.protocol === "https:")
+    );
+  } catch {
+    return false;
+  }
+};
+
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
     if (!origin) {
@@ -43,7 +52,10 @@ const corsOptions: cors.CorsOptions = {
       return;
     }
 
-    if (allowedOrigins.includes(origin)) {
+    if (
+      allowedOrigins.includes(origin) ||
+      isLocalDevOrigin(origin)
+    ) {
       callback(null, true);
       return;
     }
