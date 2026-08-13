@@ -36,7 +36,7 @@ const Title = styled.h2`
   width: 100%;
   max-width: none;
 
-  @media ${media.laptop} {
+  @media ${media.tablet} {
     font-size: 3rem;
   }
 `;
