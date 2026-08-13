@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { media } from "../../styles/breakpoints";
 
 type SectionHeaderProps = {
   eyebrow?: string;
@@ -28,10 +29,16 @@ const Eyebrow = styled.span`
 `;
 
 const Title = styled.h2`
+  margin: 0;
   font-size: clamp(1.8rem, 3vw, 3rem);
-  line-height: 1.12;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
   width: 100%;
   max-width: none;
+
+  @media ${media.laptop} {
+    font-size: 3rem;
+  }
 `;
 
 const Description = styled.p`
