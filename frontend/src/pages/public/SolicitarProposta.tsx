@@ -38,6 +38,20 @@ const Description = styled.p`
   max-width: 760px;
 `;
 
+const FeeNotice = styled.div`
+  margin-top: 0.4rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid ${({ theme }) => theme.colors.primaryBorder};
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: ${({ theme }) => theme.colors.primarySoft};
+  color: ${({ theme }) => theme.colors.text};
+  line-height: 1.65;
+
+  strong {
+    font-weight: 700;
+  }
+`;
+
 const Card = styled.div`
   padding: 1.5rem;
   border-radius: ${({ theme }) => theme.radius.lg};
@@ -57,6 +71,13 @@ export default function SolicitarProposta() {
             Este formulário inicial ajuda a ROOM a compreender melhor o contexto,
             as necessidades e o tipo de experiência mais adequada para o seu projeto.
           </Description>
+
+          <FeeNotice>
+            <strong>Importante:</strong> a solicitação de proposta está sujeita a
+            uma taxa de serviço de <strong>R$ 80,00</strong>, cobrada ao final
+            deste formulário. O pagamento é necessário para concluir o envio da
+            solicitação.
+          </FeeNotice>
         </Header>
 
         <Card>
