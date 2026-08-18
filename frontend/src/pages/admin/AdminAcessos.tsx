@@ -71,10 +71,10 @@ const Intro = styled.div`
 const ErrorBox = styled.div`
   margin-top: 1.5rem;
   padding: 1rem 1.1rem;
-  border: 1px solid ${({ theme }) => theme.colors.errorBorder};
+  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.md};
-  background: ${({ theme }) => theme.colors.errorSoft};
-  color: ${({ theme }) => theme.colors.error};
+  background: ${({ theme }) => theme.colors.surface};
+  color: ${({ theme }) => theme.colors.text};
 `;
 
 export default function AdminAcessos() {
