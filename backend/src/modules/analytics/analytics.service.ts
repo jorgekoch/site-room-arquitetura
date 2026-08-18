@@ -64,7 +64,7 @@ export class AnalyticsService {
 
     const property = `properties/${PROPERTY_ID}`;
     const dateRanges = [
-      { startDate: `${safeRange}daysAgo`, endDate: "today" },
+      { startDate: `${safeRange - 1}daysAgo`, endDate: "today" },
     ];
 
     const [totalsResponse, dailyResponse, pagesResponse] = await Promise.all([
