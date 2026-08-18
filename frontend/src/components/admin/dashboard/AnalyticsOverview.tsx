@@ -193,6 +193,42 @@ const DetailsLink = styled.button`
   }
 `;
 
+const SummaryMetric = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: ${({ theme }) => theme.colors.surface};
+`;
+
+const SummaryMetricLabel = styled.div`
+  display: grid;
+  gap: 0.2rem;
+
+  span {
+    color: ${({ theme }) => theme.colors.textSoft};
+    font-size: ${({ theme }) => theme.fontSizes.sm};
+  }
+
+  strong {
+    font-size: 1.8rem;
+    line-height: 1.1;
+  }
+`;
+
+const SummaryMetricIcon = styled.div`
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: ${({ theme }) => theme.colors.secondarySoft};
+  color: ${({ theme }) => theme.colors.secondary};
+`;
+
 function formatNumber(value: number) {
   return new Intl.NumberFormat("pt-BR").format(value);
 }
@@ -200,6 +236,15 @@ function formatNumber(value: number) {
 function getLatestDay(analytics?: AnalyticsOverviewData) {
   const daily = analytics?.daily ?? [];
   return daily[daily.length - 1];
+}
+
+function formatDay(date?: string) {
+  if (!date || date.length !== 8) {
+    return "último dia registrado";
+  }
+
+  const formatted = `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(6, 8)}`;
+  return new Intl.DateTimeFormat("pt-BR").format(new Date(`${formatted}T12:00:00`));
 }
 
 export function AnalyticsOverview({
@@ -222,7 +267,7 @@ export function AnalyticsOverview({
         <SummaryHeader>
           <SummaryTitle>
             <h2>Acessos</h2>
-            <p>Resumo do último dia registrado.</p>
+            <p>Resumo diário do site.</p>
           </SummaryTitle>
 
           <DetailsLink type="button" onClick={() => navigate("/admin/acessos")}>
@@ -231,31 +276,16 @@ export function AnalyticsOverview({
           </DetailsLink>
         </SummaryHeader>
 
-        <Cards>
-          <Metric>
-            <MetricTop>
-              <span>Visualizações</span>
-              <Eye size={17} />
-            </MetricTop>
-            <MetricValue>{formatNumber(latestDay?.views ?? 0)}</MetricValue>
-          </Metric>
+        <SummaryMetric>
+          <SummaryMetricLabel>
+            <span>Visualizações — {formatDay(latestDay?.date)}</span>
+            <strong>{formatNumber(latestDay?.views ?? 0)}</strong>
+          </SummaryMetricLabel>
 
-          <Metric>
-            <MetricTop>
-              <span>Visitantes</span>
-              <Users size={17} />
-            </MetricTop>
-            <MetricValue>{formatNumber(latestDay?.users ?? 0)}</MetricValue>
-          </Metric>
-
-          <Metric>
-            <MetricTop>
-              <span>Visualizações no período</span>
-              <Globe size={17} />
-            </MetricTop>
-            <MetricValue>{formatNumber(analytics?.totals.views ?? 0)}</MetricValue>
-          </Metric>
-        </Cards>
+          <SummaryMetricIcon aria-hidden="true">
+            <Eye size={20} />
+          </SummaryMetricIcon>
+        </SummaryMetric>
       </SummarySection>
     );
   }
