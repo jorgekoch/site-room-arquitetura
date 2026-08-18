@@ -23,6 +23,19 @@ function initializeGoogleAnalytics() {
     return;
   }
 
+  // Follow Google's recommended initialization order: create the dataLayer
+  // and gtag queue before loading gtag.js so the script can process the queue
+  // reliably as soon as it loads.
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function gtag() {
+    window.dataLayer?.push(arguments);
+  };
+
+  window.gtag("js", new Date());
+  window.gtag("config", GA_MEASUREMENT_ID, {
+    send_page_view: false,
+  });
+
   const scriptId = "google-analytics-gtag";
 
   if (!document.getElementById(scriptId)) {
@@ -34,16 +47,6 @@ function initializeGoogleAnalytics() {
     )}`;
     document.head.appendChild(script);
   }
-
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = function gtag(...args) {
-    window.dataLayer?.push(args);
-  };
-
-  window.gtag("js", new Date());
-  window.gtag("config", GA_MEASUREMENT_ID, {
-    send_page_view: false,
-  });
 
   initialized = true;
 }
