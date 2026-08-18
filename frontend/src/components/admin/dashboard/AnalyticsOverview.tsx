@@ -103,9 +103,9 @@ const PanelTitle = styled.h3`
   font-size: 1rem;
 `;
 
-const Chart = styled.div`
+const Chart = styled.div<{ $count: number }>`
   display: grid;
-  grid-template-columns: repeat(30, minmax(3px, 1fr));
+  grid-template-columns: repeat(${({ $count }) => $count}, minmax(3px, 1fr));
   align-items: end;
   gap: 3px;
   height: 190px;
@@ -339,7 +339,7 @@ export function AnalyticsOverview({
           ) : daily.length === 0 ? (
             <Empty>Ainda não há dados suficientes para exibir o gráfico.</Empty>
           ) : (
-            <Chart aria-label="Visualizações por dia">
+            <Chart $count={daily.length} aria-label="Visualizações por dia">
               {daily.map((item) => (
                 <Bar
                   key={item.date}
