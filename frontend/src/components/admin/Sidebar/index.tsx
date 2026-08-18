@@ -7,6 +7,7 @@ import {
   Settings,
   Globe,
   LogOut,
+  BarChart3,
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
@@ -19,6 +20,7 @@ import * as S from "./styles";
 
 const menuItems = [
   { label: "Dashboard", icon: LayoutDashboard, to: "/admin" },
+  { label: "Acessos", icon: BarChart3, to: "/admin/acessos" },
   { label: "Projetos", icon: FolderOpen, to: "/admin/projetos" },
   { label: "Propostas", icon: FileText, to: "/admin/propostas", notificationKey: "newProposals" },
   { label: "Blog", icon: NotebookText, to: "/admin/blog" },
