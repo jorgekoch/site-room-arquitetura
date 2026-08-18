@@ -1,5 +1,6 @@
 import styled from "styled-components";
-import { Eye, Globe, Users } from "lucide-react";
+import { ArrowRight, Eye, Globe, Users } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import type { AnalyticsOverview as AnalyticsOverviewData } from "../../../types/dashboard";
 
@@ -145,26 +146,126 @@ const Empty = styled.p`
   line-height: 1.6;
 `;
 
+const SummarySection = styled.section`
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+`;
+
+const SummaryHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+`;
+
+const SummaryTitle = styled.div`
+  display: grid;
+  gap: 0.2rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.15rem;
+  }
+
+  p {
+    margin: 0;
+    color: ${({ theme }) => theme.colors.textSoft};
+    font-size: ${({ theme }) => theme.fontSizes.sm};
+  }
+`;
+
+const DetailsLink = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: ${({ theme }) => theme.colors.secondary};
+  font: inherit;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 function formatNumber(value: number) {
   return new Intl.NumberFormat("pt-BR").format(value);
 }
 
+function getLatestDay(analytics?: AnalyticsOverviewData) {
+  const daily = analytics?.daily ?? [];
+  return daily[daily.length - 1];
+}
+
 export function AnalyticsOverview({
   analytics,
+  compact = false,
 }: {
   analytics?: AnalyticsOverviewData;
+  compact?: boolean;
 }) {
+  const navigate = useNavigate();
   const configured = analytics?.configured ?? false;
   const daily = analytics?.daily ?? [];
   const pages = analytics?.topPages ?? [];
   const maxViews = Math.max(...daily.map((item) => item.views), 1);
+  const latestDay = getLatestDay(analytics);
+
+  if (compact) {
+    return (
+      <SummarySection>
+        <SummaryHeader>
+          <SummaryTitle>
+            <h2>Acessos</h2>
+            <p>Resumo do último dia registrado.</p>
+          </SummaryTitle>
+
+          <DetailsLink type="button" onClick={() => navigate("/admin/acessos")}>
+            Ver detalhes
+            <ArrowRight size={16} />
+          </DetailsLink>
+        </SummaryHeader>
+
+        <Cards>
+          <Metric>
+            <MetricTop>
+              <span>Visualizações</span>
+              <Eye size={17} />
+            </MetricTop>
+            <MetricValue>{formatNumber(latestDay?.views ?? 0)}</MetricValue>
+          </Metric>
+
+          <Metric>
+            <MetricTop>
+              <span>Visitantes</span>
+              <Users size={17} />
+            </MetricTop>
+            <MetricValue>{formatNumber(latestDay?.users ?? 0)}</MetricValue>
+          </Metric>
+
+          <Metric>
+            <MetricTop>
+              <span>Visualizações no período</span>
+              <Globe size={17} />
+            </MetricTop>
+            <MetricValue>{formatNumber(analytics?.totals.views ?? 0)}</MetricValue>
+          </Metric>
+        </Cards>
+      </SummarySection>
+    );
+  }
 
   return (
     <Section>
       <Header>
         <Title>
           <h2>Acessos ao site</h2>
-          <p>Dados do Google Analytics nos últimos 30 dias.</p>
+          <p>Dados do Google Analytics nos últimos {analytics?.range ?? 30} dias.</p>
         </Title>
         <Status $configured={configured}>
           {configured ? "Analytics conectado" : "Analytics não configurado"}
