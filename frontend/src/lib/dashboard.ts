@@ -1,10 +1,19 @@
 import { apiGet } from "./api";
 
-import { DashboardResponse } from "../types/dashboard";
+import {
+  AnalyticsOverview,
+  DashboardResponse,
+} from "../types/dashboard";
 
 export function getDashboard() {
   return apiGet<DashboardResponse>(
     "/dashboard"
+  );
+}
+
+export function getDashboardAnalytics(range = 30) {
+  return apiGet<AnalyticsOverview>(
+    `/analytics/overview?range=${range}`
   );
 }
 
