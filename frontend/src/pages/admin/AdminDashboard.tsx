@@ -118,7 +118,7 @@ export default function AdminDashboard() {
         />
       </StatsGrid>
 
-      <AnalyticsOverview analytics={analytics} />
+      <AnalyticsOverview analytics={analytics} compact />
 
       <ContentGrid>
         <RecentProjects
