@@ -63,11 +63,23 @@ export class AnalyticsService {
     }
 
     const property = `properties/${PROPERTY_ID}`;
+    const dateRanges = [
+      { startDate: `${safeRange}daysAgo`, endDate: "today" },
+    ];
 
-    const [dailyResponse, pagesResponse] = await Promise.all([
+    const [totalsResponse, dailyResponse, pagesResponse] = await Promise.all([
       client.runReport({
         property,
-        dateRanges: [{ startDate: `${safeRange}daysAgo`, endDate: "today" }],
+        dateRanges,
+        metrics: [
+          { name: "totalUsers" },
+          { name: "sessions" },
+          { name: "screenPageViews" },
+        ],
+      }),
+      client.runReport({
+        property,
+        dateRanges,
         dimensions: [{ name: "date" }],
         metrics: [
           { name: "totalUsers" },
@@ -78,7 +90,7 @@ export class AnalyticsService {
       }),
       client.runReport({
         property,
-        dateRanges: [{ startDate: `${safeRange}daysAgo`, endDate: "today" }],
+        dateRanges,
         dimensions: [{ name: "pagePath" }],
         metrics: [{ name: "screenPageViews" }],
         orderBys: [
@@ -92,6 +104,8 @@ export class AnalyticsService {
         limit: 10,
       }),
     ]);
+
+    const totalsRow = totalsResponse[0].rows?.[0];
 
     const daily: AnalyticsDay[] = (dailyResponse[0].rows ?? []).map((row) => ({
       date: row.dimensionValues?.[0]?.value ?? "",
@@ -109,9 +123,9 @@ export class AnalyticsService {
       configured: true,
       range: safeRange,
       totals: {
-        users: daily.reduce((sum, item) => sum + item.users, 0),
-        sessions: daily.reduce((sum, item) => sum + item.sessions, 0),
-        views: daily.reduce((sum, item) => sum + item.views, 0),
+        users: Number(totalsRow?.metricValues?.[0]?.value ?? 0),
+        sessions: Number(totalsRow?.metricValues?.[1]?.value ?? 0),
+        views: Number(totalsRow?.metricValues?.[2]?.value ?? 0),
       },
       daily,
       topPages,
