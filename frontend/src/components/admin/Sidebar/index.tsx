@@ -2,8 +2,9 @@ import {
   LayoutDashboard,
   FolderOpen,
   FileText,
-  NotebookText,
   Users,
+  BarChart3,
+  NotebookText,
   Settings,
   Globe,
   LogOut,
@@ -21,8 +22,9 @@ const menuItems = [
   { label: "Dashboard", icon: LayoutDashboard, to: "/admin" },
   { label: "Projetos", icon: FolderOpen, to: "/admin/projetos" },
   { label: "Propostas", icon: FileText, to: "/admin/propostas", notificationKey: "newProposals" },
-  { label: "Blog", icon: NotebookText, to: "/admin/blog" },
   { label: "Usuários", icon: Users, to: "/admin/usuarios", notificationKey: "pendingAdminRequests" },
+  { label: "Acessos", icon: BarChart3, to: "/admin/acessos" },
+  { label: "Blog", icon: NotebookText, to: "/admin/blog" },
   { label: "Configurações", icon: Settings, to: "/admin/configuracoes" },
 ];
 

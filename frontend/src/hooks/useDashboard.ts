@@ -4,9 +4,12 @@ import {
   useState,
 } from "react";
 
-import { getDashboard } from "../lib/dashboard";
+import {
+  getDashboard,
+  getDashboardAnalytics,
+} from "../lib/dashboard";
 
-import { DashboardResponse } from "../types/dashboard";
+import { DashboardResponse, AnalyticsOverview } from "../types/dashboard";
 
 export function useDashboard() {
   const [
@@ -14,10 +17,14 @@ export function useDashboard() {
     setDashboard,
   ] = useState<DashboardResponse>();
 
+  const [analytics, setAnalytics] = useState<AnalyticsOverview>();
+
   const [
     loading,
     setLoading,
   ] = useState(true);
+
+  const [analyticsLoading, setAnalyticsLoading] = useState(true);
 
   const [
     error,
@@ -46,17 +53,31 @@ export function useDashboard() {
       }
     }, []);
 
+  const loadAnalytics = useCallback(async () => {
+    try {
+      setAnalyticsLoading(true);
+      const response = await getDashboardAnalytics(30);
+      setAnalytics(response);
+    } catch (err) {
+      console.error(err);
+      setAnalytics(undefined);
+    } finally {
+      setAnalyticsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     loadDashboard();
-  }, [loadDashboard]);
+    loadAnalytics();
+  }, [loadDashboard, loadAnalytics]);
 
   return {
     dashboard,
-
+    analytics,
     loading,
-
+    analyticsLoading,
     error,
-
     reload: loadDashboard,
+    reloadAnalytics: loadAnalytics,
   };
 }

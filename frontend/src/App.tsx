@@ -24,6 +24,7 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import AdminForgotPassword from "./pages/admin/AdminForgotPassword";
 import AdminResetPassword from "./pages/admin/AdminResetPassword";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminAcessos from "./pages/admin/AdminAcessos";
 import AdminPropostas from "./pages/admin/AdminPropostas/index";
 import AdminRequestAccess from "./pages/admin/AdminRequestAccess";
 import AdminUsuarios from "./pages/admin/AdminUsuarios";
@@ -136,6 +137,9 @@ function App() {
         >
           {/* Dashboard */}
           <Route index element={<AdminDashboard />} />
+
+          {/* Acessos */}
+          <Route path="acessos" element={<AdminAcessos />} />
 
           {/* Projetos */}
           <Route path="projetos" element={<AdminProjetos />} />

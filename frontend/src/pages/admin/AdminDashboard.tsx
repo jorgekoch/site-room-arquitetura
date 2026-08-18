@@ -11,6 +11,7 @@ import {
 import { ContentGrid } from "../../components/admin/dashboard/ContentGrid";
 import { RecentProjects } from "../../components/admin/dashboard/RecentProjects";
 import { RecentProposals } from "../../components/admin/dashboard/RecentProposals";
+import { AnalyticsOverview } from "../../components/admin/dashboard/AnalyticsOverview";
 
 import { PageHeader } from "../../components/admin/PageHeader";
 import { Loading } from "../../components/admin/common/Loading";
@@ -26,6 +27,7 @@ export default function AdminDashboard() {
 
   const {
     dashboard,
+    analytics,
     loading,
     error,
   } = useDashboard();
@@ -115,6 +117,8 @@ export default function AdminDashboard() {
           }
         />
       </StatsGrid>
+
+      <AnalyticsOverview analytics={analytics} compact />
 
       <ContentGrid>
         <RecentProjects
