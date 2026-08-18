@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { HelmetProvider } from "react-helmet-async";
 
 import App from "./App";
+import { GoogleAnalytics } from "./analytics/GoogleAnalytics";
 import { GlobalStyle } from "./styles/GlobalStyle";
 import { ThemeModeProvider } from "./contexts/ThemeModeContext";
 import { AdminProvider } from "./contexts/AdminContext";
@@ -20,6 +21,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           </AdminProvider>
         </ThemeModeProvider>
 
+        <GoogleAnalytics />
         <Analytics />
       </BrowserRouter>
     </HelmetProvider>
