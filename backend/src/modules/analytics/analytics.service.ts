@@ -16,6 +16,17 @@ type AnalyticsPage = {
   views: number;
 };
 
+type AnalyticsChannel = {
+  channel: string;
+  sessions: number;
+};
+
+type AnalyticsSource = {
+  source: string;
+  medium: string;
+  sessions: number;
+};
+
 export type AnalyticsOverview = {
   configured: boolean;
   range: number;
@@ -26,6 +37,8 @@ export type AnalyticsOverview = {
   };
   daily: AnalyticsDay[];
   topPages: AnalyticsPage[];
+  channels: AnalyticsChannel[];
+  sources: AnalyticsSource[];
 };
 
 export class AnalyticsService {
@@ -59,6 +72,8 @@ export class AnalyticsService {
         totals: { users: 0, sessions: 0, views: 0 },
         daily: [],
         topPages: [],
+        channels: [],
+        sources: [],
       };
     }
 
@@ -67,7 +82,13 @@ export class AnalyticsService {
       { startDate: `${safeRange - 1}daysAgo`, endDate: "today" },
     ];
 
-    const [totalsResponse, dailyResponse, pagesResponse] = await Promise.all([
+    const [
+      totalsResponse,
+      dailyResponse,
+      pagesResponse,
+      channelsResponse,
+      sourcesResponse,
+    ] = await Promise.all([
       client.runReport({
         property,
         dateRanges,
@@ -103,6 +124,39 @@ export class AnalyticsService {
         ],
         limit: 10,
       }),
+      client.runReport({
+        property,
+        dateRanges,
+        dimensions: [{ name: "sessionDefaultChannelGroup" }],
+        metrics: [{ name: "sessions" }],
+        orderBys: [
+          {
+            metric: {
+              metricName: "sessions",
+            },
+            desc: true,
+          },
+        ],
+        limit: 10,
+      }),
+      client.runReport({
+        property,
+        dateRanges,
+        dimensions: [
+          { name: "sessionSource" },
+          { name: "sessionMedium" },
+        ],
+        metrics: [{ name: "sessions" }],
+        orderBys: [
+          {
+            metric: {
+              metricName: "sessions",
+            },
+            desc: true,
+          },
+        ],
+        limit: 10,
+      }),
     ]);
 
     const totalsRow = totalsResponse[0].rows?.[0];
@@ -119,6 +173,19 @@ export class AnalyticsService {
       views: Number(row.metricValues?.[0]?.value ?? 0),
     }));
 
+    const channels: AnalyticsChannel[] = (channelsResponse[0].rows ?? []).map(
+      (row) => ({
+        channel: row.dimensionValues?.[0]?.value || "Não identificado",
+        sessions: Number(row.metricValues?.[0]?.value ?? 0),
+      }),
+    );
+
+    const sources: AnalyticsSource[] = (sourcesResponse[0].rows ?? []).map((row) => ({
+      source: row.dimensionValues?.[0]?.value || "Não identificado",
+      medium: row.dimensionValues?.[1]?.value || "(none)",
+      sessions: Number(row.metricValues?.[0]?.value ?? 0),
+    }));
+
     return {
       configured: true,
       range: safeRange,
@@ -129,6 +196,8 @@ export class AnalyticsService {
       },
       daily,
       topPages,
+      channels,
+      sources,
     };
   }
 }
