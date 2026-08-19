@@ -268,9 +268,10 @@ function formatChannel(channel: string) {
     "Paid Social": "Redes sociais pagas",
     "Paid Video": "Vídeo pago",
     "Organic Video": "Vídeo orgânico",
-    "Email": "E-mail",
+    Email: "E-mail",
     Affiliates: "Afiliados",
     Display: "Display",
+    Unassigned: "Origem não identificada",
   };
 
   return labels[channel] ?? channel;
@@ -279,6 +280,10 @@ function formatChannel(channel: string) {
 function formatSourceMedium(source: string, medium: string) {
   if (source === "(direct)" && (medium === "(none)" || medium === "direct")) {
     return "Acesso direto";
+  }
+
+  if (source === "(not set)" || medium === "(not set)") {
+    return "Origem não identificada";
   }
 
   return `${source} / ${medium}`;
@@ -446,9 +451,7 @@ export function AnalyticsOverview({
             <Pages>
               {sources.map((item) => (
                 <PageRow key={`${item.source}-${item.medium}`}>
-                  <span>
-                    {formatSourceMedium(item.source, item.medium)}
-                  </span>
+                  <span>{formatSourceMedium(item.source, item.medium)}</span>
                   <strong>{formatNumber(item.sessions)}</strong>
                 </PageRow>
               ))}
