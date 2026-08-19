@@ -103,29 +103,40 @@ const PanelTitle = styled.h3`
   font-size: 1rem;
 `;
 
-const Chart = styled.div<{ $count: number }>`
+const Chart = styled.div<{ $count: number; $compact: boolean }>`
   display: grid;
   grid-template-columns: repeat(${({ $count }) => $count}, minmax(3px, 1fr));
   align-items: end;
-  gap: 3px;
+  gap: ${({ $compact }) => ($compact ? "8px" : "3px")};
   height: 190px;
-  padding-top: 1rem;
+  padding: 1rem 0 0;
 `;
 
-const Bar = styled.div<{ $height: number }>`
+const Bar = styled.div<{ $height: number; $compact: boolean }>`
+  width: ${({ $compact }) => ($compact ? "min(28px, 100%)" : "100%")};
+  justify-self: center;
   min-height: 3px;
   height: ${({ $height }) => `${$height}%`};
-  border-radius: 3px 3px 0 0;
+  border-radius: 4px 4px 0 0;
   background: ${({ theme }) => theme.colors.secondary};
   opacity: 0.85;
 `;
 
-const List = styled.div`
+const ChartMessage = styled.div`
+  display: grid;
+  place-items: center;
+  height: 190px;
+  color: ${({ theme }) => theme.colors.textSoft};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  text-align: center;
+`;
+
+const Pages = styled.div`
   display: grid;
   gap: 0.65rem;
 `;
 
-const Row = styled.div`
+const PageRow = styled.div`
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 1rem;
@@ -137,41 +148,6 @@ const Row = styled.div`
     white-space: nowrap;
     color: ${({ theme }) => theme.colors.textSoft};
   }
-`;
-
-const ChannelRow = styled(Row)`
-  grid-template-columns: minmax(0, 1fr) auto auto;
-`;
-
-const SourceRow = styled(Row)`
-  grid-template-columns: minmax(0, 1fr) auto;
-`;
-
-const SourceLabel = styled.div`
-  min-width: 0;
-  display: grid;
-  gap: 0.15rem;
-
-  strong {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: ${({ theme }) => theme.fontSizes.sm};
-  }
-
-  span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: ${({ theme }) => theme.colors.textSoft};
-    font-size: ${({ theme }) => theme.fontSizes.xs};
-  }
-`;
-
-const Share = styled.span`
-  color: ${({ theme }) => theme.colors.textSoft};
-  font-size: ${({ theme }) => theme.fontSizes.xs};
-  white-space: nowrap;
 `;
 
 const Empty = styled.p`
@@ -282,12 +258,30 @@ function formatDay(date?: string) {
   return new Intl.DateTimeFormat("pt-BR").format(new Date(`${formatted}T12:00:00`));
 }
 
+function formatChannel(channel: string) {
+  const labels: Record<string, string> = {
+    Direct: "Acesso direto",
+    "Organic Search": "Pesquisa orgânica",
+    "Organic Social": "Redes sociais",
+    Referral: "Referências",
+    "Paid Search": "Pesquisa paga",
+    "Paid Social": "Redes sociais pagas",
+    "Paid Video": "Vídeo pago",
+    "Organic Video": "Vídeo orgânico",
+    "Email": "E-mail",
+    Affiliates: "Afiliados",
+    Display: "Display",
+  };
+
+  return labels[channel] ?? channel;
+}
+
 function formatSourceMedium(source: string, medium: string) {
-  if (medium === "(none)" || medium === "direct") {
-    return source === "(direct)" ? "Acesso direto" : medium;
+  if (source === "(direct)" && (medium === "(none)" || medium === "direct")) {
+    return "Acesso direto";
   }
 
-  return medium;
+  return `${source} / ${medium}`;
 }
 
 export function AnalyticsOverview({
@@ -309,6 +303,7 @@ export function AnalyticsOverview({
     0,
   );
   const latestDay = getLatestDay(analytics);
+  const isSingleDay = daily.length === 1;
 
   if (compact) {
     return (
@@ -386,14 +381,15 @@ export function AnalyticsOverview({
               exibir os dados aqui.
             </Empty>
           ) : daily.length === 0 ? (
-            <Empty>Ainda não há dados suficientes para exibir o gráfico.</Empty>
+            <ChartMessage>Ainda não há dados suficientes para exibir o gráfico.</ChartMessage>
           ) : (
-            <Chart $count={daily.length} aria-label="Visualizações por dia">
+            <Chart $count={daily.length} $compact={isSingleDay} aria-label="Visualizações por dia">
               {daily.map((item) => (
                 <Bar
                   key={item.date}
                   $height={(item.views / maxViews) * 100}
-                  title={`${item.date}: ${formatNumber(item.views)} visualizações`}
+                  $compact={isSingleDay}
+                  title={`${formatDay(item.date)}: ${formatNumber(item.views)} visualizações`}
                 />
               ))}
             </Chart>
@@ -405,14 +401,14 @@ export function AnalyticsOverview({
           {!configured || pages.length === 0 ? (
             <Empty>Nenhum dado de páginas disponível ainda.</Empty>
           ) : (
-            <List>
+            <Pages>
               {pages.map((page) => (
-                <Row key={page.path}>
+                <PageRow key={page.path}>
                   <span>{page.path}</span>
                   <strong>{formatNumber(page.views)}</strong>
-                </Row>
+                </PageRow>
               ))}
-            </List>
+            </Pages>
           )}
         </Panel>
       </Content>
@@ -423,40 +419,40 @@ export function AnalyticsOverview({
           {!configured || channels.length === 0 ? (
             <Empty>Nenhum dado de origem disponível ainda.</Empty>
           ) : (
-            <List>
+            <Pages>
               {channels.map((item) => {
-                const share = totalChannelSessions
-                  ? (item.sessions / totalChannelSessions) * 100
+                const percentage = totalChannelSessions
+                  ? Math.round((item.sessions / totalChannelSessions) * 100)
                   : 0;
 
                 return (
-                  <ChannelRow key={item.channel}>
-                    <span>{item.channel}</span>
-                    <Share>{share.toFixed(0)}%</Share>
-                    <strong>{formatNumber(item.sessions)}</strong>
-                  </ChannelRow>
+                  <PageRow key={item.channel}>
+                    <span>{formatChannel(item.channel)}</span>
+                    <strong>
+                      {percentage}% &nbsp; {formatNumber(item.sessions)}
+                    </strong>
+                  </PageRow>
                 );
               })}
-            </List>
+            </Pages>
           )}
         </Panel>
 
         <Panel>
           <PanelTitle>Principais origens</PanelTitle>
           {!configured || sources.length === 0 ? (
-            <Empty>Nenhum dado de origem disponível ainda.</Empty>
+            <Empty>Nenhuma origem disponível ainda.</Empty>
           ) : (
-            <List>
+            <Pages>
               {sources.map((item) => (
-                <SourceRow key={`${item.source}-${item.medium}`}>
-                  <SourceLabel>
-                    <strong>{item.source}</strong>
-                    <span>{formatSourceMedium(item.source, item.medium)}</span>
-                  </SourceLabel>
+                <PageRow key={`${item.source}-${item.medium}`}>
+                  <span>
+                    {formatSourceMedium(item.source, item.medium)}
+                  </span>
                   <strong>{formatNumber(item.sessions)}</strong>
-                </SourceRow>
+                </PageRow>
               ))}
-            </List>
+            </Pages>
           )}
         </Panel>
       </Content>
