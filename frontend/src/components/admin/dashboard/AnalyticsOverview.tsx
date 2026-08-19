@@ -120,12 +120,12 @@ const Bar = styled.div<{ $height: number }>`
   opacity: 0.85;
 `;
 
-const Pages = styled.div`
+const List = styled.div`
   display: grid;
   gap: 0.65rem;
 `;
 
-const PageRow = styled.div`
+const Row = styled.div`
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 1rem;
@@ -136,6 +136,31 @@ const PageRow = styled.div`
     text-overflow: ellipsis;
     white-space: nowrap;
     color: ${({ theme }) => theme.colors.textSoft};
+  }
+`;
+
+const SourceRow = styled(Row)`
+  grid-template-columns: minmax(0, 1fr) auto;
+`;
+
+const SourceLabel = styled.div`
+  min-width: 0;
+  display: grid;
+  gap: 0.15rem;
+
+  strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: ${({ theme }) => theme.fontSizes.sm};
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: ${({ theme }) => theme.colors.textSoft};
+    font-size: ${({ theme }) => theme.fontSizes.xs};
   }
 `;
 
@@ -247,6 +272,14 @@ function formatDay(date?: string) {
   return new Intl.DateTimeFormat("pt-BR").format(new Date(`${formatted}T12:00:00`));
 }
 
+function formatSourceMedium(source: string, medium: string) {
+  if (medium === "(none)" || medium === "direct") {
+    return source === "(direct)" ? "Acesso direto" : medium;
+  }
+
+  return medium;
+}
+
 export function AnalyticsOverview({
   analytics,
   compact = false,
@@ -258,6 +291,8 @@ export function AnalyticsOverview({
   const configured = analytics?.configured ?? false;
   const daily = analytics?.daily ?? [];
   const pages = analytics?.topPages ?? [];
+  const channels = analytics?.channels ?? [];
+  const sources = analytics?.sources ?? [];
   const maxViews = Math.max(...daily.map((item) => item.views), 1);
   const latestDay = getLatestDay(analytics);
 
@@ -356,14 +391,51 @@ export function AnalyticsOverview({
           {!configured || pages.length === 0 ? (
             <Empty>Nenhum dado de páginas disponível ainda.</Empty>
           ) : (
-            <Pages>
+            <List>
               {pages.map((page) => (
-                <PageRow key={page.path}>
+                <Row key={page.path}>
                   <span>{page.path}</span>
                   <strong>{formatNumber(page.views)}</strong>
-                </PageRow>
+                </Row>
               ))}
-            </Pages>
+            </List>
+          )}
+        </Panel>
+      </Content>
+
+      <Content>
+        <Panel>
+          <PanelTitle>De onde vêm os visitantes</PanelTitle>
+          {!configured || channels.length === 0 ? (
+            <Empty>Nenhum dado de origem disponível ainda.</Empty>
+          ) : (
+            <List>
+              {channels.map((item) => (
+                <Row key={item.channel}>
+                  <span>{item.channel}</span>
+                  <strong>{formatNumber(item.sessions)} sessões</strong>
+                </Row>
+              ))}
+            </List>
+          )}
+        </Panel>
+
+        <Panel>
+          <PanelTitle>Principais origens</PanelTitle>
+          {!configured || sources.length === 0 ? (
+            <Empty>Nenhum dado de origem disponível ainda.</Empty>
+          ) : (
+            <List>
+              {sources.map((item) => (
+                <SourceRow key={`${item.source}-${item.medium}`}>
+                  <SourceLabel>
+                    <strong>{item.source}</strong>
+                    <span>{formatSourceMedium(item.source, item.medium)}</span>
+                  </SourceLabel>
+                  <strong>{formatNumber(item.sessions)}</strong>
+                </SourceRow>
+              ))}
+            </List>
           )}
         </Panel>
       </Content>
