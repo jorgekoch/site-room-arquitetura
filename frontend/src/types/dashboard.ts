@@ -24,6 +24,17 @@ export interface AnalyticsPage {
   views: number;
 }
 
+export interface AnalyticsChannel {
+  channel: string;
+  sessions: number;
+}
+
+export interface AnalyticsSource {
+  source: string;
+  medium: string;
+  sessions: number;
+}
+
 export interface AnalyticsOverview {
   configured: boolean;
   range: number;
@@ -34,6 +45,8 @@ export interface AnalyticsOverview {
   };
   daily: AnalyticsDay[];
   topPages: AnalyticsPage[];
+  channels: AnalyticsChannel[];
+  sources: AnalyticsSource[];
 }
 
 export interface DashboardResponse {
