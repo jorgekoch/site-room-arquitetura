@@ -139,6 +139,10 @@ const Row = styled.div`
   }
 `;
 
+const ChannelRow = styled(Row)`
+  grid-template-columns: minmax(0, 1fr) auto auto;
+`;
+
 const SourceRow = styled(Row)`
   grid-template-columns: minmax(0, 1fr) auto;
 `;
@@ -162,6 +166,12 @@ const SourceLabel = styled.div`
     color: ${({ theme }) => theme.colors.textSoft};
     font-size: ${({ theme }) => theme.fontSizes.xs};
   }
+`;
+
+const Share = styled.span`
+  color: ${({ theme }) => theme.colors.textSoft};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  white-space: nowrap;
 `;
 
 const Empty = styled.p`
@@ -294,6 +304,10 @@ export function AnalyticsOverview({
   const channels = analytics?.channels ?? [];
   const sources = analytics?.sources ?? [];
   const maxViews = Math.max(...daily.map((item) => item.views), 1);
+  const totalChannelSessions = channels.reduce(
+    (total, item) => total + item.sessions,
+    0,
+  );
   const latestDay = getLatestDay(analytics);
 
   if (compact) {
@@ -405,17 +419,24 @@ export function AnalyticsOverview({
 
       <Content>
         <Panel>
-          <PanelTitle>De onde vêm os visitantes</PanelTitle>
+          <PanelTitle>Origem do tráfego</PanelTitle>
           {!configured || channels.length === 0 ? (
             <Empty>Nenhum dado de origem disponível ainda.</Empty>
           ) : (
             <List>
-              {channels.map((item) => (
-                <Row key={item.channel}>
-                  <span>{item.channel}</span>
-                  <strong>{formatNumber(item.sessions)} sessões</strong>
-                </Row>
-              ))}
+              {channels.map((item) => {
+                const share = totalChannelSessions
+                  ? (item.sessions / totalChannelSessions) * 100
+                  : 0;
+
+                return (
+                  <ChannelRow key={item.channel}>
+                    <span>{item.channel}</span>
+                    <Share>{share.toFixed(0)}%</Share>
+                    <strong>{formatNumber(item.sessions)}</strong>
+                  </ChannelRow>
+                );
+              })}
             </List>
           )}
         </Panel>
