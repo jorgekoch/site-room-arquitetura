@@ -114,6 +114,17 @@ export class AnalyticsService {
         dateRanges,
         dimensions: [{ name: "pagePath" }],
         metrics: [{ name: "screenPageViews" }],
+        dimensionFilter: {
+          notExpression: {
+            filter: {
+              fieldName: "pagePath",
+              stringFilter: {
+                matchType: "BEGINS_WITH",
+                value: "/admin",
+              },
+            },
+          },
+        },
         orderBys: [
           {
             metric: {
